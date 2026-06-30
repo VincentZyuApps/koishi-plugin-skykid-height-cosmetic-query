@@ -94,5 +94,5 @@ export const usage = `
 
 <h3>🔤 字体缓存</h3>
 
-<p>图片渲染默认使用 <code>LXGWWenKaiMono-Regular.ttf</code>。插件加载时会检查 <code>ctx.baseDir/data/fonts</code>，字体存在且 hash 校验通过时会跳过下载。</p>
+<p>图片渲染默认使用 <code>LXGWWenKaiMono-Regular.ttf</code>。插件加载时会检查 <code>ctx.baseDir/data/fonts</code>，字体存在且 hash 校验通过时会跳过下载。关闭配置项 <code>useCustomFont</code> 后，Puppeteer / Takumi 图片会使用系统默认字体，并跳过默认字体下载。</p>
 `

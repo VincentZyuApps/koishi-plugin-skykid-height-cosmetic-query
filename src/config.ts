@@ -26,6 +26,7 @@ export interface Config {
   // ----- 💬 通用输出设置 -----
   enableQuote: boolean
   textMaxLength: number
+  useCustomFont: boolean
 
   // ----- 🖼️ Puppeteer 图片设置 -----
   pptrWidth: number
@@ -74,6 +75,7 @@ export const Config: Schema<Config> = Schema.intersect([
   Schema.object({
     enableQuote: Schema.boolean().default(true).description('💬 回复时引用触发消息'),
     textMaxLength: Schema.number().min(200).max(5000).step(100).default(1500).description('📏 纯文本最大长度'),
+    useCustomFont: Schema.boolean().default(true).description('🔤 是否使用自定义字体路径。关闭后 Puppeteer / Takumi 图片使用系统默认字体，并跳过默认字体下载。'),
   }).description('💬 通用输出设置'),
 
   Schema.object({

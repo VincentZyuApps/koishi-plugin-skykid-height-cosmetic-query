@@ -17,7 +17,7 @@ export function registerPptrCommand(ctx: Context, config: Config) {
         width: config.pptrWidth,
         imageType: config.pptrImageType,
         quality: config.pptrQuality,
-        fontPath: config.pptrFontPath ? resolveRuntimeFontPath(ctx, config.pptrFontPath) : '',
+        fontPath: config.useCustomFont && config.pptrFontPath ? resolveRuntimeFontPath(ctx, config.pptrFontPath) : '',
         darkMode: commandOptions.enableDarkMode ?? false,
       })
       const message: (string | h)[] = [h.image(`data:image/${config.pptrImageType};base64,${image}`)]

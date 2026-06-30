@@ -16,7 +16,7 @@ export function registerTakumiCommand(ctx: Context, config: Config) {
       const image = await renderHeightTakumi(result, {
         width: config.takumiWidth,
         darkMode: commandOptions.enableDarkMode ?? config.takumiDarkMode,
-        fontPath: resolveRuntimeFontPath(ctx, config.takumiFontPath),
+        fontPath: config.useCustomFont ? resolveRuntimeFontPath(ctx, config.takumiFontPath) : '',
       })
       const message: (string | h)[] = [h.image(image, 'image/png')]
       if (config.takumiShowRenderInfo) {

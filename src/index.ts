@@ -20,7 +20,7 @@ export const inject = {
 
 export function apply(ctx: Context, config: Config) {
   ctx.on('ready', async () => {
-    await ensureRuntimeFonts(ctx, config)
+    if (config.useCustomFont) await ensureRuntimeFonts(ctx, config)
   })
 
   if (config.enableTextCommand) registerTextCommand(ctx, config)

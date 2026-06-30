@@ -102,7 +102,7 @@ POST https://sky.cesgao.cn/web/v1/query
 ctx.baseDir/data/fonts/LXGWWenKaiMono-Regular.ttf
 ```
 
-字体存在且 hash 校验通过时会跳过下载；缺失或校验失败时会尝试从 Gitee / GitHub 下载。
+字体存在且 hash 校验通过时会跳过下载；缺失或校验失败时会尝试从 Gitee / GitHub 下载。关闭配置项 `useCustomFont` 后，Puppeteer / Takumi 图片会使用系统默认字体，并跳过默认字体下载。
 
 ## ⚠️ 注意
 
