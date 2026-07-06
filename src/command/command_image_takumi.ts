@@ -1,7 +1,7 @@
 import { Context, h } from 'koishi'
 import type { Config } from '../config'
 import { renderHeightTakumi } from '../gen/gen_image_takumi'
-import { resolveRuntimeFontPath } from '../utils'
+import { resolveRuntimeFontPath } from '../utils/fonts'
 import { registerHeightCommand } from './common'
 
 export function registerTakumiCommand(ctx: Context, config: Config) {

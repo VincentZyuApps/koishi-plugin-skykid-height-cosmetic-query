@@ -3,7 +3,7 @@ import { existsSync } from 'fs'
 import { mkdir, readFile, writeFile } from 'fs/promises'
 import path from 'path'
 import type { Context } from 'koishi'
-import type { Config } from './config'
+import type { Config } from '../config'
 import { logInfo } from './logger'
 
 export const LXGW_WENKAI_FILE_NAME = 'LXGWWenKaiMono-Regular.ttf'

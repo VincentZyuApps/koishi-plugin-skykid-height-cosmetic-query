@@ -1,20 +1,20 @@
 const pkg = require('../package.json')
 
 export const usage = `
-<h2>🌌 sky-shengao-query v${pkg.version}</h2>
+<h2>🌌 skykid-height-cosmetic-query v${pkg.version}</h2>
 
 <p>
-  <a href="https://www.npmjs.com/package/koishi-plugin-sky-shengao-query" target="_blank">
-    <img src="https://img.shields.io/npm/v/koishi-plugin-sky-shengao-query?style=flat-square" alt="npm version">
+  <a href="https://www.npmjs.com/package/koishi-plugin-skykid-height-cosmetic-query" target="_blank">
+    <img src="https://img.shields.io/npm/v/koishi-plugin-skykid-height-cosmetic-query?style=flat-square" alt="npm version">
   </a>
-  <a href="https://www.npmjs.com/package/koishi-plugin-sky-shengao-query" target="_blank">
-    <img src="https://img.shields.io/npm/dm/koishi-plugin-sky-shengao-query?style=flat-square" alt="npm downloads">
+  <a href="https://www.npmjs.com/package/koishi-plugin-skykid-height-cosmetic-query" target="_blank">
+    <img src="https://img.shields.io/npm/dm/koishi-plugin-skykid-height-cosmetic-query?style=flat-square" alt="npm downloads">
   </a>
   <br>
-  <a href="https://github.com/VincentZyuApps/koishi-plugin-sky-shengao-query" target="_blank">
+  <a href="https://github.com/VincentZyuApps/koishi-plugin-skykid-height-cosmetic-query" target="_blank">
     <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub">
   </a>
-  <a href="https://gitee.com/vincent-zyu/koishi-plugin-sky-shengao-query" target="_blank">
+  <a href="https://gitee.com/vincent-zyu/koishi-plugin-skykid-height-cosmetic-query" target="_blank">
     <img src="https://img.shields.io/badge/Gitee-C71D23?style=for-the-badge&logo=gitee&logoColor=white" alt="Gitee">
   </a>
   <br>

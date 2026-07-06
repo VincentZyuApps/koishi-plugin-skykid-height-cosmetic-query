@@ -1,5 +1,5 @@
 import { Schema } from 'koishi'
-import { DEFAULT_LXGW_WENKAI_PATH } from './utils'
+import { DEFAULT_LXGW_WENKAI_PATH } from './utils/fonts'
 
 export interface Config {
   // ----- 🌐 后端接口设置 -----
@@ -22,6 +22,8 @@ export interface Config {
   pptrCommandName: string
   enableTakumiCommand: boolean
   takumiCommandName: string
+  enableApiCommand: boolean
+  apiCommandName: string
 
   // ----- 💬 通用输出设置 -----
   enableQuote: boolean
@@ -40,6 +42,16 @@ export interface Config {
   takumiDarkMode: boolean
   takumiFontPath: string
   takumiShowRenderInfo: boolean
+
+  // ----- 🌐 API 出图设置 -----
+  imageApiBaseUrl: string
+  imageApiPath: string
+  imageApiTimeout: number
+  imageApiWidth: number
+  imageApiHeight: number
+  imageApiShowOutfitName: boolean
+  imageApiExtraParams: string
+  imageApiShowRenderInfo: boolean
 
   // ----- 🛠️ 调试设置 -----
   verboseConsoleLog: boolean
@@ -70,6 +82,8 @@ export const Config: Schema<Config> = Schema.intersect([
     pptrCommandName: Schema.string().default('查询身高').description('🖼️ Puppeteer 指令名称'),
     enableTakumiCommand: Schema.boolean().default(true).description('⚡ 注册 Takumi wasm 出图查询指令'),
     takumiCommandName: Schema.string().default('查询身高-takumi').description('⚡ Takumi 指令名称'),
+    enableApiCommand: Schema.boolean().default(false).description('🌐 注册外部 FastAPI 出图查询指令'),
+    apiCommandName: Schema.string().default('查询身高-api').description('🌐 外部 FastAPI 出图指令名称'),
   }).description('📌 指令设置'),
 
   Schema.object({
@@ -96,6 +110,17 @@ export const Config: Schema<Config> = Schema.intersect([
     takumiFontPath: Schema.string().role('textarea', { rows: [2, 4] }).default(DEFAULT_LXGW_WENKAI_PATH).description('🔤 Takumi 字体路径。默认展示 process.cwd()/data/fonts/LXGWWenKaiMono-Regular.ttf；运行时自动映射到 ctx.baseDir/data/fonts/LXGWWenKaiMono-Regular.ttf。'),
     takumiShowRenderInfo: Schema.boolean().default(true).description('📊 Takumi 回复中显示渲染耗时'),
   }).description('⚡ Takumi wasm 出图设置'),
+
+  Schema.object({
+    imageApiBaseUrl: Schema.string().role('link').default('http://127.0.0.1:60704').description('🌐 外部出图 API 基础地址。同机运行时通常填 http://127.0.0.1:60704；跨机器运行时填 API 所在机器地址。'),
+    imageApiPath: Schema.string().default('/img/file').description('🖼️ 外部出图 API 图片路径，默认对接 skykid-height-cosmetic-image-draw-api 的 /img/file'),
+    imageApiTimeout: Schema.number().min(1).max(300).step(1).default(60).description('⏱️ 外部出图 API 请求超时时间（秒）'),
+    imageApiWidth: Schema.number().min(1).max(3840).step(1).default(1920).description('📐 传给外部出图 API 的 bg_x 输出宽度'),
+    imageApiHeight: Schema.number().min(1).max(2160).step(1).default(1080).description('📐 传给外部出图 API 的 bg_y 输出高度'),
+    imageApiShowOutfitName: Schema.boolean().default(true).description('🏷️ 装扮标签是否显示具体装扮名称，对应 body-txt_name / hair-txt_name 等参数'),
+    imageApiExtraParams: Schema.string().role('textarea', { rows: [2, 5] }).default('').description('🧩 追加给外部出图 API 的查询参数，例如 gm=20&title_txt=光崽档案。同名参数会覆盖插件自动生成的参数。'),
+    imageApiShowRenderInfo: Schema.boolean().default(true).description('📊 API 出图回复中显示查询和出图总耗时'),
+  }).description('🌐 API 出图设置'),
 
   Schema.object({
     verboseConsoleLog: Schema.boolean().default(false).description('🛠️ 输出详细调试日志。开启后会打印请求 URL、payload 摘要、接口响应 JSON 等信息。'),

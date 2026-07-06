@@ -23,9 +23,24 @@ export async function renderHeightTakumi(
   const get = (label: string) => rows.find(([key]) => key === label)?.[1] || '未知'
   const outfitRows = rows.filter(([label]) => !['好友码', 'UUID', '体型值', '身高值', '当前身高', '最高身高', '最矮身高'].includes(label))
   const width = options.width
-  const dryBannerHeight = result.dryRun ? 60 : 0
-  const outfitHeight = outfitRows.length ? 38 + Math.ceil(outfitRows.length / 2) * 88 : 0
-  const height = 24 * 2 + dryBannerHeight + 132 + 86 + 38 + 128 + 88 + outfitHeight + 86 + 14 * 7
+  const rootPadding = 24
+  const rootGap = 14
+  const dryBannerHeight = result.dryRun ? 54 : 0
+  const headerHeight = 118
+  const identityHeight = 86
+  const heightSectionHeight = 24 + 10 + 128 + 10 + 78
+  const outfitRowCount = Math.ceil(outfitRows.length / 2)
+  const outfitHeight = outfitRows.length ? 24 + 10 + outfitRowCount * 76 + Math.max(0, outfitRowCount - 1) * 12 : 0
+  const noteHeight = 24
+  const childCount = 4 + (result.dryRun ? 1 : 0) + (outfitRows.length ? 1 : 0)
+  const height = rootPadding * 2
+    + dryBannerHeight
+    + headerHeight
+    + identityHeight
+    + heightSectionHeight
+    + outfitHeight
+    + noteHeight
+    + rootGap * (childCount - 1)
   const t = theme(options.darkMode)
 
   const root = container({
@@ -48,9 +63,9 @@ export async function renderHeightTakumi(
           padding: 12,
         },
         children: [
-          text('🧪⚠️ 假数据测试模式 · 仅用于测试图片样式，不是真实查询结果', {
+          text('假数据测试模式 · 仅用于测试图片样式，不是真实查询结果', {
             fontSize: 19,
-            fontWeight: 900,
+            fontWeight: 400,
             color: options.darkMode ? '#ffd7b8' : '#7a3511',
             textAlign: 'center',
           }),
@@ -68,8 +83,8 @@ export async function renderHeightTakumi(
           gap: 9,
         },
         children: [
-          text('光遇身高查询', { fontSize: 40, fontWeight: 900, color: t.primary }),
-          text(`${result.message} · ${formatDate(result.queriedAt)}`, { fontSize: 15, fontWeight: 700, color: t.muted }),
+          text('光遇身高查询', { fontSize: 40, fontWeight: 500, color: t.primary }),
+          text(`${stripEmoji(result.message)} · ${formatDate(result.queriedAt)}`, { fontSize: 15, fontWeight: 400, color: t.muted }),
         ],
       }),
       container({
@@ -90,7 +105,7 @@ export async function renderHeightTakumi(
           gap: 10,
         },
         children: [
-          text('身高信息', { fontSize: 19, fontWeight: 900, color: t.primary }),
+          text('身高信息', { fontSize: 19, fontWeight: 500, color: t.primary }),
           container({
             style: {
               display: 'flex',
@@ -123,7 +138,7 @@ export async function renderHeightTakumi(
           gap: 10,
         },
         children: [
-          text('装扮信息', { fontSize: 19, fontWeight: 900, color: t.primary }),
+          text('装扮信息', { fontSize: 19, fontWeight: 500, color: t.primary }),
           container({
             style: {
               display: 'flex',
@@ -145,14 +160,14 @@ export async function renderHeightTakumi(
                 gap: 7,
               },
               children: [
-                text(label, { fontSize: 13, fontWeight: 700, color: t.muted }),
-                text(value, { fontSize: 21, fontWeight: 850, color: t.text }),
+                text(label, { fontSize: 13, fontWeight: 400, color: t.muted }),
+                text(stripEmoji(value), { fontSize: 21, fontWeight: 400, color: t.text }),
               ],
             })),
           }),
         ],
       })] : []),
-      text(result.dryRun ? '🧪 这是假数据，仅用于测试输出样式。' : '说明：该接口默认 action=delete，会消费一次性好友码。数据仅供参考。', {
+      text(result.dryRun ? '这是假数据，仅用于测试输出样式。' : '说明：该接口默认 action=delete，会消费一次性好友码。数据仅供参考。', {
         fontSize: 15,
         color: t.accent,
         marginTop: 4,
@@ -179,7 +194,7 @@ function infoCard(label: string, value: string, t: RenderTheme, width: number, m
           },
           children: [
             text(label, { fontSize: 14, color: t.muted }),
-            text(value, { fontSize: valueSize, fontWeight: 800, fontStyle: italic ? 'italic' : 'normal', color: t.text }),
+            text(value, { fontSize: valueSize, fontWeight: 400, fontStyle: italic ? 'italic' : 'normal', color: t.text }),
           ],
         })
 }
@@ -200,10 +215,17 @@ function metricCard(label: string, value: string, t: RenderTheme, width: number,
       gap: 10,
     },
     children: [
-      text(label, { fontSize: 14, fontWeight: 700, color: t.muted, textAlign: 'center' }),
-      text(value, { fontSize: main ? 38 : 26, fontWeight: 900, fontStyle: main ? 'normal' : 'italic', color: t.text, textAlign: 'center' }),
+      text(label, { fontSize: 14, fontWeight: 400, color: t.muted, textAlign: 'center' }),
+      text(value, { fontSize: main ? 38 : 26, fontWeight: main ? 500 : 400, fontStyle: main ? 'normal' : 'italic', color: t.text, textAlign: 'center' }),
     ],
   })
+}
+
+function stripEmoji(value: string): string {
+  return value
+    .replace(/\p{Extended_Pictographic}/gu, '')
+    .replace(/[\uFE0E\uFE0F\u200D]/g, '')
+    .trim()
 }
 
 function theme(dark: boolean): RenderTheme {

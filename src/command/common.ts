@@ -1,8 +1,8 @@
 import { Context, h, Session } from 'koishi'
 import type { Config } from '../config'
-import { logInfo } from '../logger'
+import { logInfo } from '../utils/logger'
 import { createDryRunHeightResult } from '../mock'
-import { friendCodePattern, queryHeight } from '../service'
+import { friendCodePattern, queryHeight } from '../query'
 import type { HeightResult } from '../types'
 
 export interface HeightCommandOptions {

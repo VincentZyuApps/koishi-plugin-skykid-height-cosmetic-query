@@ -1,7 +1,7 @@
 import { Context, h } from 'koishi'
 import type { Config } from '../config'
 import { renderHeightPptr } from '../gen/gen_image_pptr'
-import { resolveRuntimeFontPath } from '../utils'
+import { resolveRuntimeFontPath } from '../utils/fonts'
 import { registerHeightCommand, registerNaturalMatcher } from './common'
 
 export function registerPptrCommand(ctx: Context, config: Config) {

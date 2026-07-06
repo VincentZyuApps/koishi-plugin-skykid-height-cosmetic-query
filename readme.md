@@ -1,10 +1,10 @@
-# koishi-plugin-sky-shengao-query
+# koishi-plugin-skykid-height-cosmetic-query
 
-[![npm](https://img.shields.io/npm/v/koishi-plugin-sky-shengao-query?style=flat-square)](https://www.npmjs.com/package/koishi-plugin-sky-shengao-query)
-[![npm-download](https://img.shields.io/npm/dm/koishi-plugin-sky-shengao-query?style=flat-square)](https://www.npmjs.com/package/koishi-plugin-sky-shengao-query)
+[![npm](https://img.shields.io/npm/v/koishi-plugin-skykid-height-cosmetic-query?style=flat-square)](https://www.npmjs.com/package/koishi-plugin-skykid-height-cosmetic-query)
+[![npm-download](https://img.shields.io/npm/dm/koishi-plugin-skykid-height-cosmetic-query?style=flat-square)](https://www.npmjs.com/package/koishi-plugin-skykid-height-cosmetic-query)
 
-[![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/VincentZyuApps/koishi-plugin-sky-shengao-query)
-[![Gitee](https://img.shields.io/badge/Gitee-C71D23?style=for-the-badge&logo=gitee&logoColor=white)](https://gitee.com/vincent-zyu/koishi-plugin-sky-shengao-query)
+[![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/VincentZyuApps/koishi-plugin-skykid-height-cosmetic-query)
+[![Gitee](https://img.shields.io/badge/Gitee-C71D23?style=for-the-badge&logo=gitee&logoColor=white)](https://gitee.com/vincent-zyu/koishi-plugin-skykid-height-cosmetic-query)
 
 [![Koishi Forum](https://img.shields.io/badge/Koishi%20Forum-xxxxx-5546A3?style=for-the-badge&logo=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Ff%2Ff3%2FKoishi.js_Logo.png&logoColor=white)](https://forum.koishi.xyz/t/topic/xxxxx)
 [![QQ群](https://img.shields.io/badge/QQ群-1085190201-12B7F5?style=flat-square&logo=qq&logoColor=white)](https://qm.qq.com/q/ZN7fxZ3qCq)
@@ -34,6 +34,7 @@
 查询身高-text XXXX-XXXX-XXXX
 查询身高-forward XXXX-XXXX-XXXX
 查询身高-takumi XXXX-XXXX-XXXX
+查询身高-api XXXX-XXXX-XXXX
 ```
 
 ## 🧪 测试模式
@@ -45,6 +46,7 @@
 查询身高-text --dry
 查询身高-forward --dryrun
 查询身高-takumi --dryrun
+查询身高-api --dryrun
 ```
 
 ## 🌙 深色模式
@@ -72,6 +74,7 @@ Puppeteer 和 Takumi 出图命令支持 `-d` / `--dark` / `--darkmode`。可选�
 - 📨 `forward`：OneBot 合并转发
 - 🖼️ `pptr`：Puppeteer 出图
 - ⚡ `takumi`：`@takumi-rs/wasm` 出图
+- 🌐 `api`：调用外部 `skykid-height-cosmetic-image-draw-api` FastAPI 服务出图
 
 ## ⚙️ 过滤器设置
 
@@ -93,6 +96,24 @@ queryUrl
 GET  https://sky.cesgao.cn/web/v1/pow/challenge
 POST https://sky.cesgao.cn/web/v1/query
 ```
+
+## 🌐 外部出图 API
+
+启用配置项 `enableApiCommand` 后，会新增：
+
+```text
+查询身高-api XXXX-XXXX-XXXX
+测身高-api XXXX-XXXX-XXXX
+身高查询-api XXXX-XXXX-XXXX
+```
+
+默认请求：
+
+```text
+GET http://127.0.0.1:60704/img/file
+```
+
+这个指令仍然先通过 `sky.cesgao.cn` 查询好友码，再把身高和装扮数据传给外部 FastAPI 出图服务。背景、logo、字体和版式建议在 FastAPI 项目的 `config/config.yaml` 里调整；临时覆盖参数可以写到 `imageApiExtraParams`，例如 `gm=20&title_txt=光崽档案`。
 
 ## 🔤 字体缓存
 

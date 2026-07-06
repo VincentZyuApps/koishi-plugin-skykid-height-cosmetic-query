@@ -6,12 +6,13 @@ export { Config } from './config'
 export { usage } from './usage'
 
 import { registerForwardCommand } from './command/command_forward'
+import { registerApiCommand } from './command/command_image_api'
 import { registerPptrCommand } from './command/command_image_pptr'
 import { registerTakumiCommand } from './command/command_image_takumi'
 import { registerTextCommand } from './command/command_text'
-import { ensureRuntimeFonts } from './utils'
+import { ensureRuntimeFonts } from './utils/fonts'
 
-export const name = 'sky-shengao-query'
+export const name = 'skykid-height-cosmetic-query'
 
 export const inject = {
   required: ['http'],
@@ -27,4 +28,5 @@ export function apply(ctx: Context, config: Config) {
   if (config.enableForwardCommand) registerForwardCommand(ctx, config)
   if (config.enablePptrCommand) registerPptrCommand(ctx, config)
   if (config.enableTakumiCommand) registerTakumiCommand(ctx, config)
+  if (config.enableApiCommand) registerApiCommand(ctx, config)
 }
