@@ -8,9 +8,9 @@ export function registerApiCommand(ctx: Context, config: Config) {
     ctx,
     config,
     config.apiCommandName,
-    '光遇身高查询（外部 FastAPI 出图）',
-    ['测身高-api', '身高查询-api', '光遇身高查询-api', 'aqha'],
-    '正在查询并调用外部 API 出图，请稍等...',
+    '光遇身高查询（外部 Fastapi Pillow画图后端出图）',
+    ['测身高-api', '身高查询-api', 'aqha', 'awa-query-height-api', '查询饰品-api'],
+    '⏳ 正在查询并调用外部 API 出图，请稍等...',
     async (result, elapsed) => {
       const image = await renderHeightApi(ctx, config, result, {
         baseUrl: config.imageApiBaseUrl,
@@ -19,11 +19,11 @@ export function registerApiCommand(ctx: Context, config: Config) {
         width: config.imageApiWidth,
         height: config.imageApiHeight,
         showOutfitName: config.imageApiShowOutfitName,
-        extraParams: config.imageApiExtraParams,
+        extraQueryParams: config.imageApiExtraQueryParams,
       })
       const message: (string | h)[] = [h.image(image, 'image/jpeg')]
       if (config.imageApiShowRenderInfo) {
-        message.push(`\n(API 出图总耗时：${elapsed}ms)`)
+        message.push(`\n📊 API 出图总耗时：${elapsed}ms`)
       }
       return message
     },

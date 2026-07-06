@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-skykid-height-cosmetic-query",
   "description": "查询国服光遇的玩家身高信息捏",
-  "version": "0.1.3-beta.1+20260706",
+  "version": "0.1.5-beta.3+20260706",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [

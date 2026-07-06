@@ -10,8 +10,8 @@ export function registerTakumiCommand(ctx: Context, config: Config) {
     config,
     config.takumiCommandName,
     '光遇身高查询（Takumi wasm 出图）',
-    ['测身高-takumi', '身高查询-takumi', 'aqhk'],
-    '正在查询并渲染 Takumi 图片，请稍等...',
+    ['测身高-takumi', '身高查询-takumi', 'aqhk', 'awa-query-height-takumi', '查询饰品-takumi'],
+    '⏳ 正在查询并渲染 Takumi 图片，请稍等...',
     async (result, elapsed, commandOptions) => {
       const image = await renderHeightTakumi(result, {
         width: config.takumiWidth,
@@ -20,7 +20,7 @@ export function registerTakumiCommand(ctx: Context, config: Config) {
       })
       const message: (string | h)[] = [h.image(image, 'image/png')]
       if (config.takumiShowRenderInfo) {
-        message.push(`\n(Takumi 渲染耗时：${elapsed}ms)`)
+        message.push(`\n📊 Takumi 渲染耗时：${elapsed}ms`)
       }
       return message
     },

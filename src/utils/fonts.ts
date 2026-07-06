@@ -58,19 +58,19 @@ export async function ensureRuntimeFonts(ctx: Context, config: Config) {
   const fontPath = getLxgwWenKaiPathByBaseDir(ctx.baseDir)
   const ready = await verifyFontIntegrity(fontPath, LXGW_WENKAI_INTEGRITY)
   if (ready) {
-    logInfo(ctx, config, `字体文件已存在且 hash 校验通过，跳过下载`, `字体路径：${fontPath}`)
+    logInfo(ctx, config, `✅ 字体文件已存在且 hash 校验通过，跳过下载`, `🔤 字体路径：${fontPath}`)
     return
   }
 
-  if (existsSync(fontPath)) ctx.logger.warn(`${LXGW_WENKAI_FILE_NAME} hash 校验失败，将重新下载`)
+  if (existsSync(fontPath)) ctx.logger.warn(`⚠️ ${LXGW_WENKAI_FILE_NAME} hash 校验失败，将重新下载`)
 
   await mkdir(path.dirname(fontPath), { recursive: true })
-  logInfo(ctx, config, `准备下载字体：${LXGW_WENKAI_FILE_NAME}`, `目标路径：${fontPath}`)
+  logInfo(ctx, config, `📥 准备下载字体：${LXGW_WENKAI_FILE_NAME}`, `📁 目标路径：${fontPath}`)
 
   let lastError: unknown
   for (const item of LXGW_WENKAI_SOURCES) {
     try {
-      logInfo(ctx, config, `从 ${item.source} 下载字体`, item.url)
+      logInfo(ctx, config, `📥 从 ${item.source} 下载字体`, `🌐 ${item.url}`)
       const data = await ctx.http.get<ArrayBuffer>(item.url, {
         responseType: 'arraybuffer',
         timeout: 120000,
@@ -83,15 +83,15 @@ export async function ensureRuntimeFonts(ctx: Context, config: Config) {
       if (!(await verifyFontIntegrity(fontPath, LXGW_WENKAI_INTEGRITY))) {
         throw new Error(`字体写入后 hash 校验失败：${LXGW_WENKAI_FILE_NAME}`)
       }
-      logInfo(ctx, config, `字体下载完成，hash 校验通过：${fontPath}`, `字体大小：${buffer.length} bytes`)
+      logInfo(ctx, config, `✅ 字体下载完成，hash 校验通过：${fontPath}`, `📦 字体大小：${buffer.length} bytes`)
       return
     } catch (error) {
       lastError = error
-      ctx.logger.warn(`${item.source} 字体下载失败：${error instanceof Error ? error.message : String(error)}`)
+      ctx.logger.warn(`⚠️ ${item.source} 字体下载失败：${error instanceof Error ? error.message : String(error)}`)
     }
   }
 
-  ctx.logger.warn(`字体自动下载失败，将使用系统默认字体：${lastError instanceof Error ? lastError.message : String(lastError)}`)
+  ctx.logger.warn(`⚠️ 字体自动下载失败，将使用系统默认字体：${lastError instanceof Error ? lastError.message : String(lastError)}`)
 }
 
 function calculateFontHashes(buffer: Buffer) {

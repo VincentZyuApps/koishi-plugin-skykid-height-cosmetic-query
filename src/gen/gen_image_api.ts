@@ -11,7 +11,7 @@ interface RenderHeightApiOptions {
   width: number
   height: number
   showOutfitName: boolean
-  extraParams?: string
+  extraQueryParams?: string
 }
 
 const outfitParams: [string, string][] = [
@@ -54,10 +54,10 @@ export async function renderHeightApi(
     }
   }
 
-  applyExtraParams(params, options.extraParams)
+  applyExtraQueryParams(params, options.extraQueryParams)
 
   const timeout = Math.max(1000, clampInteger(options.timeout, 60, 1, 300) * 1000)
-  logInfo(ctx, config, `请求外部身高出图 API：${url.origin}${url.pathname}`, `API 出图 URL: ${url.toString()}`)
+  logInfo(ctx, config, `🌐 请求外部身高出图 API：${url.origin}${url.pathname}`, `🔗 API 出图 URL: ${url.toString()}`)
   const image = await ctx.http.get<ArrayBuffer>(url.toString(), {
     responseType: 'arraybuffer',
     timeout,
@@ -72,13 +72,13 @@ export async function renderHeightApi(
 
 function buildImageApiUrl(baseUrl: string, path: string): URL {
   const normalizedBaseUrl = String(baseUrl || 'http://127.0.0.1:60704').replace(/\/+$/, '')
-  const normalizedPath = String(path || '/img/file').trim()
+  const normalizedPath = String(path || '/img/render').trim()
   if (/^https?:\/\//i.test(normalizedPath)) return new URL(normalizedPath)
   return new URL(normalizedPath.startsWith('/') ? normalizedPath : `/${normalizedPath}`, `${normalizedBaseUrl}/`)
 }
 
-function applyExtraParams(params: URLSearchParams, extraParams?: string): void {
-  const extra = String(extraParams || '').trim().replace(/^\?/, '')
+function applyExtraQueryParams(params: URLSearchParams, extraQueryParams?: string): void {
+  const extra = String(extraQueryParams || '').trim().replace(/^\?/, '')
   if (!extra) return
   for (const [key, value] of new URLSearchParams(extra)) {
     if (key) params.set(key, value)

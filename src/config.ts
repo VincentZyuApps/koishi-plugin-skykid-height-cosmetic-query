@@ -50,7 +50,7 @@ export interface Config {
   imageApiWidth: number
   imageApiHeight: number
   imageApiShowOutfitName: boolean
-  imageApiExtraParams: string
+  imageApiExtraQueryParams: string
   imageApiShowRenderInfo: boolean
 
   // ----- 🛠️ 调试设置 -----
@@ -82,8 +82,8 @@ export const Config: Schema<Config> = Schema.intersect([
     pptrCommandName: Schema.string().default('查询身高').description('🖼️ Puppeteer 指令名称'),
     enableTakumiCommand: Schema.boolean().default(true).description('⚡ 注册 Takumi wasm 出图查询指令'),
     takumiCommandName: Schema.string().default('查询身高-takumi').description('⚡ Takumi 指令名称'),
-    enableApiCommand: Schema.boolean().default(false).description('🌐 注册外部 FastAPI 出图查询指令'),
-    apiCommandName: Schema.string().default('查询身高-api').description('🌐 外部 FastAPI 出图指令名称'),
+    enableApiCommand: Schema.boolean().default(false).description('🌐 注册外部 Fastapi Pillow画图后端出图查询指令'),
+    apiCommandName: Schema.string().default('查询身高-api').description('🌐 外部 Fastapi Pillow画图后端出图指令名称'),
   }).description('📌 指令设置'),
 
   Schema.object({
@@ -113,12 +113,12 @@ export const Config: Schema<Config> = Schema.intersect([
 
   Schema.object({
     imageApiBaseUrl: Schema.string().role('link').default('http://127.0.0.1:60704').description('🌐 外部出图 API 基础地址。同机运行时通常填 http://127.0.0.1:60704；跨机器运行时填 API 所在机器地址。'),
-    imageApiPath: Schema.string().default('/img/file').description('🖼️ 外部出图 API 图片路径，默认对接 skykid-height-cosmetic-image-draw-api 的 /img/file'),
+    imageApiPath: Schema.string().default('/img/render').description('🖼️ 外部出图 API 图片路径，默认对接 Fastapi Pillow画图后端的 /img/render'),
     imageApiTimeout: Schema.number().min(1).max(300).step(1).default(60).description('⏱️ 外部出图 API 请求超时时间（秒）'),
     imageApiWidth: Schema.number().min(1).max(3840).step(1).default(1920).description('📐 传给外部出图 API 的 bg_x 输出宽度'),
     imageApiHeight: Schema.number().min(1).max(2160).step(1).default(1080).description('📐 传给外部出图 API 的 bg_y 输出高度'),
     imageApiShowOutfitName: Schema.boolean().default(true).description('🏷️ 装扮标签是否显示具体装扮名称，对应 body-txt_name / hair-txt_name 等参数'),
-    imageApiExtraParams: Schema.string().role('textarea', { rows: [2, 5] }).default('').description('🧩 追加给外部出图 API 的查询参数，例如 gm=20&title_txt=光崽档案。同名参数会覆盖插件自动生成的参数。'),
+    imageApiExtraQueryParams: Schema.string().role('textarea', { rows: [2, 5] }).default('').description('🧩 追加给外部出图 API 的 URL 查询参数，例如 gm=20&title_txt=光崽档案。同名 query 会覆盖插件自动生成的 query。完整手册见 Fastapi Pillow画图后端的 /koishi-query-doc。'),
     imageApiShowRenderInfo: Schema.boolean().default(true).description('📊 API 出图回复中显示查询和出图总耗时'),
   }).description('🌐 API 出图设置'),
 

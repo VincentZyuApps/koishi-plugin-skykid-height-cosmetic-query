@@ -27,31 +27,31 @@ export function generateHeightText(result: HeightResult): string {
   const data = result.data
   const lines = [
     ...(result.dryRun ? ['🧪⚠️ 假数据测试模式：仅用于测试文字格式/图片样式，不是真实查询结果。', '=================='] : []),
-    result.message,
+    `✅ 状态：${result.message}`,
     '==================',
-    `好友码：${result.code}`,
-    `UUID：${valueText(data.uuid)}`,
-    `查询时间：${formatDate(result.queriedAt)}`,
+    `🧾 好友码：${result.code}`,
+    `🆔 UUID：${valueText(data.uuid)}`,
+    `🕒 查询时间：${formatDate(result.queriedAt)}`,
     '==================',
-    '身高信息',
-    `体型值：${numberText(data.body_size)}`,
-    `身高值：${numberText(data.height_value)}`,
-    `当前身高：${numberText(data.current_height)}`,
-    `最高身高：${numberText(data.max_height)}`,
-    `最矮身高：${numberText(data.min_height)}`,
+    '📏 身高信息',
+    `📐 体型值：${numberText(data.body_size)}`,
+    `📊 身高值：${numberText(data.height_value)}`,
+    `🧍 当前身高：${numberText(data.current_height)}`,
+    `⬆️ 最高身高：${numberText(data.max_height)}`,
+    `⬇️ 最矮身高：${numberText(data.min_height)}`,
   ]
 
   if (data.outfit && typeof data.outfit === 'object' && Object.keys(data.outfit).length) {
-    lines.push('==================', '装扮信息')
+    lines.push('==================', '🎒 装扮信息')
     for (const [key, label] of outfitLabels) {
-      lines.push(`${label}：${valueText(data.outfit[key])}`)
+      lines.push(`🏷️ ${label}：${valueText(data.outfit[key])}`)
     }
   }
 
   if (result.dryRun) {
     lines.push('==================', '🧪 这是假数据，仅用于测试输出样式。')
   } else {
-    lines.push('==================', '说明：该接口默认 action=delete，会消费一次性好友码。', '数据仅供参考，请以游戏内实际情况为准。')
+    lines.push('==================', '⚠️ 说明：该接口默认 action=delete，会消费一次性好友码。', '📌 数据仅供参考，请以游戏内实际情况为准。')
   }
   return lines.join('\n')
 }
