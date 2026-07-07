@@ -3,6 +3,9 @@ import type { Config } from '../config'
 import { generateHeightText } from '../gen/gen_text'
 import { registerHeightCommand } from './common'
 
+/**
+ * 📝 注册纯文本身高查询命令。
+ */
 export function registerTextCommand(ctx: Context, config: Config) {
   registerHeightCommand(
     ctx,

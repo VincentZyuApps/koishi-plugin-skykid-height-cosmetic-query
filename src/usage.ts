@@ -149,6 +149,8 @@ export const usage = `
   <tbody>
     <tr><td><code>enableQuote</code></td><td><code>boolean</code></td><td><code>true</code></td><td>回复时是否引用触发消息。</td></tr>
     <tr><td><code>textMaxLength</code></td><td><code>number</code></td><td><code>1500</code></td><td>纯文本输出最大长度。</td></tr>
+    <tr><td><code>hideFullUuid</code></td><td><code>boolean</code></td><td><code>true</code></td><td>是否不显示完整 UUID；开启后显示前 10 个字符并追加 <code>......</code>，关闭后显示完整 UUID。</td></tr>
+    <tr><td><code>showFullUnknownOutfitId</code></td><td><code>boolean</code></td><td><code>false</code></td><td>未知装扮是否显示完整 ID；默认隐藏，<code>未知装扮(123456)</code> 会显示为 <code>未知装扮(123...)</code>。</td></tr>
     <tr><td><code>useCustomFont</code></td><td><code>boolean</code></td><td><code>true</code></td><td>是否使用自定义字体路径；开启后会检查 <code>ctx.baseDir/data/fonts/LXGWWenKaiMono-Regular.ttf</code>，缺失或 hash 校验失败时尝试从 Gitee / GitHub 下载；关闭后 Puppeteer / Takumi 使用系统默认字体，并跳过字体下载。</td></tr>
   </tbody>
 </table>
@@ -166,7 +168,9 @@ export const usage = `
   </thead>
   <tbody>
     <tr><td><code>pptrWidth</code></td><td><code>number</code></td><td><code>880</code></td><td>Puppeteer 图片宽度。</td></tr>
+    <tr><td><code>pptrDeviceScaleFactor</code></td><td><code>number</code></td><td><code>2.5</code></td><td>Puppeteer 截图设备像素比，越高越清晰但图片体积越大。</td></tr>
     <tr><td><code>pptrImageType</code></td><td><code>"png" | "jpeg" | "webp"</code></td><td><code>png</code></td><td>Puppeteer 图片类型。</td></tr>
+    <tr><td><code>pptrCardColorMode</code></td><td><code>"solid" | "fixed" | "random"</code></td><td><code>random</code></td><td>Puppeteer 圆角矩形配色模式；<code>solid</code> 完全纯色，<code>fixed</code> 固定的随便感，<code>random</code> 完全随机。</td></tr>
     <tr><td><code>pptrQuality</code></td><td><code>number</code></td><td><code>90</code></td><td>Puppeteer 图片质量；<code>png</code> 无效。</td></tr>
     <tr><td><code>pptrFontPath</code></td><td><code>string</code></td><td><code>process.cwd()/data/fonts/LXGWWenKaiMono-Regular.ttf</code></td><td>Puppeteer 字体路径；运行时会映射到 <code>ctx.baseDir/data/fonts/LXGWWenKaiMono-Regular.ttf</code>，留空则使用系统默认字体。</td></tr>
     <tr><td><code>pptrShowRenderInfo</code></td><td><code>boolean</code></td><td><code>true</code></td><td>Puppeteer 回复中是否显示渲染耗时。</td></tr>

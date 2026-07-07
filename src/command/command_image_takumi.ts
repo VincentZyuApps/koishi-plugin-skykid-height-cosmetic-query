@@ -4,6 +4,9 @@ import { renderHeightTakumi } from '../gen/gen_image_takumi'
 import { resolveRuntimeFontPath } from '../utils/fonts'
 import { registerHeightCommand } from './common'
 
+/**
+ * ⚡ 注册 Takumi wasm 出图命令。
+ */
 export function registerTakumiCommand(ctx: Context, config: Config) {
   registerHeightCommand(
     ctx,

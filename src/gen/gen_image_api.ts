@@ -27,6 +27,9 @@ const outfitParams: [string, string][] = [
   ['horn', 'horn_name'],
 ]
 
+/**
+ * 🌐 调用外部 Pillow 后端，把查询结果渲染成图片。
+ */
 export async function renderHeightApi(
   ctx: Context,
   config: Config,
@@ -70,6 +73,9 @@ export async function renderHeightApi(
   return buffer
 }
 
+/**
+ * 🔗 拼出外部出图 API 的完整 URL。
+ */
 function buildImageApiUrl(baseUrl: string, path: string): URL {
   const normalizedBaseUrl = String(baseUrl || 'http://127.0.0.1:60704').replace(/\/+$/, '')
   const normalizedPath = String(path || '/img/render').trim()
@@ -77,6 +83,9 @@ function buildImageApiUrl(baseUrl: string, path: string): URL {
   return new URL(normalizedPath.startsWith('/') ? normalizedPath : `/${normalizedPath}`, `${normalizedBaseUrl}/`)
 }
 
+/**
+ * 🧩 把用户额外 query 参数覆盖写入 URLSearchParams。
+ */
 function applyExtraQueryParams(params: URLSearchParams, extraQueryParams?: string): void {
   const extra = String(extraQueryParams || '').trim().replace(/^\?/, '')
   if (!extra) return
@@ -85,16 +94,25 @@ function applyExtraQueryParams(params: URLSearchParams, extraQueryParams?: strin
   }
 }
 
+/**
+ * 🔢 把配置值转换成整数并限制范围。
+ */
 function clampInteger(value: unknown, fallback: number, min: number, max: number): number {
   const number = Number(value)
   if (!Number.isFinite(number)) return fallback
   return Math.max(min, Math.min(max, Math.trunc(number)))
 }
 
+/**
+ * ✅ 判断字段是否有可传给出图 API 的文本。
+ */
 function hasText(value: unknown): boolean {
   return value !== null && value !== undefined && String(value).trim() !== ''
 }
 
+/**
+ * 🧹 去掉文字中的 emoji，避免部分图片后端字体不支持。
+ */
 function stripEmoji(value: string): string {
   return value
     .replace(/\p{Extended_Pictographic}/gu, '')

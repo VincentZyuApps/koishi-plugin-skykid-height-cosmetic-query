@@ -101,6 +101,28 @@ Puppeteer 和 Takumi 出图命令支持 `-d` / `--dark` / `--darkmode`。可选�
 - ⚡ `takumi`：`@takumi-rs/wasm` 出图
 - 🌐 `api`：调用外部 Fastapi Pillow画图后端出图
 
+## 🖼️ 效果预览
+
+### 🧪 测试模式 dryrun
+
+| 输出方式 | 预览 |
+| --- | --- |
+| pptr<br>（浏览器截图出图）<br>`查询身高` | <img src="./docs/images/preview/dryrun/preview.dryrun.pptr.png" width="420" alt="dryrun pptr preview"> |
+| api<br>（外部 Pillow 后端出图）<br>`查询身高-api` | <img src="./docs/images/preview/dryrun/preview.dryrun.api.png" width="420" alt="dryrun api preview"> |
+| forward<br>（OneBot 合并转发）<br>`查询身高-forward` | <img src="./docs/images/preview/dryrun/preview.dryrun.forward.png" width="420" alt="dryrun forward preview"> |
+| takumi<br>（wasm 渲染图片）<br>`查询身高-takumi` | <img src="./docs/images/preview/dryrun/preview.dryrun.takumi.png" width="420" alt="dryrun takumi preview"> |
+| text<br>（直接拼接文本）<br>`查询身高-text` | <img src="./docs/images/preview/dryrun/preview.dryrun.text.png" width="420" alt="dryrun text preview"> |
+
+### 🌐 真实查询 live
+
+| 输出方式 | 预览 |
+| --- | --- |
+| pptr<br>（浏览器截图出图）<br>`查询身高` | <img src="./docs/images/preview/live/preview.live.pptr.png" width="420" alt="live pptr preview"> |
+| api<br>（外部 Pillow 后端出图）<br>`查询身高-api` | <img src="./docs/images/preview/live/preview.live.api.png" width="420" alt="live api preview"> |
+| forward<br>（OneBot 合并转发）<br>`查询身高-forward` | <img src="./docs/images/preview/live/preview.live.forward.png" width="420" alt="live forward preview"> |
+| takumi<br>（wasm 渲染图片）<br>`查询身高-takumi` | <img src="./docs/images/preview/live/preview.live.takumi.png" width="420" alt="live takumi preview"> |
+| text<br>（直接拼接文本）<br>`查询身高-text` | <img src="./docs/images/preview/live/preview.live.text.png" width="420" alt="live text preview"> |
+
 ## ⚙️ 配置项
 
 ### 🌐 后端设置
@@ -138,6 +160,8 @@ Puppeteer 和 Takumi 出图命令支持 `-d` / `--dark` / `--darkmode`。可选�
 | --- | --- | --- | --- |
 | `enableQuote` | `boolean` | `true` | 回复时是否引用触发消息。 |
 | `textMaxLength` | `number` | `1500` | 纯文本输出最大长度。 |
+| `hideFullUuid` | `boolean` | `true` | 是否不显示完整 UUID；开启后显示前 10 个字符并追加 `......`，关闭后显示完整 UUID。 |
+| `showFullUnknownOutfitId` | `boolean` | `false` | 未知装扮是否显示完整 ID；默认隐藏，`未知装扮(123456)` 会显示为 `未知装扮(123...)`。 |
 | `useCustomFont` | `boolean` | `true` | 是否使用自定义字体路径；开启后会检查 `ctx.baseDir/data/fonts/LXGWWenKaiMono-Regular.ttf`，缺失或 hash 校验失败时尝试从 Gitee / GitHub 下载；关闭后 Puppeteer / Takumi 使用系统默认字体，并跳过字体下载。 |
 
 ### 🖼️ Puppeteer 出图设置
@@ -145,7 +169,9 @@ Puppeteer 和 Takumi 出图命令支持 `-d` / `--dark` / `--darkmode`。可选�
 | 配置名 | 类型 | 默认值 | 备注 |
 | --- | --- | --- | --- |
 | `pptrWidth` | `number` | `880` | Puppeteer 图片宽度。 |
+| `pptrDeviceScaleFactor` | `number` | `2.5` | Puppeteer 截图设备像素比，越高越清晰但图片体积越大。 |
 | `pptrImageType` | `"png" \| "jpeg" \| "webp"` | `png` | Puppeteer 图片类型。 |
+| `pptrCardColorMode` | `"solid" \| "fixed" \| "random"` | `random` | Puppeteer 圆角矩形配色模式；`solid` 完全纯色，`fixed` 固定的随便感，`random` 完全随机。 |
 | `pptrQuality` | `number` | `90` | Puppeteer 图片质量；`png` 无效。 |
 | `pptrFontPath` | `string` | `process.cwd()/data/fonts/LXGWWenKaiMono-Regular.ttf` | Puppeteer 字体路径；运行时会映射到 `ctx.baseDir/data/fonts/LXGWWenKaiMono-Regular.ttf`，留空则使用系统默认字体。 |
 | `pptrShowRenderInfo` | `boolean` | `true` | Puppeteer 回复中是否显示渲染耗时。 |

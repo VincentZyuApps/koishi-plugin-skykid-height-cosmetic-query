@@ -1,5 +1,8 @@
 import type { HeightResult } from './types'
 
+/**
+ * 🧪 构造 dry-run 假数据，方便测试文字和图片输出。
+ */
 export function createDryRunHeightResult(code = 'AAAA-BBBB-CCCC'): HeightResult {
   return {
     code,

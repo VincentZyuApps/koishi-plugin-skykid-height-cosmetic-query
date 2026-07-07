@@ -3,6 +3,9 @@ import type { Config } from '../config'
 import { renderHeightApi } from '../gen/gen_image_api'
 import { registerHeightCommand } from './common'
 
+/**
+ * 🌐 注册外部 Fastapi Pillow 后端出图命令。
+ */
 export function registerApiCommand(ctx: Context, config: Config) {
   registerHeightCommand(
     ctx,

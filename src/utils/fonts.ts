@@ -32,10 +32,16 @@ const LXGW_WENKAI_INTEGRITY: FontIntegrity = {
   sha512: '793dc4357d311dba539c50b0ae38ff247af066f141ffea54ff0cc51e274453671e736989cee4998fd89211035ecfe52ad38aa828ba7f1739bcf107b94a023be5',
 }
 
+/**
+ * 📁 根据 Koishi baseDir 计算插件字体目录。
+ */
 export function getFontDirByBaseDir(baseDir: string) {
   return path.join(baseDir, 'data', 'fonts')
 }
 
+/**
+ * 🔤 根据 Koishi baseDir 计算 LXGW WenKai 字体完整路径。
+ */
 export function getLxgwWenKaiPathByBaseDir(baseDir: string) {
   return path.join(getFontDirByBaseDir(baseDir), LXGW_WENKAI_FILE_NAME)
 }
@@ -44,6 +50,9 @@ export function getLxgwWenKaiPathByBaseDir(baseDir: string) {
 // 运行时必须优先使用 ctx.baseDir，见 resolveRuntimeFontPath()。
 export const DEFAULT_LXGW_WENKAI_PATH = getLxgwWenKaiPathByBaseDir(process.cwd())
 
+/**
+ * 🧭 把配置面板里的字体路径映射成运行时真实路径。
+ */
 export function resolveRuntimeFontPath(ctx: Context, filePath: string) {
   const runtimeDefault = getLxgwWenKaiPathByBaseDir(ctx.baseDir)
   const normalized = path.normalize(String(filePath || '').trim())
@@ -54,6 +63,9 @@ export function resolveRuntimeFontPath(ctx: Context, filePath: string) {
   return filePath
 }
 
+/**
+ * 📥 检查运行时字体是否存在且 hash 正确，缺失时尝试下载。
+ */
 export async function ensureRuntimeFonts(ctx: Context, config: Config) {
   const fontPath = getLxgwWenKaiPathByBaseDir(ctx.baseDir)
   const ready = await verifyFontIntegrity(fontPath, LXGW_WENKAI_INTEGRITY)
@@ -94,6 +106,9 @@ export async function ensureRuntimeFonts(ctx: Context, config: Config) {
   ctx.logger.warn(`⚠️ 字体自动下载失败，将使用系统默认字体：${lastError instanceof Error ? lastError.message : String(lastError)}`)
 }
 
+/**
+ * 🧮 计算字体文件 buffer 的多种 hash。
+ */
 function calculateFontHashes(buffer: Buffer) {
   return {
     md5: createHash('md5').update(buffer).digest('hex'),
@@ -103,6 +118,9 @@ function calculateFontHashes(buffer: Buffer) {
   }
 }
 
+/**
+ * ✅ 校验字体文件是否存在且完整。
+ */
 async function verifyFontIntegrity(filePath: string, expected: FontIntegrity): Promise<boolean> {
   try {
     if (!existsSync(filePath)) return false
@@ -113,6 +131,9 @@ async function verifyFontIntegrity(filePath: string, expected: FontIntegrity): P
   }
 }
 
+/**
+ * 🔐 校验字体 buffer 的大小和 hash。
+ */
 function verifyFontBuffer(buffer: Buffer, expected: FontIntegrity): boolean {
   if (buffer.length !== expected.size) return false
   const hashes = calculateFontHashes(buffer)

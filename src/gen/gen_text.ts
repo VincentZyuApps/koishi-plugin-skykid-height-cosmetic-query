@@ -13,16 +13,25 @@ const outfitLabels: [string, string][] = [
   ['horn', '角饰'],
 ]
 
+/**
+ * 🧾 把任意值转成展示文本，空值使用兜底文案。
+ */
 export function valueText(value: unknown, fallback = '未知'): string {
   if (value === null || value === undefined || String(value).trim() === '') return fallback
   return String(value)
 }
 
+/**
+ * 🔢 把身高数值字段转成展示文本。
+ */
 export function numberText(value: unknown): string {
   if (value === null || value === undefined || String(value).trim() === '') return '未知'
   return String(value)
 }
 
+/**
+ * 📝 生成纯文本身高查询结果。
+ */
 export function generateHeightText(result: HeightResult): string {
   const data = result.data
   const lines = [
@@ -56,6 +65,9 @@ export function generateHeightText(result: HeightResult): string {
   return lines.join('\n')
 }
 
+/**
+ * 📋 生成图片和转发输出共用的行数据。
+ */
 export function generateHeightRows(result: HeightResult): [string, string][] {
   const data = result.data
   const rows: [string, string][] = [
@@ -75,6 +87,9 @@ export function generateHeightRows(result: HeightResult): [string, string][] {
   return rows
 }
 
+/**
+ * 🕒 按中文环境格式化查询时间。
+ */
 export function formatDate(date: Date): string {
   return date.toLocaleString('zh-CN', { hour12: false })
 }

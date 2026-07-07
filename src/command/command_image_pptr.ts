@@ -4,6 +4,9 @@ import { renderHeightPptr } from '../gen/gen_image_pptr'
 import { resolveRuntimeFontPath } from '../utils/fonts'
 import { registerHeightCommand, registerNaturalMatcher } from './common'
 
+/**
+ * 🖼️ 注册 Puppeteer 截图出图命令和自然语言快捷触发。
+ */
 export function registerPptrCommand(ctx: Context, config: Config) {
   registerHeightCommand(
     ctx,
@@ -19,7 +22,9 @@ export function registerPptrCommand(ctx: Context, config: Config) {
     async (result, elapsed, commandOptions) => {
       const image = await renderHeightPptr(ctx, result, {
         width: config.pptrWidth,
+        deviceScaleFactor: config.pptrDeviceScaleFactor,
         imageType: config.pptrImageType,
+        cardColorMode: config.pptrCardColorMode,
         quality: config.pptrQuality,
         fontPath: config.useCustomFont && config.pptrFontPath ? resolveRuntimeFontPath(ctx, config.pptrFontPath) : '',
         darkMode: commandOptions.enableDarkMode ?? false,

@@ -28,11 +28,15 @@ export interface Config {
   // ----- 💬 通用输出设置 -----
   enableQuote: boolean
   textMaxLength: number
+  hideFullUuid: boolean
+  showFullUnknownOutfitId: boolean
   useCustomFont: boolean
 
   // ----- 🖼️ Puppeteer 图片设置 -----
   pptrWidth: number
+  pptrDeviceScaleFactor: number
   pptrImageType: 'png' | 'jpeg' | 'webp'
+  pptrCardColorMode: 'solid' | 'fixed' | 'random'
   pptrQuality: number
   pptrFontPath: string
   pptrShowRenderInfo: boolean
@@ -89,16 +93,24 @@ export const Config: Schema<Config> = Schema.intersect([
   Schema.object({
     enableQuote: Schema.boolean().default(true).description('💬 回复时引用触发消息'),
     textMaxLength: Schema.number().min(200).max(5000).step(100).default(1500).description('📏 纯文本最大长度'),
+    hideFullUuid: Schema.boolean().default(true).description('🆔 是否不显示完整 UUID。开启后显示前 10 个字符并追加 ......，关闭后显示完整 UUID。'),
+    showFullUnknownOutfitId: Schema.boolean().default(false).description('🏷️ 未知装扮是否显示完整 ID。关闭时将 未知装扮(123456) 显示为 未知装扮(123...)。'),
     useCustomFont: Schema.boolean().default(true).description('🔤 是否使用自定义字体路径。关闭后 Puppeteer / Takumi 图片使用系统默认字体，并跳过默认字体下载。'),
   }).description('💬 通用输出设置'),
 
   Schema.object({
     pptrWidth: Schema.number().min(480).max(1600).step(10).default(880).description('📐 Puppeteer 图片宽度'),
+    pptrDeviceScaleFactor: Schema.number().min(0.5).max(5).step(0.1).default(2.5).description('🔍 Puppeteer 截图设备像素比，越高越清晰但图片体积越大'),
     pptrImageType: Schema.union([
       Schema.const('png').description('🖼️ png'),
       Schema.const('jpeg').description('🌄 jpeg'),
       Schema.const('webp').description('🌐 webp'),
     ]).role('radio').default('png').description('📤 Puppeteer 图片类型'),
+    pptrCardColorMode: Schema.union([
+      Schema.const('solid').description('⬜ 完全纯色'),
+      Schema.const('fixed').description('🧭 固定的随便感'),
+      Schema.const('random').description('🎲 完全随机'),
+    ]).role('radio').default('random').description('🎨 Puppeteer 圆角矩形配色模式。完全纯色会统一卡片底色；固定的随便感会按结果内容稳定分配色块；完全随机每次出图都会随机分配。'),
     pptrQuality: Schema.number().min(1).max(100).step(1).default(90).description('📏 Puppeteer 图片质量，png 无效'),
     pptrFontPath: Schema.string().role('textarea', { rows: [2, 4] }).default(DEFAULT_LXGW_WENKAI_PATH).description('🔤 Puppeteer 字体路径。默认展示 process.cwd()/data/fonts/LXGWWenKaiMono-Regular.ttf；运行时自动映射到 ctx.baseDir/data/fonts/LXGWWenKaiMono-Regular.ttf。留空则使用系统默认字体。'),
     pptrShowRenderInfo: Schema.boolean().default(true).description('📊 Puppeteer 回复中显示渲染耗时'),

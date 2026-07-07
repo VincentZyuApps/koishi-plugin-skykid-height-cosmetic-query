@@ -3,6 +3,9 @@ import type { Config } from '../config'
 import { generateHeightForward } from '../gen/gen_forward'
 import { registerHeightCommand } from './common'
 
+/**
+ * 📨 注册 OneBot 合并转发身高查询命令。
+ */
 export function registerForwardCommand(ctx: Context, config: Config) {
   registerHeightCommand(
     ctx,

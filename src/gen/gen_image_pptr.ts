@@ -4,12 +4,17 @@ import {} from 'koishi-plugin-puppeteer'
 import type { HeightResult } from '../types'
 import { formatDate, generateHeightRows } from './gen_text'
 
+/**
+ * 🖼️ 使用 Puppeteer 打开 HTML 并截图成图片。
+ */
 export async function renderHeightPptr(
   ctx: Context,
   result: HeightResult,
   options: {
     width: number
+    deviceScaleFactor?: number
     imageType: 'png' | 'jpeg' | 'webp'
+    cardColorMode?: 'solid' | 'fixed' | 'random'
     quality: number
     fontPath?: string
     darkMode?: boolean
@@ -19,12 +24,13 @@ export async function renderHeightPptr(
   const page = await ctx.puppeteer.page()
   try {
     const html = generateHtml(result, options)
-    await page.setViewport({ width: options.width, height: 800, deviceScaleFactor: 1 })
+    const deviceScaleFactor = clampNumber(options.deviceScaleFactor, 2.5, 0.5, 5)
+    await page.setViewport({ width: options.width, height: 800, deviceScaleFactor })
     await page.setContent(html)
     await page.waitForSelector('body', { timeout: 10000 })
     await page.evaluate(() => document.fonts?.ready).catch(() => undefined)
     const height = await page.evaluate(() => document.documentElement.scrollHeight)
-    await page.setViewport({ width: options.width, height, deviceScaleFactor: 1 })
+    await page.setViewport({ width: options.width, height, deviceScaleFactor })
     await page.evaluate(() => document.fonts?.ready).catch(() => undefined)
     const screenshotOptions: any = { encoding: 'base64', type: options.imageType }
     if (options.imageType !== 'png') screenshotOptions.quality = options.quality
@@ -34,16 +40,26 @@ export async function renderHeightPptr(
   }
 }
 
-function generateHtml(result: HeightResult, options: { width: number; fontPath?: string; darkMode?: boolean }): string {
+/**
+ * 🧱 把查询结果拼成 Puppeteer 截图用的完整 HTML。
+ */
+function generateHtml(result: HeightResult, options: { width: number; cardColorMode?: 'solid' | 'fixed' | 'random'; fontPath?: string; darkMode?: boolean }): string {
   const rows = generateHeightRows(result)
   const t = theme(Boolean(options.darkMode))
   const get = (label: string) => rows.find(([key]) => key === label)?.[1] || '未知'
+  const currentHeight = compactNumber(get('当前身高'), 5)
+  const bodySize = compactNumber(get('体型值'), 6)
+  const heightValue = compactNumber(get('身高值'), 5)
+  const maxHeight = compactNumber(get('最高身高'), 5)
+  const minHeight = compactNumber(get('最矮身高'), 5)
   const outfitRows = rows.filter(([label]) => !['好友码', 'UUID', '体型值', '身高值', '当前身高', '最高身高', '最矮身高'].includes(label))
+  const cardColorMode = options.cardColorMode || 'random'
+  const tone = (...parts: string[]) => resolveTone(cardColorMode, [result.code, get('UUID'), formatDate(result.queriedAt), ...parts].join('|'))
   const fontFace = options.fontPath && fs.existsSync(options.fontPath)
     ? `@font-face{font-family:'CustomFont';src:url(data:font/truetype;charset=utf-8;base64,${fs.readFileSync(options.fontPath).toString('base64')}) format('truetype');}`
     : ''
   const outfitHtml = outfitRows.map(([label, value], index) => `
-    <div class="gear gear-${index % 5}">
+    <div class="gear tone-${tone('outfit', String(index), label, value)}">
       <div class="gear-mark">${escapeHtml(firstChar(label))}</div>
       <div class="gear-copy">
         <div class="gear-label">${escapeHtml(label)}</div>
@@ -69,45 +85,47 @@ body{margin:0;width:${options.width}px;min-height:520px;padding:24px;background:
 .brand{display:flex;align-items:center;gap:13px;min-width:0}
 .brand-badge{width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:0 0 auto;background:${t.badgeBg};border:1px solid ${t.badgeBorder};box-shadow:${t.badgeShadow};color:${t.badgeText};font-size:16px;font-weight:950}
 .brand-copy{min-width:0}
-.title{font-size:38px;font-weight:950;color:${t.title};line-height:1.05;text-shadow:${t.titleShadow};letter-spacing:0}
+.title{font-size:32px;font-weight:700;color:${t.title};line-height:1.05;text-shadow:${t.titleShadow};letter-spacing:0}
 .subtitle{margin-top:6px;font-size:14px;font-weight:750;color:${t.muted};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:${t.textHalo}}
 .stamp{flex:0 0 auto;text-align:right;font-size:13px;font-weight:800;color:${t.stampText};background:${t.stampBg};border:1px solid ${t.panelBorder};border-radius:999px;padding:9px 13px;box-shadow:${t.softShadow}}
-.hero{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:16px;align-items:stretch}
-.height-stage{position:relative;min-height:264px;padding:24px;border:1px solid ${t.heroBorder};border-radius:18px;background:${t.heroBg};overflow:hidden;box-shadow:${t.softShadow}}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.618fr);gap:16px;align-items:stretch}
+.height-stage{position:relative;min-height:292px;padding:24px;border:1px solid ${t.heroBorder};border-radius:18px;background:${t.heroBg};overflow:hidden;box-shadow:${t.softShadow};display:flex;flex-direction:column}
 .height-stage:before{content:"";position:absolute;right:-52px;top:-52px;width:168px;height:168px;border-radius:50%;background:${t.heroOrb};filter:blur(1px)}
 .height-stage:after{content:"";position:absolute;left:24px;right:24px;bottom:18px;height:1px;background:${t.rule}}
 .eyebrow{position:relative;font-size:15px;font-weight:900;color:${t.accent};text-shadow:${t.textHalo}}
-.height-value{position:relative;margin-top:12px;font-size:68px;font-weight:950;line-height:.95;color:${t.heightText};text-shadow:${t.heightShadow};word-break:break-all}
-.height-caption{position:relative;margin-top:14px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
-.mini{min-width:0;padding:10px 12px;border-radius:10px;background:${t.miniBg};border:1px solid ${t.miniBorder}}
-.mini-label{font-size:12px;font-weight:750;color:${t.muted};margin-bottom:5px}
-.mini-value{font-size:19px;font-weight:900;color:${t.textStrong};line-height:1.05;overflow-wrap:anywhere;text-shadow:${t.textHalo}}
-.identity{position:relative;margin-top:16px;display:grid;gap:8px}
+.height-value{position:relative;margin-top:14px;font-size:64px;font-weight:760;line-height:.98;color:${t.heightText};text-shadow:${t.heightShadow};white-space:nowrap;letter-spacing:0}
+.range-row{position:relative;margin-top:18px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.range-card{min-width:0;padding:12px;border:1px solid ${t.miniBorder};border-radius:12px;background:${t.miniBg}}
+.range-label{font-size:12px;font-weight:820;color:${t.muted};margin-bottom:7px}
+.range-value{font-size:24px;font-weight:820;color:${t.textStrong};line-height:1.05;overflow-wrap:anywhere;text-shadow:${t.textHalo}}
+.identity{position:relative;margin-top:auto;padding-top:18px;display:grid;gap:8px}
 .identity-row{display:grid;grid-template-columns:58px minmax(0,1fr);gap:8px;align-items:center;font-size:13px}
 .identity-key{font-weight:850;color:${t.muted}}
 .identity-value{min-width:0;color:${t.textSoft};font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.metric-board{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.metric{min-height:126px;padding:17px 16px;border:1px solid ${t.cardBorder};border-radius:14px;background:${t.card};box-shadow:${t.softShadow};display:flex;flex-direction:column;justify-content:center}
-.metric.primary{grid-column:span 2;min-height:104px;background:${t.metricWide};border-color:${t.metricBorder}}
+.metric-board{display:grid;grid-template-columns:1fr;gap:12px}
+.metric{min-height:140px;padding:17px 16px;border:1px solid ${t.cardBorder};border-radius:14px;background:${t.card};box-shadow:${t.softShadow};display:flex;flex-direction:column;justify-content:center}
 .metric-label{font-size:13px;font-weight:850;color:${t.muted};margin-bottom:9px}
 .metric-value{font-size:30px;font-weight:950;color:${t.textStrong};line-height:1.05;overflow-wrap:anywhere;text-shadow:${t.textHalo}}
-.metric.primary .metric-value{font-size:34px;color:${t.heightText}}
-.bar{height:7px;border-radius:999px;margin-top:13px;background:${t.barTrack};overflow:hidden}
-.bar:before{content:"";display:block;width:68%;height:100%;border-radius:inherit;background:${t.barFill};box-shadow:${t.barGlow}}
 .section{margin-top:16px;border:1px solid ${t.panelBorder};border-radius:16px;background:${t.sectionBg};padding:16px;box-shadow:${t.softShadow}}
 .section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
 .section-title{font-size:19px;font-weight:950;color:${t.heading};text-shadow:${t.textHalo}}
 .section-count{font-size:12px;font-weight:850;color:${t.muted};background:${t.countBg};border:1px solid ${t.panelBorder};border-radius:999px;padding:5px 9px}
 .gear-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 .gear{min-width:0;min-height:72px;display:flex;align-items:center;gap:10px;padding:10px;border:1px solid ${t.cardBorder};border-radius:12px;background:${t.gearBg};overflow:hidden}
+.tone-0{background:${t.cardTone0}}
+.tone-1{background:${t.cardTone1}}
+.tone-2{background:${t.cardTone2}}
+.tone-3{background:${t.cardTone3}}
+.tone-4{background:${t.cardTone4}}
+.gear.tone-0{background:${t.gearTone0}}
+.gear.tone-1{background:${t.gearTone1}}
+.gear.tone-2{background:${t.gearTone2}}
+.gear.tone-3{background:${t.gearTone3}}
+.gear.tone-4{background:${t.gearTone4}}
 .gear-mark{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;font-size:18px;font-weight:950;color:${t.gearMarkText};background:${t.gearMarkBg};box-shadow:inset 0 0 0 1px ${t.gearMarkBorder}}
 .gear-copy{min-width:0}
 .gear-label{font-size:12px;font-weight:800;color:${t.muted};margin-bottom:5px}
 .gear-value{font-size:17px;font-weight:900;color:${t.textStrong};line-height:1.18;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:${t.textHalo}}
-.gear-1{background:${t.gearAlt}}
-.gear-2{background:${t.gearCool}}
-.gear-3{background:${t.gearWarm}}
-.gear-4{background:${t.gearSoft}}
 .footer{margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:14px;color:${t.footerText};font-size:13px;font-weight:750}
 .slogan{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rule-mark{height:22px;width:86px;flex:0 0 auto;border-radius:999px;background:${t.footerMark};box-shadow:${t.footerGlow}}
@@ -118,7 +136,7 @@ body{margin:0;width:${options.width}px;min-height:520px;padding:24px;background:
   .stamp{text-align:left}
   .hero{grid-template-columns:1fr}
   .gear-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .title{font-size:33px}
+  .title{font-size:30px}
   .height-value{font-size:56px}
 }
 </style>
@@ -131,7 +149,7 @@ body{margin:0;width:${options.width}px;min-height:520px;padding:24px;background:
       <div class="brand">
         <div class="brand-badge">SKY</div>
         <div class="brand-copy">
-          <div class="title">光崽档案</div>
+          <div class="title">光崽身高装扮查询</div>
           <div class="subtitle">${escapeHtml(result.message)}</div>
         </div>
       </div>
@@ -141,15 +159,15 @@ body{margin:0;width:${options.width}px;min-height:520px;padding:24px;background:
     <section class="hero">
       <div class="height-stage">
         <div class="eyebrow">当前身高</div>
-        <div class="height-value">${escapeHtml(get('当前身高'))}</div>
-        <div class="height-caption">
-          <div class="mini">
-            <div class="mini-label">体型值</div>
-            <div class="mini-value">${escapeHtml(get('体型值'))}</div>
+        <div class="height-value">${escapeHtml(currentHeight)}</div>
+        <div class="range-row">
+          <div class="range-card tone-${tone('minHeight', minHeight)}">
+            <div class="range-label">最矮身高</div>
+            <div class="range-value">${escapeHtml(minHeight)}</div>
           </div>
-          <div class="mini">
-            <div class="mini-label">身高值</div>
-            <div class="mini-value">${escapeHtml(get('身高值'))}</div>
+          <div class="range-card tone-${tone('maxHeight', maxHeight)}">
+            <div class="range-label">最高身高</div>
+            <div class="range-value">${escapeHtml(maxHeight)}</div>
           </div>
         </div>
         <div class="identity">
@@ -165,18 +183,13 @@ body{margin:0;width:${options.width}px;min-height:520px;padding:24px;background:
       </div>
 
       <div class="metric-board">
-        <div class="metric primary">
-          <div class="metric-label">身高状态</div>
-          <div class="metric-value">${escapeHtml(get('当前身高'))}</div>
-          <div class="bar"></div>
+        <div class="metric tone-${tone('heightValue', heightValue)}">
+          <div class="metric-label">身高值</div>
+          <div class="metric-value">${escapeHtml(heightValue)}</div>
         </div>
-        <div class="metric">
-          <div class="metric-label">最高身高</div>
-          <div class="metric-value">${escapeHtml(get('最高身高'))}</div>
-        </div>
-        <div class="metric">
-          <div class="metric-label">最矮身高</div>
-          <div class="metric-value">${escapeHtml(get('最矮身高'))}</div>
+        <div class="metric tone-${tone('bodySize', bodySize)}">
+          <div class="metric-label">体型值</div>
+          <div class="metric-value">${escapeHtml(bodySize)}</div>
         </div>
       </div>
     </section>
@@ -199,14 +212,67 @@ body{margin:0;width:${options.width}px;min-height:520px;padding:24px;background:
 </html>`
 }
 
+/**
+ * 🧼 转义 HTML 文本，避免内容破坏页面结构。
+ */
 function escapeHtml(value: string): string {
   return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 }
 
+/**
+ * 🔢 压缩小数显示，去掉无意义的尾随 0。
+ */
+function compactNumber(value: string, decimals: number): string {
+  const raw = value.trim()
+  const number = Number(raw)
+  if (!Number.isFinite(number)) return value
+  if (!raw.includes('.') && !/[eE]/.test(raw)) return raw
+  return number
+    .toFixed(decimals)
+    .replace(/(\.\d*?[1-9])0+$/, '$1')
+    .replace(/\.0+$/, '')
+}
+
+/**
+ * 📏 把数值限制在指定范围内。
+ */
+function clampNumber(value: unknown, fallback: number, min: number, max: number): number {
+  const number = Number(value)
+  if (!Number.isFinite(number)) return fallback
+  return Math.max(min, Math.min(max, number))
+}
+
+/**
+ * 🎨 根据字符串稳定计算卡片色调索引。
+ */
+function toneIndex(value: string): number {
+  let hash = 2166136261
+  for (const char of value) {
+    hash ^= char.codePointAt(0) || 0
+    hash = Math.imul(hash, 16777619)
+  }
+  return Math.abs(hash) % 5
+}
+
+/**
+ * 🎛️ 根据配色模式决定当前卡片使用哪个色调。
+ */
+function resolveTone(mode: 'solid' | 'fixed' | 'random', stableKey: string): number {
+  if (mode === 'solid') return 0
+  if (mode === 'random') return 1 + Math.floor(Math.random() * 4)
+  return 1 + (toneIndex(stableKey) % 4)
+}
+
+/**
+ * 🔤 获取标签首字符，用作装扮小标记。
+ */
 function firstChar(value: string): string {
   return Array.from(value)[0] || '?'
 }
 
+/**
+ * 🌗 生成浅色或深色模式下的样式变量。
+ */
 function theme(dark: boolean) {
   if (dark) {
     return {
@@ -235,7 +301,12 @@ function theme(dark: boolean) {
       metricBorder: 'rgba(92,212,249,.46)',
       sectionBg: 'rgba(255,255,255,.07)',
       miniBg: 'rgba(255,255,255,.08)',
-      miniBorder: 'rgba(255,255,255,.12)',
+      miniBorder: 'rgba(255,255,255,.14)',
+      cardTone0: 'rgba(26,56,72,.70)',
+      cardTone1: 'linear-gradient(135deg,rgba(30,69,87,.74),rgba(24,51,70,.70))',
+      cardTone2: 'linear-gradient(135deg,rgba(25,57,86,.74),rgba(30,48,77,.70))',
+      cardTone3: 'linear-gradient(135deg,rgba(37,67,69,.72),rgba(24,56,62,.68))',
+      cardTone4: 'linear-gradient(135deg,rgba(38,62,82,.72),rgba(28,54,72,.68))',
       badgeBg: 'linear-gradient(135deg,rgba(92,212,249,.30),rgba(112,156,255,.22))',
       badgeBorder: 'rgba(234,251,255,.34)',
       badgeText: '#EAFBFF',
@@ -244,18 +315,16 @@ function theme(dark: boolean) {
       stampText: '#D9F5FF',
       countBg: 'rgba(255,255,255,.08)',
       gearBg: 'rgba(26,56,72,.70)',
-      gearAlt: 'rgba(34,63,75,.70)',
-      gearCool: 'rgba(29,59,86,.70)',
-      gearWarm: 'rgba(30,62,88,.52)',
-      gearSoft: 'rgba(37,67,69,.70)',
+      gearTone0: 'rgba(26,56,72,.70)',
+      gearTone1: 'linear-gradient(135deg,rgba(31,76,96,.78),rgba(22,52,70,.72))',
+      gearTone2: 'linear-gradient(135deg,rgba(28,66,100,.78),rgba(31,50,80,.70))',
+      gearTone3: 'linear-gradient(135deg,rgba(35,76,83,.76),rgba(23,57,66,.70))',
+      gearTone4: 'linear-gradient(135deg,rgba(39,67,96,.76),rgba(26,58,80,.70))',
       gearMarkBg: 'rgba(92,212,249,.13)',
       gearMarkBorder: 'rgba(92,212,249,.22)',
       gearMarkText: '#CFF5FF',
       dryBg: '#342f21',
       dryText: '#ffd7b8',
-      barTrack: 'rgba(255,255,255,.12)',
-      barFill: 'linear-gradient(90deg,#5CD4F9,#709CFF)',
-      barGlow: '0 0 16px rgba(92,212,249,.28)',
       rule: 'linear-gradient(90deg,rgba(92,212,249,.55),transparent)',
       footerText: '#A5C7D2',
       footerMark: 'linear-gradient(90deg,rgba(92,212,249,.64),rgba(112,156,255,.50))',
@@ -293,6 +362,11 @@ function theme(dark: boolean) {
     sectionBg: 'rgba(255,255,255,.34)',
     miniBg: 'rgba(255,255,255,.54)',
     miniBorder: 'rgba(92,212,249,.24)',
+    cardTone0: 'rgba(255,255,255,.50)',
+    cardTone1: 'linear-gradient(135deg,rgba(235,248,255,.58),rgba(255,255,255,.50))',
+    cardTone2: 'linear-gradient(135deg,rgba(222,244,255,.64),rgba(247,253,255,.52))',
+    cardTone3: 'linear-gradient(135deg,rgba(235,255,246,.58),rgba(255,255,255,.50))',
+    cardTone4: 'linear-gradient(135deg,rgba(220,240,255,.60),rgba(255,255,255,.50))',
     badgeBg: 'linear-gradient(135deg,rgba(92,212,249,.32),rgba(143,185,255,.34))',
     badgeBorder: 'rgba(255,255,255,.72)',
     badgeText: '#0F4254',
@@ -301,18 +375,16 @@ function theme(dark: boolean) {
     stampText: '#356B7B',
     countBg: 'rgba(255,255,255,.50)',
     gearBg: 'rgba(255,255,255,.50)',
-    gearAlt: 'rgba(235,248,255,.52)',
-    gearCool: 'rgba(236,248,252,.54)',
-    gearWarm: 'rgba(220,240,255,.56)',
-    gearSoft: 'rgba(235,255,246,.52)',
+    gearTone0: 'rgba(255,255,255,.50)',
+    gearTone1: 'linear-gradient(135deg,rgba(204,239,255,.76),rgba(255,255,255,.56))',
+    gearTone2: 'linear-gradient(135deg,rgba(190,231,255,.74),rgba(235,249,255,.58))',
+    gearTone3: 'linear-gradient(135deg,rgba(204,246,255,.70),rgba(247,255,255,.54))',
+    gearTone4: 'linear-gradient(135deg,rgba(213,232,255,.74),rgba(241,250,255,.56))',
     gearMarkBg: 'rgba(92,212,249,.16)',
     gearMarkBorder: 'rgba(92,212,249,.20)',
     gearMarkText: '#137EA0',
     dryBg: '#fff0df',
     dryText: '#7a3511',
-    barTrack: 'rgba(92,212,249,.18)',
-    barFill: 'linear-gradient(90deg,#159CC4,#5CD4F9)',
-    barGlow: '0 0 16px rgba(92,212,249,.24)',
     rule: 'linear-gradient(90deg,rgba(92,212,249,.58),transparent)',
     footerText: '#5C7E8A',
     footerMark: 'linear-gradient(90deg,rgba(92,212,249,.70),rgba(143,185,255,.60))',

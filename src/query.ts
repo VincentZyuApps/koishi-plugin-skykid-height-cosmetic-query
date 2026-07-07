@@ -6,6 +6,9 @@ import type { HeightResult, PowChallenge } from './types'
 
 export const friendCodePattern = '[A-Za-z0-9]{4}(?:\\s*[-_—－]?\\s*[A-Za-z0-9]{4}){2}'
 
+/**
+ * 🧭 规范化光遇好友码为 XXXX-XXXX-XXXX 格式。
+ */
 export function normalizeFriendCode(raw: string): string {
   const compact = String(raw || '')
     .trim()
@@ -18,6 +21,9 @@ export function normalizeFriendCode(raw: string): string {
   return `${compact.slice(0, 4)}-${compact.slice(4, 8)}-${compact.slice(8, 12)}`
 }
 
+/**
+ * 🔎 查询 sky.cesgao.cn，并返回统一的身高查询结果。
+ */
 export async function queryHeight(ctx: Context, config: Config, rawCode: string): Promise<HeightResult> {
   const code = normalizeFriendCode(rawCode)
   if (!code) throw new Error('好友码格式错误，请使用 XXXX-XXXX-XXXX')
@@ -49,6 +55,9 @@ export async function queryHeight(ctx: Context, config: Config, rawCode: string)
   }
 }
 
+/**
+ * 🧩 请求并校验 POW challenge。
+ */
 async function getPowChallenge(ctx: Context, config: Config): Promise<PowChallenge> {
   logInfo(ctx, config, `🧩 请求 POW challenge: ${resolveUrl(config, config.powChallengeUrl)}`)
   const challenge = await requestJson<PowChallenge>(ctx, config, 'GET', config.powChallengeUrl)
@@ -60,6 +69,9 @@ async function getPowChallenge(ctx: Context, config: Config): Promise<PowChallen
   return challenge
 }
 
+/**
+ * 🌐 发送 JSON HTTP 请求，并附带查询接口需要的请求头。
+ */
 async function requestJson<T>(ctx: Context, config: Config, method: 'GET' | 'POST', urlOrPath: string, data?: unknown): Promise<T> {
   const baseUrl = normalizedBaseUrl(config)
   const url = resolveUrl(config, urlOrPath)
@@ -83,6 +95,9 @@ async function requestJson<T>(ctx: Context, config: Config, method: 'GET' | 'POS
   return result
 }
 
+/**
+ * 🧮 计算满足 difficulty 前导零要求的 POW token。
+ */
 function buildPowToken(challenge: PowChallenge, maxNonce: number): string {
   const algorithm = String(challenge.algorithm || 'SHA-256').replace('_', '-').toUpperCase()
   if (algorithm !== 'SHA-256' && algorithm !== 'SHA256') {
@@ -112,15 +127,24 @@ function buildPowToken(challenge: PowChallenge, maxNonce: number): string {
   throw new Error(`POW 计算失败，已尝试 ${maxNonce} 个 nonce`)
 }
 
+/**
+ * 🧱 规范化配置里的基础 URL。
+ */
 function normalizedBaseUrl(config: Config): string {
   return (config.baseUrl || 'https://sky.cesgao.cn').replace(/\/+$/, '')
 }
 
+/**
+ * 🔗 把相对路径或完整 URL 解析成最终请求地址。
+ */
 function resolveUrl(config: Config, urlOrPath: string): string {
   const baseUrl = normalizedBaseUrl(config)
   return /^https?:\/\//i.test(urlOrPath) ? urlOrPath : baseUrl + (urlOrPath.startsWith('/') ? urlOrPath : `/${urlOrPath}`)
 }
 
+/**
+ * 📦 安全地把任意值转成 JSON 字符串用于日志。
+ */
 function safeJson(value: unknown): string {
   try {
     return JSON.stringify(value)
