@@ -1,7 +1,7 @@
 import { Context, h } from 'koishi'
 import type { Config } from '../config'
 import { generateHeightForward } from '../gen/gen_forward'
-import { registerHeightCommand } from './common'
+import { buildCommandAliases, buildCommandName, registerHeightCommand } from './common'
 
 /**
  * 📨 注册 OneBot 合并转发身高查询命令。
@@ -10,9 +10,9 @@ export function registerForwardCommand(ctx: Context, config: Config) {
   registerHeightCommand(
     ctx,
     config,
-    config.forwardCommandName,
+    buildCommandName(config, config.forwardCommandSuffix),
     '光遇身高查询（OneBot 合并转发）',
-    ['测身高-forward', '身高查询-forward', 'aqhf', 'awa-query-height-forward', '查询饰品-forward'],
+    buildCommandAliases(config, config.forwardCommandSuffix),
     '⏳ 正在查询身高信息，请稍等...',
     async (result) => h.unescape(generateHeightForward(result)),
     {

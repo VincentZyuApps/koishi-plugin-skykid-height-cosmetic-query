@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-skykid-height-cosmetic-query",
-  "description": "查询国服光遇的玩家身高信息捏",
-  "version": "0.1.8-beta.6+20260707",
+  "description": "🌌 光遇国服身高与装扮查询，需要传入好友码。基于基于 sky.cesgao.cn 的 API 📏",
+  "version": "0.1.10-beta.8+20260707",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [

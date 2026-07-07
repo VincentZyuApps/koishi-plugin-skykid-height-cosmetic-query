@@ -1,6 +1,25 @@
 import { Schema } from 'koishi'
 import { DEFAULT_LXGW_WENKAI_PATH } from './utils/fonts'
 
+export const QQ_MARKDOWN_BUTTON_MODE = {
+  STANDALONE: 'standalone',
+  APPEND_TEXT: 'append-text',
+  APPEND_API_IMAGE: 'append-api-image',
+  APPEND_PPTR_IMAGE: 'append-pptr-image',
+  APPEND_TAKUMI_IMAGE: 'append-takumi-image',
+  APPEND_MD_TABLE: 'append-md-table',
+  APPEND_MD_STYLE: 'append-md-style',
+} as const
+
+export type QQMarkdownButtonModeType = typeof QQ_MARKDOWN_BUTTON_MODE[keyof typeof QQ_MARKDOWN_BUTTON_MODE]
+
+export const QQ_MARKDOWN_IMAGE_STORAGE_MODE = {
+  ASSETS: 'assets',
+  SERVER: 'server',
+} as const
+
+export type QQMarkdownImageStorageModeType = typeof QQ_MARKDOWN_IMAGE_STORAGE_MODE[keyof typeof QQ_MARKDOWN_IMAGE_STORAGE_MODE]
+
 export interface Config {
   // ----- 🌐 后端接口设置 -----
   baseUrl: string
@@ -14,16 +33,24 @@ export interface Config {
   userAgent: string
 
   // ----- 📌 指令设置 -----
+  commandPrefix: string
+  commandPrefixAliases: string[]
+  enableHelpCommand: boolean
+  helpCommandSuffix: string
   enableTextCommand: boolean
-  textCommandName: string
+  textCommandSuffix: string
   enableForwardCommand: boolean
-  forwardCommandName: string
+  forwardCommandSuffix: string
   enablePptrCommand: boolean
-  pptrCommandName: string
+  pptrCommandSuffix: string
   enableTakumiCommand: boolean
-  takumiCommandName: string
+  takumiCommandSuffix: string
   enableApiCommand: boolean
-  apiCommandName: string
+  apiCommandSuffix: string
+  enableQqMdTableCommand: boolean
+  qqMdTableCommandSuffix: string
+  enableQqMdStyleCommand: boolean
+  qqMdStyleCommandSuffix: string
 
   // ----- 💬 通用输出设置 -----
   enableQuote: boolean
@@ -57,7 +84,18 @@ export interface Config {
   imageApiExtraQueryParams: string
   imageApiShowRenderInfo: boolean
 
+  // ----- 💬 QQ 官方 Bot Markdown 适配设置 -----
+  qqMarkdownButtonMode: QQMarkdownButtonModeType[]
+  qqMarkdownKeyboardJson: string
+  qqMarkdownImageStorageMode: QQMarkdownImageStorageModeType
+  qqMarkdownImageSelfUrl: string
+  qqMarkdownImageMaxFiles: number
+  qqMarkdownEmbedApiImage: boolean
+  qqMarkdownEmbedPptrImage: boolean
+  qqMarkdownEmbedTakumiImage: boolean
+
   // ----- 🛠️ 调试设置 -----
+  verboseSessionLog: boolean
   verboseConsoleLog: boolean
 }
 
@@ -78,16 +116,24 @@ export const Config: Schema<Config> = Schema.intersect([
   }).description('🌐 后端设置'),
 
   Schema.object({
+    commandPrefix: Schema.string().default('查询光崽身高装扮').description('📌 查询指令共同前缀。实际命令格式为：前缀 + 英文句号 + 后缀，例如 查询光崽身高装扮.pptr'),
+    commandPrefixAliases: Schema.array(String).role('table').default(['查询光崽身高', '查询光崽装扮', '查询身高', '查询装扮', '测身高']).description('📌 查询指令前缀别名。每个别名都会和相同后缀组合成指令 alias，例如 查询光崽身高.pptr。'),
+    enableHelpCommand: Schema.boolean().default(true).description('❔ 注册帮助指令'),
+    helpCommandSuffix: Schema.string().default('帮助').description('❔ 帮助指令后缀'),
     enableTextCommand: Schema.boolean().default(true).description('📝 注册纯文本查询指令'),
-    textCommandName: Schema.string().default('查询身高-text').description('📝 纯文本指令名称'),
+    textCommandSuffix: Schema.string().default('text').description('📝 纯文本指令后缀'),
     enableForwardCommand: Schema.boolean().default(true).description('📨 注册 OneBot 合并转发查询指令'),
-    forwardCommandName: Schema.string().default('查询身高-forward').description('📨 合并转发指令名称'),
+    forwardCommandSuffix: Schema.string().default('forward').description('📨 合并转发指令后缀'),
     enablePptrCommand: Schema.boolean().default(true).description('🖼️ 注册 Puppeteer 出图查询指令'),
-    pptrCommandName: Schema.string().default('查询身高').description('🖼️ Puppeteer 指令名称'),
+    pptrCommandSuffix: Schema.string().default('pptr').description('🖼️ Puppeteer 指令后缀'),
     enableTakumiCommand: Schema.boolean().default(true).description('⚡ 注册 Takumi wasm 出图查询指令'),
-    takumiCommandName: Schema.string().default('查询身高-takumi').description('⚡ Takumi 指令名称'),
+    takumiCommandSuffix: Schema.string().default('takumi').description('⚡ Takumi 指令后缀'),
     enableApiCommand: Schema.boolean().default(false).description('🌐 注册外部 Fastapi Pillow画图后端出图查询指令'),
-    apiCommandName: Schema.string().default('查询身高-api').description('🌐 外部 Fastapi Pillow画图后端出图指令名称'),
+    apiCommandSuffix: Schema.string().default('api').description('🌐 外部 Fastapi Pillow画图后端出图指令后缀'),
+    enableQqMdTableCommand: Schema.boolean().default(false).description('📊 注册 QQ Markdown 表格模式查询指令。仅 QQ 官方 Bot 平台支持，非 QQ 平台会按调试配置提示并跳过。'),
+    qqMdTableCommandSuffix: Schema.string().default('md-table').description('📊 QQ Markdown 表格模式指令后缀'),
+    enableQqMdStyleCommand: Schema.boolean().default(true).description('💫 注册 QQ Markdown 格式风格查询指令。仅 QQ 官方 Bot 平台支持，非 QQ 平台会按调试配置提示并跳过。'),
+    qqMdStyleCommandSuffix: Schema.string().default('md-style').description('💫 QQ Markdown 格式风格指令后缀'),
   }).description('📌 指令设置'),
 
   Schema.object({
@@ -135,6 +181,75 @@ export const Config: Schema<Config> = Schema.intersect([
   }).description('🌐 API 出图设置'),
 
   Schema.object({
-    verboseConsoleLog: Schema.boolean().default(false).description('🛠️ 输出详细调试日志。开启后会打印请求 URL、payload 摘要、接口响应 JSON 等信息。'),
+    qqMarkdownButtonMode: Schema.array(Schema.union([
+      Schema.const(QQ_MARKDOWN_BUTTON_MODE.STANDALONE).description(`【 ${QQ_MARKDOWN_BUTTON_MODE.STANDALONE}】每次查询成功后额外发送一条 JSON 按钮消息`),
+      Schema.const(QQ_MARKDOWN_BUTTON_MODE.APPEND_TEXT).description(`【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_TEXT}】挂在 text 的 QQ Markdown 文本后面`),
+      Schema.const(QQ_MARKDOWN_BUTTON_MODE.APPEND_API_IMAGE).description(`【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_API_IMAGE}】挂在 API 出图 QQ Markdown 内联图片后面`),
+      Schema.const(QQ_MARKDOWN_BUTTON_MODE.APPEND_PPTR_IMAGE).description(`【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_PPTR_IMAGE}】挂在 Puppeteer 出图 QQ Markdown 内联图片后面`),
+      Schema.const(QQ_MARKDOWN_BUTTON_MODE.APPEND_TAKUMI_IMAGE).description(`【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_TAKUMI_IMAGE}】挂在 Takumi 出图 QQ Markdown 内联图片后面`),
+      Schema.const(QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_TABLE).description(`【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_TABLE}】挂在 QQ Markdown 表格模式后面`),
+      Schema.const(QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_STYLE).description(`【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_STYLE}】挂在 QQ Markdown 格式风格后面`),
+    ]))
+      .role('checkbox')
+      .default([
+        QQ_MARKDOWN_BUTTON_MODE.APPEND_TEXT,
+        QQ_MARKDOWN_BUTTON_MODE.APPEND_API_IMAGE,
+        QQ_MARKDOWN_BUTTON_MODE.APPEND_PPTR_IMAGE,
+        QQ_MARKDOWN_BUTTON_MODE.APPEND_TAKUMI_IMAGE,
+        QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_TABLE,
+        QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_STYLE,
+      ])
+      .description([
+        '🔘 QQ Markdown 按钮发送行为，可多选。',
+        `【 ${QQ_MARKDOWN_BUTTON_MODE.STANDALONE}】每次查询成功后额外发送一条 JSON 按钮消息。`,
+        `【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_TEXT}】挂在 text 的 QQ Markdown 文本后面。`,
+        `【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_API_IMAGE}】挂在 API 出图 QQ Markdown 内联图片后面，需要 qqMarkdownEmbedApiImage 开启。`,
+        `【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_PPTR_IMAGE}】挂在 Puppeteer 出图 QQ Markdown 内联图片后面，需要 qqMarkdownEmbedPptrImage 开启。`,
+        `【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_TAKUMI_IMAGE}】挂在 Takumi 出图 QQ Markdown 内联图片后面，需要 qqMarkdownEmbedTakumiImage 开启。`,
+        `【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_TABLE}】挂在 QQ Markdown 表格模式后面。`,
+        `【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_STYLE}】挂在 QQ Markdown 格式风格后面。`,
+        '⚠️ 不想发送 QQ 按钮时保持空选即可。条件不满足时默认静默跳过，除非开启调试日志。',
+      ].join('<br/>')),
+    qqMarkdownKeyboardJson: Schema.string().role('textarea', { rows: [4, 12] }).default(`{
+  "rows": [
+    {
+      "buttons": [
+        {
+          "render_data": { "label": "玩玩别的", "style": 0 },
+          "action": { "type": 2, "permission": { "type": 2 }, "data": "help", "enter": true }
+        }
+      ]
+    }
+  ]
+}`).description('⌨️ QQ Markdown 按钮 JSON。默认只有一行一个按钮：玩玩别的 -> help。JSON 解析失败时使用默认按钮。'),
+    qqMarkdownImageStorageMode: Schema.union([
+      Schema.const(QQ_MARKDOWN_IMAGE_STORAGE_MODE.ASSETS).description(`【 ${QQ_MARKDOWN_IMAGE_STORAGE_MODE.ASSETS}】使用 Koishi assets 服务发送 Markdown 内嵌图片`),
+      Schema.const(QQ_MARKDOWN_IMAGE_STORAGE_MODE.SERVER).description(`【 ${QQ_MARKDOWN_IMAGE_STORAGE_MODE.SERVER}】使用 Koishi server 服务发送 Markdown 内嵌图片`),
+    ])
+      .role('radio')
+      .default(QQ_MARKDOWN_IMAGE_STORAGE_MODE.SERVER)
+      .description([
+        '🖼️ Puppeteer / Takumi 本地出图转 QQ Markdown 内联图片时的公网 URL 生成模式。',
+        '【 assets】生成公网图片 URL。只能新增，不能删除，文件名由 assets 服务决定，通常无法自定义。',
+        '【 server】从 ctx.baseDir/cache/skykid-height-cosmetic-query 暴露临时图片，并按数量上限仅保留最新图片。',
+        'standalone、append-text、append-md-table、append-md-style 不使用此配置。',
+      ].join('<br/>')),
+    qqMarkdownImageSelfUrl: Schema.string().role('textarea', { rows: [2, 5] }).default('').description([
+      '🌐 server 模式的公网 URL 覆盖值。',
+      '示例：<code>http://your-public-ip:your-port</code>。',
+      '仅图片 URL 生成模式为 server 时生效；留空则回退 ctx.server.config.selfUrl。',
+    ].join('<br/>')),
+    qqMarkdownImageMaxFiles: Schema.number().step(1).default(5).description([
+      '🧹 server 模式缓存图片数量上限。',
+      '缓存目录固定为 ctx.baseDir/cache/skykid-height-cosmetic-query；仅保留最新 N 张，填写 <= 0 表示不设置上限。',
+    ].join('<br/>')),
+    qqMarkdownEmbedApiImage: Schema.boolean().default(true).description('🌐 QQ 官方平台下，API 出图是否改为 QQ Markdown 内联图片。关闭后保持普通图片 + 耗时文本。'),
+    qqMarkdownEmbedPptrImage: Schema.boolean().default(true).description('🖼️ QQ 官方平台下，Puppeteer 出图是否改为 QQ Markdown 内联图片。关闭后保持普通图片 + 耗时文本。'),
+    qqMarkdownEmbedTakumiImage: Schema.boolean().default(true).description('⚡ QQ 官方平台下，Takumi 出图是否改为 QQ Markdown 内联图片。关闭后保持普通图片 + 耗时文本。'),
+  }).description('💬 QQ 官方 Bot Markdown 适配设置'),
+
+  Schema.object({
+    verboseSessionLog: Schema.boolean().default(false).description('💬 是否在会话中输出详细调试信息。关闭时 QQ Markdown / 按钮跳过提醒默认不会发送到会话；开启后才会同步发送到会话。'),
+    verboseConsoleLog: Schema.boolean().default(false).description('🛠️ 是否在控制台输出详细调试信息。关闭时 QQ Markdown / 按钮跳过提醒默认不会输出到控制台；开启后会输出请求 URL、payload 摘要、接口响应 JSON、渲染、发送、assets/server 图片 URL 生成和字体检查细节。'),
   }).description('🛠️ 调试设置'),
 ]) as unknown as Schema<Config>

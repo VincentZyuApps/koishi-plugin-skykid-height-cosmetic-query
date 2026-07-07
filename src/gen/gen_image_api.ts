@@ -4,7 +4,7 @@ import { logInfo } from '../utils/logger'
 import type { HeightResult } from '../types'
 import { numberText } from './gen_text'
 
-interface RenderHeightApiOptions {
+export interface RenderHeightApiOptions {
   baseUrl: string
   path: string
   timeout: number
@@ -36,6 +36,26 @@ export async function renderHeightApi(
   result: HeightResult,
   options: RenderHeightApiOptions,
 ): Promise<Buffer> {
+  const url = buildHeightApiRenderUrl(result, options)
+
+  const timeout = Math.max(1000, clampInteger(options.timeout, 60, 1, 300) * 1000)
+  logInfo(ctx, config, `🌐 请求外部身高出图 API：${url.origin}${url.pathname}`, `🔗 API 出图 URL: ${url.toString()}`)
+  const image = await ctx.http.get<ArrayBuffer>(url.toString(), {
+    responseType: 'arraybuffer',
+    timeout,
+    headers: {
+      Accept: 'image/jpeg,image/*;q=0.9,*/*;q=0.8',
+    },
+  })
+  const buffer = Buffer.from(image)
+  if (!buffer.length) throw new Error('外部出图 API 返回空图片')
+  return buffer
+}
+
+/**
+ * 🔗 只拼接外部 Pillow 后端出图 URL，不发起 HTTP 请求。
+ */
+export function buildHeightApiRenderUrl(result: HeightResult, options: RenderHeightApiOptions): URL {
   const url = buildImageApiUrl(options.baseUrl, options.path)
   const params = url.searchParams
   const data = result.data
@@ -58,19 +78,7 @@ export async function renderHeightApi(
   }
 
   applyExtraQueryParams(params, options.extraQueryParams)
-
-  const timeout = Math.max(1000, clampInteger(options.timeout, 60, 1, 300) * 1000)
-  logInfo(ctx, config, `🌐 请求外部身高出图 API：${url.origin}${url.pathname}`, `🔗 API 出图 URL: ${url.toString()}`)
-  const image = await ctx.http.get<ArrayBuffer>(url.toString(), {
-    responseType: 'arraybuffer',
-    timeout,
-    headers: {
-      Accept: 'image/jpeg,image/*;q=0.9,*/*;q=0.8',
-    },
-  })
-  const buffer = Buffer.from(image)
-  if (!buffer.length) throw new Error('外部出图 API 返回空图片')
-  return buffer
+  return url
 }
 
 /**

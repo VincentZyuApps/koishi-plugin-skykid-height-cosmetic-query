@@ -37,12 +37,17 @@ export const usage = `
 
 <h3>📌 指令</h3>
 
+<p>默认前缀是 <code>查询光崽身高装扮</code>。默认前缀别名是 <code>查询光崽身高</code>、<code>查询光崽装扮</code>、<code>查询身高</code>、<code>查询装扮</code>、<code>测身高</code>，每个前缀都会和相同后缀组合成可用指令。</p>
+
 <ul>
-  <li>🖼️ <b>查询身高</b> / <b>测身高</b> / <b>身高查询</b> / <b>aqh</b> / <b>awa-query-height</b> / <b>查询饰品</b> - Puppeteer 出图</li>
-  <li>📝 <b>查询身高-text</b> / <b>测身高-text</b> / <b>身高查询-text</b> / <b>aqht</b> / <b>awa-query-height-text</b> / <b>查询饰品-text</b> - 纯文本</li>
-  <li>📨 <b>查询身高-forward</b> / <b>测身高-forward</b> / <b>身高查询-forward</b> / <b>aqhf</b> / <b>awa-query-height-forward</b> / <b>查询饰品-forward</b> - OneBot 合并转发</li>
-  <li>⚡ <b>查询身高-takumi</b> / <b>测身高-takumi</b> / <b>身高查询-takumi</b> / <b>aqhk</b> / <b>awa-query-height-takumi</b> / <b>查询饰品-takumi</b> - @takumi-rs/wasm 出图</li>
-  <li>🌐 <b>查询身高-api</b> / <b>测身高-api</b> / <b>身高查询-api</b> / <b>aqha</b> / <b>awa-query-height-api</b> / <b>查询饰品-api</b> - 外部 Fastapi Pillow画图后端出图</li>
+  <li>❔ <b>查询光崽身高装扮.帮助</b> - 查看帮助</li>
+  <li>🖼️ <b>查询光崽身高装扮.pptr</b> - Puppeteer 出图</li>
+  <li>📝 <b>查询光崽身高装扮.text</b> - 纯文本</li>
+  <li>📨 <b>查询光崽身高装扮.forward</b> - OneBot 合并转发</li>
+  <li>⚡ <b>查询光崽身高装扮.takumi</b> - @takumi-rs/wasm 出图</li>
+  <li>🌐 <b>查询光崽身高装扮.api</b> - 外部 Fastapi Pillow画图后端出图</li>
+  <li>💫 <b>查询光崽身高装扮.md-style</b> - QQ Markdown 格式风格，仅 QQ 官方平台支持</li>
+  <li>📊 <b>查询光崽身高装扮.md-table</b> - QQ Markdown 表格，仅 QQ 官方平台支持</li>
 </ul>
 
 <h3>🧪 测试模式</h3>
@@ -50,15 +55,19 @@ export const usage = `
 <p>所有查询命令都支持 <code>--dry</code> / <code>--dryrun</code>。测试模式不会请求后端，只使用假数据测试文字或图片样式。</p>
 
 <pre>
-<code>查询身高 --dryrun</code>
+<code>查询光崽身高装扮.pptr --dryrun</code>
 <br>
-<code>查询身高-text --dry</code>
+<code>查询光崽身高装扮.text --dry</code>
 <br>
-<code>查询身高-forward --dryrun</code>
+<code>查询光崽身高装扮.forward --dryrun</code>
 <br>
-<code>查询身高-takumi --dryrun</code>
+<code>查询光崽身高装扮.takumi --dryrun</code>
 <br>
-<code>查询身高-api --dryrun</code>
+<code>查询光崽身高装扮.api --dryrun</code>
+<br>
+<code>查询光崽身高装扮.md-style --dryrun</code>
+<br>
+<code>查询光崽身高装扮.md-table --dryrun</code>
 </pre>
 
 <h3>🌙 深色模式</h3>
@@ -66,13 +75,13 @@ export const usage = `
 <p>Puppeteer 和 Takumi 出图命令支持 <code>-d</code> / <code>--dark</code> / <code>--darkmode</code>。可选值：<code>true</code> / <code>false</code> / <code>on</code> / <code>off</code> / <code>dark</code> / <code>light</code> / <code>深色</code> / <code>浅色</code>。</p>
 
 <pre>
-<code>查询身高-pptr XXXX-XXXX-XXXX -d true</code>
+<code>查询光崽身高装扮.pptr XXXX-XXXX-XXXX -d true</code>
 <br>
-<code>查询身高-pptr XXXX-XXXX-XXXX --dark on</code>
+<code>查询光崽身高装扮.pptr XXXX-XXXX-XXXX --dark on</code>
 <br>
-<code>查询身高-takumi XXXX-XXXX-XXXX --dark dark</code>
+<code>查询光崽身高装扮.takumi XXXX-XXXX-XXXX --dark dark</code>
 <br>
-<code>查询身高-takumi XXXX-XXXX-XXXX --darkmode 深色</code>
+<code>查询光崽身高装扮.takumi XXXX-XXXX-XXXX --darkmode 深色</code>
 </pre>
 
 <h3>🛠️ 调试参数</h3>
@@ -80,8 +89,14 @@ export const usage = `
 <p>所有查询命令支持 <code>-v</code> / <code>--verbose</code>，会在 session 和 console 打印本次命令解析到的详细参数。</p>
 
 <pre>
-<code>查询身高 --dryrun -v</code>
+<code>查询光崽身高装扮.pptr --dryrun -v</code>
 </pre>
+
+<h3>💬 QQ 官方 Bot Markdown</h3>
+
+<p>QQ Markdown 相关输出仅支持 Koishi 的 QQ 官方 Bot 平台，非 QQ 平台不会 fallback 成其他格式。默认注册 <code>查询光崽身高装扮.md-style</code>，<code>查询光崽身高装扮.md-table</code> 默认关闭。</p>
+<p><code>qqMarkdownButtonMode</code> 控制按钮 append / standalone 行为。<code>append-api-image</code> / <code>append-pptr-image</code> / <code>append-takumi-image</code> 需要对应的内联图片开关为 <code>true</code>；否则默认静默跳过，开启 <code>verboseSessionLog</code> / <code>verboseConsoleLog</code> 后才会提示。</p>
+<p>Puppeteer / Takumi 本地图片嵌入 Markdown 时，需要通过 <code>server</code> 或 <code>assets</code> 生成公网 URL。server 模式缓存目录为 <code>ctx.baseDir/cache/skykid-height-cosmetic-query</code>，暴露路由为 <code>/skykid-height-cosmetic-query/cache/:name</code>。</p>
 
 <details>
 <summary><h3>⚙️ 配置项（点击展开）</h3></summary>
@@ -122,16 +137,24 @@ export const usage = `
     </tr>
   </thead>
   <tbody>
+    <tr><td><code>commandPrefix</code></td><td><code>string</code></td><td><code>查询光崽身高装扮</code></td><td>查询指令共同前缀；实际命令格式为 <code>前缀.后缀</code>。</td></tr>
+    <tr><td><code>commandPrefixAliases</code></td><td><code>string[]</code></td><td><code>查询光崽身高</code>, <code>查询光崽装扮</code>, <code>查询身高</code>, <code>查询装扮</code>, <code>测身高</code></td><td>查询指令前缀别名；每个别名都会和相同后缀组合成指令 alias，例如 <code>查询光崽身高.pptr</code>。</td></tr>
+    <tr><td><code>enableHelpCommand</code></td><td><code>boolean</code></td><td><code>true</code></td><td>注册帮助指令。</td></tr>
+    <tr><td><code>helpCommandSuffix</code></td><td><code>string</code></td><td><code>帮助</code></td><td>帮助指令后缀。</td></tr>
     <tr><td><code>enableTextCommand</code></td><td><code>boolean</code></td><td><code>true</code></td><td>注册纯文本查询指令。</td></tr>
-    <tr><td><code>textCommandName</code></td><td><code>string</code></td><td><code>查询身高-text</code></td><td>纯文本主指令名称。</td></tr>
+    <tr><td><code>textCommandSuffix</code></td><td><code>string</code></td><td><code>text</code></td><td>纯文本指令后缀。</td></tr>
     <tr><td><code>enableForwardCommand</code></td><td><code>boolean</code></td><td><code>true</code></td><td>注册 OneBot 合并转发查询指令。</td></tr>
-    <tr><td><code>forwardCommandName</code></td><td><code>string</code></td><td><code>查询身高-forward</code></td><td>OneBot 合并转发主指令名称。</td></tr>
+    <tr><td><code>forwardCommandSuffix</code></td><td><code>string</code></td><td><code>forward</code></td><td>OneBot 合并转发指令后缀。</td></tr>
     <tr><td><code>enablePptrCommand</code></td><td><code>boolean</code></td><td><code>true</code></td><td>注册 Puppeteer 出图查询指令。</td></tr>
-    <tr><td><code>pptrCommandName</code></td><td><code>string</code></td><td><code>查询身高</code></td><td>Puppeteer 出图主指令名称。</td></tr>
+    <tr><td><code>pptrCommandSuffix</code></td><td><code>string</code></td><td><code>pptr</code></td><td>Puppeteer 出图指令后缀。</td></tr>
     <tr><td><code>enableTakumiCommand</code></td><td><code>boolean</code></td><td><code>true</code></td><td>注册 Takumi wasm 出图查询指令。</td></tr>
-    <tr><td><code>takumiCommandName</code></td><td><code>string</code></td><td><code>查询身高-takumi</code></td><td>Takumi wasm 出图主指令名称。</td></tr>
-    <tr><td><code>enableApiCommand</code></td><td><code>boolean</code></td><td><code>false</code></td><td>注册外部 Fastapi Pillow画图后端出图查询指令；启用后可使用 <code>查询身高-api</code> / <code>测身高-api</code> / <code>身高查询-api</code> / <code>aqha</code> / <code>awa-query-height-api</code> / <code>查询饰品-api</code>。</td></tr>
-    <tr><td><code>apiCommandName</code></td><td><code>string</code></td><td><code>查询身高-api</code></td><td>外部 Fastapi Pillow画图后端出图主指令名称。</td></tr>
+    <tr><td><code>takumiCommandSuffix</code></td><td><code>string</code></td><td><code>takumi</code></td><td>Takumi wasm 出图指令后缀。</td></tr>
+    <tr><td><code>enableApiCommand</code></td><td><code>boolean</code></td><td><code>false</code></td><td>注册外部 Fastapi Pillow画图后端出图查询指令。</td></tr>
+    <tr><td><code>apiCommandSuffix</code></td><td><code>string</code></td><td><code>api</code></td><td>外部 Fastapi Pillow画图后端出图指令后缀。</td></tr>
+    <tr><td><code>enableQqMdTableCommand</code></td><td><code>boolean</code></td><td><code>false</code></td><td>注册 QQ Markdown 表格模式查询指令；仅 QQ 官方 Bot 平台支持。</td></tr>
+    <tr><td><code>qqMdTableCommandSuffix</code></td><td><code>string</code></td><td><code>md-table</code></td><td>QQ Markdown 表格模式指令后缀。</td></tr>
+    <tr><td><code>enableQqMdStyleCommand</code></td><td><code>boolean</code></td><td><code>true</code></td><td>注册 QQ Markdown 格式风格查询指令；仅 QQ 官方 Bot 平台支持。</td></tr>
+    <tr><td><code>qqMdStyleCommandSuffix</code></td><td><code>string</code></td><td><code>md-style</code></td><td>QQ Markdown 格式风格指令后缀。</td></tr>
   </tbody>
 </table>
 
@@ -221,6 +244,29 @@ export const usage = `
   </tbody>
 </table>
 
+<h4>💬 QQ 官方 Bot Markdown 适配设置</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th>配置名</th>
+      <th>类型</th>
+      <th>默认值</th>
+      <th>备注</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>qqMarkdownButtonMode</code></td><td><code>string[]</code></td><td>append 除 standalone 外全部勾选</td><td>QQ Markdown 按钮发送行为；包含 <code>append-text</code> / <code>append-api-image</code> / <code>append-pptr-image</code> / <code>append-takumi-image</code> / <code>append-md-table</code> / <code>append-md-style</code> / <code>standalone</code>。</td></tr>
+    <tr><td><code>qqMarkdownKeyboardJson</code></td><td><code>string</code></td><td>玩玩别的 -> help</td><td>QQ Markdown 按钮 JSON；解析失败时使用默认按钮。</td></tr>
+    <tr><td><code>qqMarkdownImageStorageMode</code></td><td><code>"assets" | "server"</code></td><td><code>server</code></td><td>Puppeteer / Takumi 本地图片转公网 URL 的方式。</td></tr>
+    <tr><td><code>qqMarkdownImageSelfUrl</code></td><td><code>string</code></td><td>空字符串</td><td>server 模式公网 URL 覆盖值；留空则回退 <code>ctx.server.config.selfUrl</code>。</td></tr>
+    <tr><td><code>qqMarkdownImageMaxFiles</code></td><td><code>number</code></td><td><code>5</code></td><td>server 模式缓存图片数量上限；<code>&lt;= 0</code> 表示不限制。</td></tr>
+    <tr><td><code>qqMarkdownEmbedApiImage</code></td><td><code>boolean</code></td><td><code>true</code></td><td>QQ 官方平台下，API 出图是否改为 QQ Markdown 内联图片。</td></tr>
+    <tr><td><code>qqMarkdownEmbedPptrImage</code></td><td><code>boolean</code></td><td><code>true</code></td><td>QQ 官方平台下，Puppeteer 出图是否改为 QQ Markdown 内联图片。</td></tr>
+    <tr><td><code>qqMarkdownEmbedTakumiImage</code></td><td><code>boolean</code></td><td><code>true</code></td><td>QQ 官方平台下，Takumi 出图是否改为 QQ Markdown 内联图片。</td></tr>
+  </tbody>
+</table>
+
 <h4>🛠️ 调试设置</h4>
 
 <table>
@@ -233,7 +279,8 @@ export const usage = `
     </tr>
   </thead>
   <tbody>
-    <tr><td><code>verboseConsoleLog</code></td><td><code>boolean</code></td><td><code>false</code></td><td>输出详细调试日志，包括请求 URL、payload 摘要和接口响应 JSON 等。</td></tr>
+    <tr><td><code>verboseSessionLog</code></td><td><code>boolean</code></td><td><code>false</code></td><td>是否在会话中输出详细调试信息；QQ Markdown / 按钮跳过提醒默认不会发送到会话。</td></tr>
+    <tr><td><code>verboseConsoleLog</code></td><td><code>boolean</code></td><td><code>false</code></td><td>是否在控制台输出详细调试信息；QQ Markdown / 按钮跳过提醒默认不会输出到控制台。</td></tr>
   </tbody>
 </table>
 

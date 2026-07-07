@@ -1,25 +1,26 @@
 import { Context, h } from 'koishi'
 import type { Config } from '../config'
 import { renderHeightPptr } from '../gen/gen_image_pptr'
+import { hasAppendPptrImageButtonMode, normalizeQQButtonModes } from '../qq/button'
+import { fitImageDimensionsByWidth, formatHeightImageMarkdown, getImageDimensions } from '../qq/image'
+import { buildHeightKeyboard } from '../qq/keyboard'
+import { notifyQQButtonSkip } from '../qq/notify'
+import { isQQOfficialSession, resolveQQMarkdownImageUrl, sendQQMarkdownWithGuard } from '../qq/sender'
 import { resolveRuntimeFontPath } from '../utils/fonts'
-import { registerHeightCommand, registerNaturalMatcher } from './common'
+import { buildCommandAliases, buildCommandName, registerHeightCommand } from './common'
 
 /**
- * 🖼️ 注册 Puppeteer 截图出图命令和自然语言快捷触发。
+ * 🖼️ 注册 Puppeteer 截图出图命令。
  */
 export function registerPptrCommand(ctx: Context, config: Config) {
   registerHeightCommand(
     ctx,
     config,
-    config.pptrCommandName,
+    buildCommandName(config, config.pptrCommandSuffix),
     '光遇身高查询（Puppeteer 出图）',
-    [
-      '测身高', '身高查询', 'aqh', 'awa-query-height', '查询饰品',
-      '测身高-pptr', '身高查询-pptr', 'aqhp', 'awa-query-height-pptr', '查询饰品-pptr',
-      '测身高-puppeteer', '身高查询-puppeteer', 'aqhp', 'awa-query-height-puppeteer', '查询饰品-puppeteer'
-    ],
+    buildCommandAliases(config, config.pptrCommandSuffix),
     '⏳ 正在查询并渲染 Puppeteer 图片，请稍等...',
-    async (result, elapsed, commandOptions) => {
+    async (result, elapsed, commandOptions, session) => {
       const image = await renderHeightPptr(ctx, result, {
         width: config.pptrWidth,
         deviceScaleFactor: config.pptrDeviceScaleFactor,
@@ -29,6 +30,34 @@ export function registerPptrCommand(ctx: Context, config: Config) {
         fontPath: config.useCustomFont && config.pptrFontPath ? resolveRuntimeFontPath(ctx, config.pptrFontPath) : '',
         darkMode: commandOptions.enableDarkMode ?? false,
       })
+      const buttonModes = normalizeQQButtonModes(config)
+      const shouldAppendButton = hasAppendPptrImageButtonMode(buttonModes)
+      const imageBuffer = Buffer.from(image, 'base64')
+
+      if (isQQOfficialSession(session)) {
+        if (config.qqMarkdownEmbedPptrImage) {
+          const imageUrl = await resolveQQMarkdownImageUrl(ctx, config, imageBuffer, config.pptrImageType)
+          const dimensions = fitImageDimensionsByWidth(
+            getImageDimensions(imageBuffer),
+            { maxWidth: 900, fallback: { width: Math.min(config.pptrWidth, 900), height: 1200 } },
+          )
+          const footer = config.pptrShowRenderInfo ? `📊 Puppeteer 渲染耗时：${elapsed}ms | 类型：${config.pptrImageType}` : undefined
+          await sendQQMarkdownWithGuard(
+            ctx,
+            session,
+            config,
+            formatHeightImageMarkdown('🌌 光崽身高装扮查询', imageUrl, dimensions.width, dimensions.height, footer),
+            shouldAppendButton ? buildHeightKeyboard(config) : null,
+            'pptr-image',
+          )
+          return
+        }
+
+        if (shouldAppendButton) {
+          await notifyQQButtonSkip(ctx, session, config, 'append-pptr-image 需要 qqMarkdownEmbedPptrImage 开启。')
+        }
+      }
+
       const message: (string | h)[] = [h.image(`data:image/${config.pptrImageType};base64,${image}`)]
       if (config.pptrShowRenderInfo) {
         message.push(`\n📊 Puppeteer 渲染耗时：${elapsed}ms | 类型：${config.pptrImageType}`)
@@ -36,6 +65,4 @@ export function registerPptrCommand(ctx: Context, config: Config) {
       return message
     },
   )
-
-  registerNaturalMatcher(ctx, config, ['测身高', '身高查询', 'aqh', 'awa-query-height', '查询饰品'])
 }

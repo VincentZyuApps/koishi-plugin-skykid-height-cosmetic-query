@@ -2,7 +2,8 @@ import { Context, h, Session } from 'koishi'
 import type { Config } from '../config'
 import { logInfo } from '../utils/logger'
 import { createDryRunHeightResult } from '../mock'
-import { friendCodePattern, queryHeight } from '../query'
+import { queryHeight } from '../query'
+import { sendStandaloneQQButton } from '../qq/sender'
 import type { HeightResult } from '../types'
 
 const UNKNOWN_OUTFIT_ID_PREVIEW_LENGTH = 3
@@ -14,7 +15,42 @@ export interface HeightCommandOptions {
   verbose: boolean
 }
 
-type CommandHandler = (result: HeightResult, elapsed: number, options: HeightCommandOptions) => Promise<string | h | (string | h)[]>
+/**
+ * 🧩 拼接 Koishi 子指令名称，格式固定为 前缀.后缀。
+ */
+export function buildCommandName(config: Config, suffix: string): string {
+  return joinCommandPrefixAndSuffix(config.commandPrefix || '查询光崽身高装扮', suffix)
+}
+
+/**
+ * 🧩 拼接 Koishi 子指令别名，格式固定为 前缀别名.后缀。
+ */
+export function buildCommandAliases(config: Config, suffix: string): string[] {
+  const mainCommandName = buildCommandName(config, suffix)
+  const seen = new Set([mainCommandName])
+  const aliases: string[] = []
+  const prefixAliases = Array.isArray(config.commandPrefixAliases) ? config.commandPrefixAliases : []
+
+  for (const prefix of prefixAliases) {
+    const alias = joinCommandPrefixAndSuffix(prefix, suffix)
+    if (seen.has(alias)) continue
+    seen.add(alias)
+    aliases.push(alias)
+  }
+
+  return aliases
+}
+
+/**
+ * 🔗 拼接单个前缀和后缀。
+ */
+function joinCommandPrefixAndSuffix(prefix: string, suffix: string): string {
+  const normalizedPrefix = String(prefix || '').trim().replace(/\.+$/, '') || '查询光崽身高装扮'
+  const normalizedSuffix = String(suffix || '').trim().replace(/^\.+/, '')
+  return normalizedSuffix ? `${normalizedPrefix}.${normalizedSuffix}` : normalizedPrefix
+}
+
+type CommandHandler = (result: HeightResult, elapsed: number, options: HeightCommandOptions, session: Session) => Promise<string | h | (string | h)[] | void>
 type CommandGuard = (session: Session, options: HeightCommandOptions) => string | void | Promise<string | void>
 
 interface RegisterHeightCommandOptions {
@@ -35,8 +71,9 @@ export function registerHeightCommand(
   handler: CommandHandler,
   registerOptions: RegisterHeightCommandOptions = {},
 ) {
-  ctx.command(`${commandName} <code:string>`, description)
-    .alias(...aliases)
+  const command = ctx.command(`${commandName} <code:string>`, description)
+  if (aliases.length) command.alias(...aliases)
+  command
     .option('dryRun', '--dry, --dryrun 跳过后端请求，使用假数据测试输出样式')
     .option('enableDarkMode', '-d, --dark, --darkmode [enableDarkMode:string] 启用深色模式，可选值：true/false/on/off/dark/light/深色/浅色')
     .option('verbose', '-v, --verbose 在 session 和 console 打印详细参数信息')
@@ -72,9 +109,10 @@ export function registerHeightCommand(
         const result = dryRun ? createDryRunHeightResult() : await queryHeight(ctx, config, code)
         const elapsed = Date.now() - start
         logInfo(ctx, config, `✅ 身高查询完成：${result.code}，耗时 ${elapsed}ms`, `✅ 查询完成 command=${commandName}, code=${result.code}, elapsed=${elapsed}ms, 开始生成输出`, verbose)
-        const message = await handler(applyDisplayOptions(result, config), elapsed, commandOptions)
+        const message = await handler(applyDisplayOptions(result, config), elapsed, commandOptions, session)
         logInfo(ctx, config, `🖼️ 身高查询输出生成完成：${commandName}`, `🖼️ 输出生成完成 command=${commandName}, code=${result.code}`, verbose)
-        await reply(message)
+        if (message !== undefined) await reply(message as string | h | (string | h)[])
+        await sendStandaloneQQButton(ctx, session, config)
       } catch (error) {
         ctx.logger.warn(`❌ 查询失败：${error instanceof Error ? error.message : String(error)}`)
         await reply(`❌ 查询失败：${error instanceof Error ? error.message : String(error)}`)
@@ -87,41 +125,12 @@ export function registerHeightCommand(
 }
 
 /**
- * 💬 注册自然语言匹配，让用户不写斜杠也能触发主查询命令。
- */
-export function registerNaturalMatcher(
-  ctx: Context,
-  config: Config,
-  commandNames: string[],
-) {
-  const escaped = commandNames.map(escapeRegExp).join('|')
-  const pattern = new RegExp(`^\\s*[/!！。.]?\\s*(?:${escaped})\\s*[:：]?\\s*(${friendCodePattern})\\s*$`, 'i')
-
-  ctx.middleware(async (session, next) => {
-    const content = session.content || ''
-    const match = pattern.exec(content)
-    if (!match) return next()
-
-    const commandName = config.pptrCommandName
-    logInfo(ctx, config, `🧭 身高查询自然语言匹配成功`, `🧭 自然语言匹配成功 content=${JSON.stringify(content)}, execute=${commandName} ${match[1]}`)
-    await session.execute(`${commandName} ${match[1]}`)
-  }, true)
-}
-
-/**
  * ↩️ 根据配置决定是否给回复附带原消息引用。
  */
 export function withQuote(session: Session, config: Config, message: string | h | (string | h)[]): string | h | (string | h)[] {
   if (!config.enableQuote || !session.messageId) return message
   const quote = h.quote(session.messageId)
   return Array.isArray(message) ? [quote, ...message] : [quote, message]
-}
-
-/**
- * 🛡️ 转义正则特殊字符，避免命令名影响匹配表达式。
- */
-function escapeRegExp(value: string): string {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
 /**
