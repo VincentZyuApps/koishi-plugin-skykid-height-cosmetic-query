@@ -9,33 +9,43 @@ export interface KeyboardRows {
   rows: { buttons: KeyboardButton[] }[]
 }
 
-export const DEFAULT_QQ_MARKDOWN_KEYBOARD: KeyboardRows = {
-  rows: [
-    {
-      buttons: [
-        {
-          render_data: { label: '玩玩别的', style: 0 },
-          action: { type: 2, permission: { type: 2 }, data: 'help', enter: true },
-        },
-      ],
-    },
-  ],
-}
-
 export const QQ_MARKDOWN_BUTTON_ONLY_CONTENT = '# 光遇身高查询操作按钮'
 
 /**
  * ⌨️ 根据配置构造 QQ 官方 Bot keyboard。
  */
 export function buildHeightKeyboard(config: Config): KeyboardRows {
-  const raw = String(config.qqMarkdownKeyboardJson || stringifyCompact(DEFAULT_QQ_MARKDOWN_KEYBOARD))
+  const fallbackKeyboard = buildDefaultHeightKeyboard(config)
+  const raw = String(config.qqMarkdownKeyboardJson || stringifyCompact(fallbackKeyboard))
 
   try {
     const parsed = JSON.parse(raw)
     if (parsed?.rows?.[0]?.buttons?.length) return parsed
   } catch {}
 
-  return DEFAULT_QQ_MARKDOWN_KEYBOARD
+  return fallbackKeyboard
+}
+
+/**
+ * ⌨️ 构造默认 QQ 官方 Bot keyboard。
+ */
+export function buildDefaultHeightKeyboard(config: Config): KeyboardRows {
+  return {
+    rows: [
+      {
+        buttons: [
+          {
+            render_data: { label: '❔ 获取帮助', style: 1 },
+            action: { type: 2, permission: { type: 2 }, data: buildHelpCommandName(config), enter: true },
+          },
+          {
+            render_data: { label: '🧭 玩玩别的', style: 0 },
+            action: { type: 2, permission: { type: 2 }, data: 'help', enter: true },
+          },
+        ],
+      },
+    ],
+  }
 }
 
 /**
@@ -46,4 +56,13 @@ export function stringifyCompact(obj: object): string {
     .split('\n')
     .map((line) => line.trimEnd())
     .join('\n')
+}
+
+/**
+ * ❔ 拼出帮助指令，避免 qq 模块反向依赖 command 模块。
+ */
+function buildHelpCommandName(config: Config): string {
+  const prefix = String(config.commandPrefix || '查询光崽身高装扮').trim().replace(/\.+$/, '') || '查询光崽身高装扮'
+  const suffix = String(config.helpCommandSuffix || '帮助').trim().replace(/^\.+/, '') || '帮助'
+  return `${prefix}.${suffix}`
 }

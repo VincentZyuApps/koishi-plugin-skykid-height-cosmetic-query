@@ -210,18 +210,7 @@ export const Config: Schema<Config> = Schema.intersect([
         `【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_STYLE}】挂在 QQ Markdown 格式风格后面。`,
         '⚠️ 不想发送 QQ 按钮时保持空选即可。条件不满足时默认静默跳过，除非开启调试日志。',
       ].join('<br/>')),
-    qqMarkdownKeyboardJson: Schema.string().role('textarea', { rows: [4, 12] }).default(`{
-  "rows": [
-    {
-      "buttons": [
-        {
-          "render_data": { "label": "玩玩别的", "style": 0 },
-          "action": { "type": 2, "permission": { "type": 2 }, "data": "help", "enter": true }
-        }
-      ]
-    }
-  ]
-}`).description('⌨️ QQ Markdown 按钮 JSON。默认只有一行一个按钮：玩玩别的 -> help。JSON 解析失败时使用默认按钮。'),
+    qqMarkdownKeyboardJson: Schema.string().role('textarea', { rows: [4, 12] }).default('').description('⌨️ QQ Markdown 按钮 JSON。留空时默认一行两个按钮：获取帮助 -> 当前前缀.帮助，玩玩别的 -> help。JSON 解析失败时使用默认按钮。'),
     qqMarkdownImageStorageMode: Schema.union([
       Schema.const(QQ_MARKDOWN_IMAGE_STORAGE_MODE.ASSETS).description(`【 ${QQ_MARKDOWN_IMAGE_STORAGE_MODE.ASSETS}】使用 Koishi assets 服务发送 Markdown 内嵌图片`),
       Schema.const(QQ_MARKDOWN_IMAGE_STORAGE_MODE.SERVER).description(`【 ${QQ_MARKDOWN_IMAGE_STORAGE_MODE.SERVER}】使用 Koishi server 服务发送 Markdown 内嵌图片`),

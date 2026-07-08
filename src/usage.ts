@@ -257,7 +257,7 @@ export const usage = `
   </thead>
   <tbody>
     <tr><td><code>qqMarkdownButtonMode</code></td><td><code>string[]</code></td><td>append 除 standalone 外全部勾选</td><td>QQ Markdown 按钮发送行为；包含 <code>append-text</code> / <code>append-api-image</code> / <code>append-pptr-image</code> / <code>append-takumi-image</code> / <code>append-md-table</code> / <code>append-md-style</code> / <code>standalone</code>。</td></tr>
-    <tr><td><code>qqMarkdownKeyboardJson</code></td><td><code>string</code></td><td>玩玩别的 -> help</td><td>QQ Markdown 按钮 JSON；解析失败时使用默认按钮。</td></tr>
+    <tr><td><code>qqMarkdownKeyboardJson</code></td><td><code>string</code></td><td>空字符串</td><td>QQ Markdown 按钮 JSON；留空时默认一行两个按钮：获取帮助 -> 当前前缀.帮助，玩玩别的 -> help。</td></tr>
     <tr><td><code>qqMarkdownImageStorageMode</code></td><td><code>"assets" | "server"</code></td><td><code>server</code></td><td>Puppeteer / Takumi 本地图片转公网 URL 的方式。</td></tr>
     <tr><td><code>qqMarkdownImageSelfUrl</code></td><td><code>string</code></td><td>空字符串</td><td>server 模式公网 URL 覆盖值；留空则回退 <code>ctx.server.config.selfUrl</code>。</td></tr>
     <tr><td><code>qqMarkdownImageMaxFiles</code></td><td><code>number</code></td><td><code>5</code></td><td>server 模式缓存图片数量上限；<code>&lt;= 0</code> 表示不限制。</td></tr>

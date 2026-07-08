@@ -200,7 +200,7 @@ Puppeteer / Takumi 是本地生成图片。若要嵌入 QQ Markdown，需要通�
 | 配置名 | 类型 | 默认值 | 备注 |
 | --- | --- | --- | --- |
 | `qqMarkdownButtonMode` | `string[]` | append 除 standalone 外全部勾选 | QQ Markdown 按钮发送行为；包含 `append-text` / `append-api-image` / `append-pptr-image` / `append-takumi-image` / `append-md-table` / `append-md-style` / `standalone`。 |
-| `qqMarkdownKeyboardJson` | `string` | 玩玩别的 -> help | QQ Markdown 按钮 JSON；解析失败时使用默认按钮。 |
+| `qqMarkdownKeyboardJson` | `string` | 空字符串 | QQ Markdown 按钮 JSON；留空时默认一行两个按钮：获取帮助 -> 当前前缀.帮助，玩玩别的 -> help。 |
 | `qqMarkdownImageStorageMode` | `"assets" \| "server"` | `server` | Puppeteer / Takumi 本地图片转公网 URL 的方式。 |
 | `qqMarkdownImageSelfUrl` | `string` | 空字符串 | server 模式公网 URL 覆盖值；留空则回退 `ctx.server.config.selfUrl`。 |
 | `qqMarkdownImageMaxFiles` | `number` | `5` | server 模式缓存图片数量上限；`<= 0` 表示不限制。 |
