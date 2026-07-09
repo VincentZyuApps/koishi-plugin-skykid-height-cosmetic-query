@@ -92,7 +92,7 @@ export function registerHeightCommand(
         return
       }
       if (!code && !dryRun) {
-        await reply(`🧭 请提供好友码，用法：${commandName} XXXX-XXXX-XXXX`)
+        await reply(`🧭 请提供好友码，用法：${commandName} 【好友码】`)
         return
       }
       if (verbose) {

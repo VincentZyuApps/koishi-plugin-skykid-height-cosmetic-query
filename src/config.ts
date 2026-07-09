@@ -225,7 +225,7 @@ export const Config: Schema<Config> = Schema.intersect([
       ].join('<br/>')),
     qqMarkdownImageSelfUrl: Schema.string().role('textarea', { rows: [2, 5] }).default('').description([
       '🌐 server 模式的公网 URL 覆盖值。',
-      '示例：<code>http://your-public-ip:your-port</code>。',
+      '示例：<code>http://【公网地址】:【端口】</code>。',
       '仅图片 URL 生成模式为 server 时生效；留空则回退 ctx.server.config.selfUrl。',
     ].join('<br/>')),
     qqMarkdownImageMaxFiles: Schema.number().step(1).default(5).description([

@@ -17,7 +17,7 @@
 
 🌌 查询国服光遇的玩家身高信息捏。基于 `sky.cesgao.cn` 的光遇好友码身高查询插件。
 
-`XXXX-XXXX-XXXX` 表示光遇一次性好友码，例如 `ABCD-EFGH-IJKL`。也支持不带横杠的 12 位好友码。
+`【好友码】` 表示光遇一次性好友码，例如 `ABCD-EFGH-IJKL`。也支持不带横杠的 12 位好友码。
 
 ## 📌 指令
 
@@ -25,16 +25,16 @@
 
 ```text
 查询光崽身高装扮.帮助
-查询光崽身高装扮.pptr XXXX-XXXX-XXXX
-查询光崽身高装扮.text XXXX-XXXX-XXXX
-查询光崽身高装扮.forward XXXX-XXXX-XXXX
-查询光崽身高装扮.takumi XXXX-XXXX-XXXX
-查询光崽身高装扮.api XXXX-XXXX-XXXX
-查询光崽身高装扮.md-style XXXX-XXXX-XXXX
-查询光崽身高装扮.md-table XXXX-XXXX-XXXX
+查询光崽身高装扮.pptr 【好友码】
+查询光崽身高装扮.text 【好友码】
+查询光崽身高装扮.forward 【好友码】
+查询光崽身高装扮.takumi 【好友码】
+查询光崽身高装扮.api 【好友码】
+查询光崽身高装扮.md-style 【好友码】
+查询光崽身高装扮.md-table 【好友码】
 
-查询光崽身高.pptr XXXX-XXXX-XXXX
-查询光崽装扮.pptr XXXX-XXXX-XXXX
+查询光崽身高.pptr 【好友码】
+查询光崽装扮.pptr 【好友码】
 ```
 
 ## 🧪 测试模式
@@ -56,10 +56,10 @@
 Puppeteer 和 Takumi 出图命令支持 `-d` / `--dark` / `--darkmode`。可选值：`true` / `false` / `on` / `off` / `dark` / `light` / `深色` / `浅色`。
 
 ```text
-查询光崽身高装扮.pptr XXXX-XXXX-XXXX -d true
-查询光崽身高装扮.pptr XXXX-XXXX-XXXX --dark on
-查询光崽身高装扮.takumi XXXX-XXXX-XXXX --dark dark
-查询光崽身高装扮.takumi XXXX-XXXX-XXXX --darkmode 深色
+查询光崽身高装扮.pptr 【好友码】 -d true
+查询光崽身高装扮.pptr 【好友码】 --dark on
+查询光崽身高装扮.takumi 【好友码】 --dark dark
+查询光崽身高装扮.takumi 【好友码】 --darkmode 深色
 ```
 
 ## 🛠️ 调试参数

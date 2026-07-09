@@ -7,7 +7,7 @@ import type { HeightResult, PowChallenge } from './types'
 export const friendCodePattern = '[A-Za-z0-9]{4}(?:\\s*[-_—－]?\\s*[A-Za-z0-9]{4}){2}'
 
 /**
- * 🧭 规范化光遇好友码为 XXXX-XXXX-XXXX 格式。
+ * 🧭 规范化光遇好友码为 4-4-4 格式。
  */
 export function normalizeFriendCode(raw: string): string {
   const compact = String(raw || '')
@@ -26,7 +26,7 @@ export function normalizeFriendCode(raw: string): string {
  */
 export async function queryHeight(ctx: Context, config: Config, rawCode: string): Promise<HeightResult> {
   const code = normalizeFriendCode(rawCode)
-  if (!code) throw new Error('好友码格式错误，请使用 XXXX-XXXX-XXXX')
+  if (!code) throw new Error('好友码格式错误，请传入【好友码】，例如 ABCD-EFGH-IJKL')
 
   logInfo(ctx, config, `🔎 开始查询身高，好友码=${code}`)
   const challenge = await getPowChallenge(ctx, config)

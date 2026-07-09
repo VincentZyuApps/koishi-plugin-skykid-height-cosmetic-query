@@ -33,7 +33,7 @@ export const usage = `
 <p>💡 在群里直接艾特我，回复的更快哦~ ✨</p>
 
 <p>基于 <code>sky.cesgao.cn</code> 的光遇好友码身高查询插件。</p>
-<p><code>XXXX-XXXX-XXXX</code> 表示光遇一次性好友码，例如 <code>ABCD-EFGH-IJKL</code>。也支持不带横杠的 12 位好友码。</p>
+<p><code>【好友码】</code> 表示光遇一次性好友码，例如 <code>ABCD-EFGH-IJKL</code>。也支持不带横杠的 12 位好友码。</p>
 
 <h3>📌 指令</h3>
 
@@ -75,13 +75,13 @@ export const usage = `
 <p>Puppeteer 和 Takumi 出图命令支持 <code>-d</code> / <code>--dark</code> / <code>--darkmode</code>。可选值：<code>true</code> / <code>false</code> / <code>on</code> / <code>off</code> / <code>dark</code> / <code>light</code> / <code>深色</code> / <code>浅色</code>。</p>
 
 <pre>
-<code>查询光崽身高装扮.pptr XXXX-XXXX-XXXX -d true</code>
+<code>查询光崽身高装扮.pptr 【好友码】 -d true</code>
 <br>
-<code>查询光崽身高装扮.pptr XXXX-XXXX-XXXX --dark on</code>
+<code>查询光崽身高装扮.pptr 【好友码】 --dark on</code>
 <br>
-<code>查询光崽身高装扮.takumi XXXX-XXXX-XXXX --dark dark</code>
+<code>查询光崽身高装扮.takumi 【好友码】 --dark dark</code>
 <br>
-<code>查询光崽身高装扮.takumi XXXX-XXXX-XXXX --darkmode 深色</code>
+<code>查询光崽身高装扮.takumi 【好友码】 --darkmode 深色</code>
 </pre>
 
 <h3>🛠️ 调试参数</h3>
