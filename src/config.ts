@@ -5,7 +5,7 @@ const DEFAULT_USER_AGENT =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36 Edg/149.0.0.0'
 
 export const DEFAULT_FEEDBACK_NOTICE =
-  '📢 若发现装扮物品的中文标注显示有误或缺失 🎒，欢迎加入交流 Q 群或联系作者 @VincentZyu 反馈更正 🛠️ 感谢光崽们的支持与陪伴 ✨🕯️'
+  '📢 若发现装扮物品的中文标注显示有误或缺失 🎒，欢迎加入交流 Q 群（1085190201）或联系作者 @VincentZyu（QQ：1830540513）反馈更正 🛠️ 感谢光崽们的支持与陪伴 ✨🕯️'
 
 export const QQ_MARKDOWN_BUTTON_MODE = {
   STANDALONE: 'standalone',
