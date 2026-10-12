@@ -36,12 +36,15 @@ export function registerTakumiCommand(ctx: Context, config: Config) {
             getImageDimensions(image),
             { maxWidth: 900, fallback: { width: Math.min(config.takumiWidth, 900), height: 1200 } },
           )
-          const footer = config.takumiShowRenderInfo ? `📊 Takumi 渲染耗时：${elapsed}ms` : undefined
+          const footers = [
+            config.takumiShowRenderInfo ? `📊 Takumi 渲染耗时：${elapsed}ms` : undefined,
+            config.outfitFeedbackNotice || undefined,
+          ]
           await sendQQMarkdownWithGuard(
             ctx,
             session,
             config,
-            formatHeightImageMarkdown('🌌 光崽身高装扮查询', imageUrl, dimensions.width, dimensions.height, footer),
+            formatHeightImageMarkdown('🌌 光崽身高装扮查询', imageUrl, dimensions.width, dimensions.height, footers),
             shouldAppendButton ? buildHeightKeyboard(config) : null,
             'takumi-image',
           )
@@ -56,6 +59,9 @@ export function registerTakumiCommand(ctx: Context, config: Config) {
       const message: (string | h)[] = [h.image(image, 'image/png')]
       if (config.takumiShowRenderInfo) {
         message.push(`\n📊 Takumi 渲染耗时：${elapsed}ms`)
+      }
+      if (config.outfitFeedbackNotice) {
+        message.push(`\n${config.outfitFeedbackNotice}`)
       }
       return message
     },

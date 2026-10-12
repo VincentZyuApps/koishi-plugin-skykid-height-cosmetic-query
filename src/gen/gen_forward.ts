@@ -4,7 +4,7 @@ import { formatDate, generateHeightRows } from './gen_text'
 /**
  * 📨 生成 OneBot 合并转发 XML 消息。
  */
-export function generateHeightForward(result: HeightResult): string {
+export function generateHeightForward(result: HeightResult, feedbackNotice?: string): string {
   const rows = generateHeightRows(result)
 
   /**
@@ -39,6 +39,7 @@ export function generateHeightForward(result: HeightResult): string {
     addMessage('📏 身高信息', heightRows),
     outfitRows ? addMessage('🎒 装扮信息', outfitRows) : '',
     addMessage('⚠️ 说明', result.dryRun ? '🧪 这是假数据，仅用于测试输出样式。' : '⚠️ 该接口默认 action=delete，会消费一次性好友码。\n📌 数据仅供参考，请以游戏内实际情况为准。'),
+    feedbackNotice ? addMessage('📢 标注反馈', feedbackNotice) : '',
   ].filter(Boolean).join('\n')
 
   return `<message forward>\n${messages}\n</message>`

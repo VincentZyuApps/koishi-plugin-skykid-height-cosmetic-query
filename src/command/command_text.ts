@@ -19,7 +19,7 @@ export function registerTextCommand(ctx: Context, config: Config) {
     buildCommandAliases(config, config.textCommandSuffix),
     '⏳ 正在查询身高信息，请稍等...',
     async (result, _elapsed, _commandOptions, session) => {
-      const text = generateHeightText(result).slice(0, config.textMaxLength)
+      const text = generateHeightText(result, config.outfitFeedbackNotice).slice(0, config.textMaxLength)
       const buttonModes = normalizeQQButtonModes(config)
       if (!hasAppendTextButtonMode(buttonModes)) return text
 

@@ -11,9 +11,15 @@ import { storeQQMarkdownImage } from './server'
 export type QQMarkdownImageType = 'png' | 'jpeg' | 'jpg' | 'webp'
 
 /**
- * 🧭 判断当前会话是否来自 QQ 官方 Bot 平台。
+ * 🧭 判断当前会话是否来自支持 QQ Markdown 的官方平台（结合 config.qqMarkdownPlatforms 判定）。
  */
-export function isQQOfficialSession(session: Session) {
+export function isQQOfficialSession(session: Session, config?: Config) {
+  if (config && Array.isArray(config.qqMarkdownPlatforms)) {
+    const currentPlatform = String(session.platform || '').trim().toLowerCase()
+    return config.qqMarkdownPlatforms.some(
+      (item) => item && item.enabled && String(item.platform || '').trim().toLowerCase() === currentPlatform,
+    )
+  }
   return session.platform === 'qq'
 }
 
@@ -24,7 +30,7 @@ export async function sendStandaloneQQButton(ctx: Context, session: Session, con
   const buttonModes = normalizeQQButtonModes(config)
   if (!hasStandaloneQQButtonMode(buttonModes)) return
 
-  if (!isQQOfficialSession(session)) {
+  if (!isQQOfficialSession(session, config)) {
     await notifyQQButtonSkip(ctx, session, config, 'standalone 按钮仅支持 QQ 官方平台。')
     return
   }
@@ -54,8 +60,13 @@ export async function sendQQMarkdownWithGuard(
  * 🔒 非 QQ 官方平台时按调试配置提示并返回 false。
  */
 export async function ensureQQMarkdownPlatform(ctx: Context, session: Session, config: Config, feature: string) {
-  if (isQQOfficialSession(session)) return true
-  await notifyQQMarkdownSkip(ctx, session, config, `${feature} 仅支持 QQ 官方平台。`)
+  if (isQQOfficialSession(session, config)) return true
+  const activeRules = (Array.isArray(config.qqMarkdownPlatforms) ? config.qqMarkdownPlatforms : []).filter(
+    (item) => item && item.enabled && String(item.platform || '').trim(),
+  )
+  const allowedNames = activeRules.map((item) => String(item.platform || '').trim()).filter(Boolean)
+  const allowedDesc = allowedNames.length > 0 ? allowedNames.join('、') : 'qq'
+  await notifyQQMarkdownSkip(ctx, session, config, `${feature}仅支持 ${allowedDesc} 平台。`)
   return false
 }
 

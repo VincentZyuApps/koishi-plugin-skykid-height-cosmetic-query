@@ -7,7 +7,7 @@ const excludedOutfitLabels = ['好友码', 'UUID', ...heightLabels]
 /**
  * 💫 生成 QQ Markdown 格式风格内容。
  */
-export function generateQqMdStyle(result: HeightResult): string {
+export function generateQqMdStyle(result: HeightResult, feedbackNotice?: string): string {
   const rows = generateHeightRows(result)
   const get = (label: string) => rows.find(([key]) => key === label)?.[1] || '未知'
   const outfitRows = rows.filter(([label]) => !excludedOutfitLabels.includes(label))
@@ -44,6 +44,7 @@ export function generateQqMdStyle(result: HeightResult): string {
     result.dryRun
       ? '> 🧪 这是假数据，仅用于测试输出样式。'
       : '> ⚠️ 默认 action=delete，会消费一次性好友码；数据仅供参考。',
+    ...(feedbackNotice ? ['', `> ${escapeMarkdown(feedbackNotice)}`] : []),
   ].join('\n')
 }
 

@@ -6,7 +6,7 @@ const basicLabels = ['好友码', 'UUID', '体型值', '身高值', '当前身�
 /**
  * 📊 生成 QQ Markdown 表格模式内容。
  */
-export function generateQqMdTable(result: HeightResult): string {
+export function generateQqMdTable(result: HeightResult, feedbackNotice?: string): string {
   const rows = generateHeightRows(result)
   const basicRows = rows.filter(([label]) => basicLabels.includes(label))
   const outfitRows = rows.filter(([label]) => !basicLabels.includes(label))
@@ -35,6 +35,7 @@ export function generateQqMdTable(result: HeightResult): string {
     result.dryRun
       ? '> 🧪 这是假数据，仅用于测试输出样式。'
       : '> ⚠️ 默认 action=delete，会消费一次性好友码；数据仅供参考。',
+    ...(feedbackNotice ? ['', `> ${escapeMarkdown(feedbackNotice)}`] : []),
   ].join('\n')
 }
 

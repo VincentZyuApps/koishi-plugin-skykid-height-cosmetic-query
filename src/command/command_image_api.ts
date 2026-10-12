@@ -39,12 +39,15 @@ export function registerApiCommand(ctx: Context, config: Config) {
             { width: config.imageApiWidth, height: config.imageApiHeight },
             { maxWidth: 900, fallback: { width: 900, height: 506 } },
           )
-          const footer = config.imageApiShowRenderInfo ? `📊 API 出图总耗时：${elapsed}ms` : undefined
+          const footers = [
+            config.imageApiShowRenderInfo ? `📊 API 出图总耗时：${elapsed}ms` : undefined,
+            config.outfitFeedbackNotice || undefined,
+          ]
           await sendQQMarkdownWithGuard(
             ctx,
             session,
             config,
-            formatHeightImageMarkdown('🌌 光崽身高装扮查询', url.toString(), dimensions.width, dimensions.height, footer),
+            formatHeightImageMarkdown('🌌 光崽身高装扮查询', url.toString(), dimensions.width, dimensions.height, footers),
             shouldAppendButton ? buildHeightKeyboard(config) : null,
             'api-image',
           )
@@ -60,6 +63,9 @@ export function registerApiCommand(ctx: Context, config: Config) {
       const message: (string | h)[] = [h.image(image, 'image/jpeg')]
       if (config.imageApiShowRenderInfo) {
         message.push(`\n📊 API 出图总耗时：${elapsed}ms`)
+      }
+      if (config.outfitFeedbackNotice) {
+        message.push(`\n${config.outfitFeedbackNotice}`)
       }
       return message
     },

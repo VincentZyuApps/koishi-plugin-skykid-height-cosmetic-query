@@ -1,6 +1,12 @@
 import { Schema } from 'koishi'
 import { DEFAULT_LXGW_WENKAI_PATH } from './utils/fonts'
 
+const DEFAULT_USER_AGENT =
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36 Edg/149.0.0.0'
+
+export const DEFAULT_FEEDBACK_NOTICE =
+  '📢 若发现装扮物品的中文标注显示有误或缺失 🎒，欢迎加入交流 Q 群或联系作者 @VincentZyu 反馈更正 🛠️ 感谢光崽们的支持与陪伴 ✨🕯️'
+
 export const QQ_MARKDOWN_BUTTON_MODE = {
   STANDALONE: 'standalone',
   APPEND_TEXT: 'append-text',
@@ -20,6 +26,12 @@ export const QQ_MARKDOWN_IMAGE_STORAGE_MODE = {
 
 export type QQMarkdownImageStorageModeType = typeof QQ_MARKDOWN_IMAGE_STORAGE_MODE[keyof typeof QQ_MARKDOWN_IMAGE_STORAGE_MODE]
 
+export interface ForwardPlatformConfig {
+  platform: string
+  enableQuote: boolean
+  enabled: boolean
+}
+
 export interface Config {
   // ----- 🌐 后端接口设置 -----
   baseUrl: string
@@ -33,24 +45,33 @@ export interface Config {
   userAgent: string
 
   // ----- 📌 指令设置 -----
+  // ---------- 📌 通用前缀设置 ----------
   commandPrefix: string
   commandPrefixAliases: string[]
+  // ---------- ❔ 帮助指令设置 ----------
   enableHelpCommand: boolean
   helpCommandSuffix: string
+  // ---------- 📝 纯文本指令设置 ----------
   enableTextCommand: boolean
   textCommandSuffix: string
+  // ---------- 📨 合并转发指令设置 ----------
   enableForwardCommand: boolean
   forwardCommandSuffix: string
+  forwardPlatforms: ForwardPlatformConfig[]
+  // ---------- 🖼️ 本地开源渲染出图设置 ----------
   enablePptrCommand: boolean
   pptrCommandSuffix: string
   enableTakumiCommand: boolean
   takumiCommandSuffix: string
+  // ---------- 🌐 远程闭源 API 出图设置 ----------
   enableApiCommand: boolean
   apiCommandSuffix: string
+  // ---------- 💫 QQ Markdown 指令设置 ----------
   enableQqMdTableCommand: boolean
   qqMdTableCommandSuffix: string
   enableQqMdStyleCommand: boolean
   qqMdStyleCommandSuffix: string
+  qqMarkdownPlatforms: ForwardPlatformConfig[]
 
   // ----- 💬 通用输出设置 -----
   enableQuote: boolean
@@ -58,6 +79,7 @@ export interface Config {
   hideFullUuid: boolean
   showFullUnknownOutfitId: boolean
   useCustomFont: boolean
+  outfitFeedbackNotice: string
 
   // ----- 🖼️ Puppeteer 图片设置 -----
   pptrWidth: number
@@ -99,9 +121,6 @@ export interface Config {
   verboseConsoleLog: boolean
 }
 
-const DEFAULT_USER_AGENT =
-  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36 Edg/149.0.0.0'
-
 export const Config: Schema<Config> = Schema.intersect([
   Schema.object({
     baseUrl: Schema.string().role('link').default('https://sky.cesgao.cn').description('🌐 sky.cesgao.cn 基础地址'),
@@ -115,33 +134,70 @@ export const Config: Schema<Config> = Schema.intersect([
     userAgent: Schema.string().role('textarea', { rows: [2, 4] }).default(DEFAULT_USER_AGENT).description('🧭 请求 User-Agent'),
   }).description('🌐 后端设置'),
 
-  Schema.object({
-    commandPrefix: Schema.string().default('查询光崽身高装扮').description('📌 查询指令共同前缀。实际命令格式为：前缀 + 英文句号 + 后缀，例如 查询光崽身高装扮.pptr'),
-    commandPrefixAliases: Schema.array(String).role('table').default(['查询光崽身高', '查询光崽装扮', '查询身高', '查询装扮', '测身高']).description('📌 查询指令前缀别名。每个别名都会和相同后缀组合成指令 alias，例如 查询光崽身高.pptr。'),
-    enableHelpCommand: Schema.boolean().default(true).description('❔ 注册帮助指令'),
-    helpCommandSuffix: Schema.string().default('帮助').description('❔ 帮助指令后缀'),
-    enableTextCommand: Schema.boolean().default(true).description('📝 注册纯文本查询指令'),
-    textCommandSuffix: Schema.string().default('text').description('📝 纯文本指令后缀'),
-    enableForwardCommand: Schema.boolean().default(true).description('📨 注册 OneBot 合并转发查询指令'),
-    forwardCommandSuffix: Schema.string().default('forward').description('📨 合并转发指令后缀'),
-    enablePptrCommand: Schema.boolean().default(true).description('🖼️ 注册 Puppeteer 出图查询指令'),
-    pptrCommandSuffix: Schema.string().default('pptr').description('🖼️ Puppeteer 指令后缀'),
-    enableTakumiCommand: Schema.boolean().default(true).description('⚡ 注册 Takumi wasm 出图查询指令'),
-    takumiCommandSuffix: Schema.string().default('takumi').description('⚡ Takumi 指令后缀'),
-    enableApiCommand: Schema.boolean().default(false).description('🌐 注册外部 Fastapi Pillow画图后端出图查询指令'),
-    apiCommandSuffix: Schema.string().default('api').description('🌐 外部 Fastapi Pillow画图后端出图指令后缀'),
-    enableQqMdTableCommand: Schema.boolean().default(false).description('📊 注册 QQ Markdown 表格模式查询指令。仅 QQ 官方 Bot 平台支持，非 QQ 平台会按调试配置提示并跳过。'),
-    qqMdTableCommandSuffix: Schema.string().default('md-table').description('📊 QQ Markdown 表格模式指令后缀'),
-    enableQqMdStyleCommand: Schema.boolean().default(true).description('💫 注册 QQ Markdown 格式风格查询指令。仅 QQ 官方 Bot 平台支持，非 QQ 平台会按调试配置提示并跳过。'),
-    qqMdStyleCommandSuffix: Schema.string().default('md-style').description('💫 QQ Markdown 格式风格指令后缀'),
-  }).description('📌 指令设置'),
+  Schema.intersect([
+    Schema.object({
+      commandPrefix: Schema.string().default('测身高').description('📌 查询指令共同前缀。实际命令格式为：前缀 + 英文句号 + 后缀，例如 测身高.pptr'),
+      commandPrefixAliases: Schema.array(String).role('table').default(['查询光崽身高装扮', '查询光崽身高', '查询光崽装扮', '查询身高', '查询装扮']).description('📌 查询指令前缀别名。每个别名都会和相同后缀组合成指令 alias，例如 查询光崽身高装扮.pptr。'),
+    }).description('📌 通用前缀设置'),
+
+    Schema.object({
+      enableHelpCommand: Schema.boolean().default(true).description('❔ 注册帮助指令'),
+      helpCommandSuffix: Schema.string().default('帮助').description('❔ 帮助指令后缀'),
+    }).description('❔ 帮助指令设置'),
+
+    Schema.object({
+      enableTextCommand: Schema.boolean().default(true).description('📝 注册纯文本查询指令'),
+      textCommandSuffix: Schema.string().default('text').description('📝 纯文本指令后缀'),
+    }).description('📝 纯文本指令设置'),
+
+    Schema.object({
+      enableForwardCommand: Schema.boolean().default(true).description('📨 注册合并转发查询指令'),
+      forwardCommandSuffix: Schema.string().default('forward').description('📨 合并转发指令后缀'),
+      forwardPlatforms: Schema.array(Schema.object({
+        platform: Schema.string().required().description('平台名称 (如 onebot, red, discord)'),
+        enableQuote: Schema.boolean().default(false).description('是否quote触发指令的消息'),
+        enabled: Schema.boolean().default(true).description('是否启用此平台'),
+      })).role('table').default([
+        { platform: 'onebot', enableQuote: false, enabled: true },
+        { platform: 'red', enableQuote: false, enabled: true },
+        { platform: 'discord', enableQuote: false, enabled: true },
+      ]).description('📋 允许合并转发的平台与引用策略列表'),
+    }).description('📨 合并转发指令设置'),
+
+    Schema.object({
+      enablePptrCommand: Schema.boolean().default(true).description('🖼️ 注册本地开源 Puppeteer 出图查询指令'),
+      pptrCommandSuffix: Schema.string().default('pptr').description('🖼️ Puppeteer 指令后缀'),
+      enableTakumiCommand: Schema.boolean().default(true).description('⚡ 注册本地开源 Takumi wasm 出图查询指令'),
+      takumiCommandSuffix: Schema.string().default('takumi').description('⚡ Takumi 指令后缀'),
+    }).description('🖼️ 本地开源渲染出图设置'),
+
+    Schema.object({
+      enableApiCommand: Schema.boolean().default(false).description('🌐 注册远程闭源 FastAPI Pillow 后端出图查询指令'),
+      apiCommandSuffix: Schema.string().default('api').description('🌐 远程闭源 FastAPI Pillow 后端出图指令后缀'),
+    }).description('🌐 远程闭源 API 出图设置'),
+
+    Schema.object({
+      enableQqMdTableCommand: Schema.boolean().default(true).description('📊 注册 QQ Markdown 表格模式查询指令。仅 QQ 官方 Bot 平台支持，非 QQ 平台会按调试配置提示并跳过。'),
+      qqMdTableCommandSuffix: Schema.string().default('md-table').description('📊 QQ Markdown 表格模式指令后缀'),
+      enableQqMdStyleCommand: Schema.boolean().default(true).description('💫 注册 QQ Markdown 格式风格查询指令。仅 QQ 官方 Bot 平台支持，非 QQ 平台会按调试配置提示并跳过。'),
+      qqMdStyleCommandSuffix: Schema.string().default('md-style').description('💫 QQ Markdown 格式风格指令后缀'),
+      qqMarkdownPlatforms: Schema.array(Schema.object({
+        platform: Schema.string().required().description('平台名称'),
+        enableQuote: Schema.boolean().default(true).description('是否quote触发指令的消息'),
+        enabled: Schema.boolean().default(true).description('是否启用此平台'),
+      })).role('table').default([
+        { platform: 'qq', enableQuote: true, enabled: true },
+      ]).disabled().description('📋 允许 QQ Markdown 渲染的平台列表（固定仅支持官方 QQ 平台）'),
+    }).description('💫 QQ Markdown 指令设置'),
+  ]).description('📌 指令设置'),
 
   Schema.object({
     enableQuote: Schema.boolean().default(true).description('💬 回复时引用触发消息'),
     textMaxLength: Schema.number().min(200).max(5000).step(100).default(1500).description('📏 纯文本最大长度'),
     hideFullUuid: Schema.boolean().default(true).description('🆔 是否不显示完整 UUID。开启后显示前 10 个字符并追加 ......，关闭后显示完整 UUID。'),
-    showFullUnknownOutfitId: Schema.boolean().default(false).description('🏷️ 未知装扮是否显示完整 ID。关闭时将 未知装扮(123456) 显示为 未知装扮(123...)。'),
+    showFullUnknownOutfitId: Schema.boolean().default(true).description('🏷️ 未知装扮是否显示完整 ID。开启时直接显示 未知装扮(123456)，关闭时显示为 未知装扮(123...)。'),
     useCustomFont: Schema.boolean().default(true).description('🔤 是否使用自定义字体路径。关闭后 Puppeteer / Takumi 图片使用系统默认字体，并跳过默认字体下载。'),
+    outfitFeedbackNotice: Schema.string().role('textarea', { rows: [2, 5] }).default(DEFAULT_FEEDBACK_NOTICE).disabled().description('📢 装扮标注反馈提示<i>（固定提示，包含作者联系与反馈渠道）</i>'),
   }).description('💬 通用输出设置'),
 
   Schema.object({

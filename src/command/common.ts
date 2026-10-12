@@ -19,7 +19,7 @@ export interface HeightCommandOptions {
  * 🧩 拼接 Koishi 子指令名称，格式固定为 前缀.后缀。
  */
 export function buildCommandName(config: Config, suffix: string): string {
-  return joinCommandPrefixAndSuffix(config.commandPrefix || '查询光崽身高装扮', suffix)
+  return joinCommandPrefixAndSuffix(config.commandPrefix || '测身高', suffix)
 }
 
 /**
@@ -54,7 +54,7 @@ type CommandHandler = (result: HeightResult, elapsed: number, options: HeightCom
 type CommandGuard = (session: Session, options: HeightCommandOptions) => string | void | Promise<string | void>
 
 interface RegisterHeightCommandOptions {
-  quote?: boolean
+  quote?: boolean | ((session: Session) => boolean)
   guard?: CommandGuard
 }
 
@@ -84,25 +84,29 @@ export function registerHeightCommand(
       const enableDarkMode = parseBooleanOption(options?.enableDarkMode)
       const commandOptions: HeightCommandOptions = { dryRun, enableDarkMode, verbose }
       const detailMessage = `🧾 命令详情 command=${commandName}, platform=${session.platform}, channel=${session.channelId}, user=${session.userId}, rawCode=${code || ''}, dryRun=${dryRun}, enableDarkMode=${enableDarkMode ?? 'default'}, verbose=${verbose}`
-      const reply = (message: string | h | (string | h)[]) => session.send(registerOptions.quote === false ? message : withQuote(session, config, message))
+      const replyPrompt = (message: string | h | (string | h)[]) => session.send(withQuote(session, config, message))
+      const shouldQuoteResult = typeof registerOptions.quote === 'function'
+        ? registerOptions.quote(session)
+        : registerOptions.quote !== false
+      const replyResult = (message: string | h | (string | h)[]) => session.send(shouldQuoteResult ? withQuote(session, config, message) : message)
       logInfo(ctx, config, `📨 身高查询命令触发：${commandName}`, detailMessage, verbose)
       const guardMessage = await registerOptions.guard?.(session, commandOptions)
       if (guardMessage) {
-        await reply(guardMessage)
+        await replyPrompt(guardMessage)
         return
       }
       if (!code && !dryRun) {
-        await reply(`🧭 请提供好友码或扫码链接，用法：${commandName} 【好友码 / 扫码链接】`)
+        await replyPrompt(`🧭 请提供好友码或扫码链接，用法：${commandName} 【好友码 / 扫码链接】`)
         return
       }
       if (verbose) {
-        await reply(`🛠️ 详细参数：\n${detailMessage}`)
+        await replyPrompt(`🛠️ 详细参数：\n${detailMessage}`)
       }
 
       const start = Date.now()
       let waitIds: string[] = []
       if (config.sendRunningTip) {
-        waitIds = await reply(waitText)
+        waitIds = await replyPrompt(waitText)
       }
 
       try {
@@ -111,11 +115,11 @@ export function registerHeightCommand(
         logInfo(ctx, config, `✅ 身高查询完成：${result.code}，耗时 ${elapsed}ms`, `✅ 查询完成 command=${commandName}, code=${result.code}, elapsed=${elapsed}ms, 开始生成输出`, verbose)
         const message = await handler(applyDisplayOptions(result, config), elapsed, commandOptions, session)
         logInfo(ctx, config, `🖼️ 身高查询输出生成完成：${commandName}`, `🖼️ 输出生成完成 command=${commandName}, code=${result.code}`, verbose)
-        if (message !== undefined) await reply(message as string | h | (string | h)[])
+        if (message !== undefined) await replyResult(message as string | h | (string | h)[])
         await sendStandaloneQQButton(ctx, session, config)
       } catch (error) {
         ctx.logger.warn(`❌ 查询失败：${error instanceof Error ? error.message : String(error)}`)
-        await reply(`❌ 查询失败：${error instanceof Error ? error.message : String(error)}`)
+        await replyPrompt(`❌ 查询失败：${error instanceof Error ? error.message : String(error)}`)
       } finally {
         if (waitIds[0]) {
           await session.bot.deleteMessage(session.channelId, waitIds[0]).catch(() => undefined)

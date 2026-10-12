@@ -11,13 +11,22 @@ interface FitImageByWidthOptions {
 /**
  * 🖼️ 生成 QQ Markdown 内联图片语法。
  */
-export function formatHeightImageMarkdown(title: string, imageUrl: string, width = 900, height = 1200, footer?: string) {
+export function formatHeightImageMarkdown(
+  title: string,
+  imageUrl: string,
+  width = 900,
+  height = 1200,
+  footer?: string | (string | undefined)[],
+) {
+  const footers = Array.isArray(footer)
+    ? footer.filter((item): item is string => Boolean(item && String(item).trim()))
+    : (footer && String(footer).trim() ? [footer] : [])
+
   return [
     `# ${title}`,
     '',
     `![${title} #${width}px #${height}px](${imageUrl})`,
-    '',
-    ...(footer ? [`> ${footer}`] : []),
+    ...(footers.length ? ['', ...footers.map((line) => `> ${line}`)] : []),
   ].join('\n')
 }
 

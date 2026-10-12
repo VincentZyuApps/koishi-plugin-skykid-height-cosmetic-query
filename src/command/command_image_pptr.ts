@@ -41,12 +41,15 @@ export function registerPptrCommand(ctx: Context, config: Config) {
             getImageDimensions(imageBuffer),
             { maxWidth: 900, fallback: { width: Math.min(config.pptrWidth, 900), height: 1200 } },
           )
-          const footer = config.pptrShowRenderInfo ? `📊 Puppeteer 渲染耗时：${elapsed}ms | 类型：${config.pptrImageType}` : undefined
+          const footers = [
+            config.pptrShowRenderInfo ? `📊 Puppeteer 渲染耗时：${elapsed}ms | 类型：${config.pptrImageType}` : undefined,
+            config.outfitFeedbackNotice || undefined,
+          ]
           await sendQQMarkdownWithGuard(
             ctx,
             session,
             config,
-            formatHeightImageMarkdown('🌌 光崽身高装扮查询', imageUrl, dimensions.width, dimensions.height, footer),
+            formatHeightImageMarkdown('🌌 光崽身高装扮查询', imageUrl, dimensions.width, dimensions.height, footers),
             shouldAppendButton ? buildHeightKeyboard(config) : null,
             'pptr-image',
           )
@@ -61,6 +64,9 @@ export function registerPptrCommand(ctx: Context, config: Config) {
       const message: (string | h)[] = [h.image(`data:image/${config.pptrImageType};base64,${image}`)]
       if (config.pptrShowRenderInfo) {
         message.push(`\n📊 Puppeteer 渲染耗时：${elapsed}ms | 类型：${config.pptrImageType}`)
+      }
+      if (config.outfitFeedbackNotice) {
+        message.push(`\n${config.outfitFeedbackNotice}`)
       }
       return message
     },

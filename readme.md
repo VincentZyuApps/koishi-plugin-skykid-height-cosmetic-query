@@ -22,20 +22,21 @@
 
 ## 📌 指令
 
-默认前缀是 `查询光崽身高装扮`。默认前缀别名是 `查询光崽身高`、`查询光崽装扮`、`查询身高`、`查询装扮`、`测身高`，每个前缀都会和相同后缀组合成可用指令。
+默认前缀是 `测身高`。默认前缀别名是 `查询光崽身高装扮`、`查询光崽身高`、`查询光崽装扮`、`查询身高`、`查询装扮`，每个前缀都会和相同后缀组合成可用指令。此外，直接发送纯前缀（如 `测身高` 或 `查询光崽身高装扮`）也可快捷呼出帮助菜单。
 
 ```text
-查询光崽身高装扮.帮助
-查询光崽身高装扮.pptr 【好友码 / 扫码链接】
-查询光崽身高装扮.text 【好友码 / 扫码链接】
-查询光崽身高装扮.forward 【好友码 / 扫码链接】
-查询光崽身高装扮.takumi 【好友码 / 扫码链接】
-查询光崽身高装扮.api 【好友码 / 扫码链接】
-查询光崽身高装扮.md-style 【好友码 / 扫码链接】
-查询光崽身高装扮.md-table 【好友码 / 扫码链接】
+测身高
+测身高.帮助
+测身高.pptr 【好友码 / 扫码链接】
+测身高.text 【好友码 / 扫码链接】
+测身高.forward 【好友码 / 扫码链接】
+测身高.takumi 【好友码 / 扫码链接】
+测身高.api 【好友码 / 扫码链接】
+测身高.md-style 【好友码 / 扫码链接】
+测身高.md-table 【好友码 / 扫码链接】
 
+查询光崽身高装扮.pptr 【好友码 / 扫码链接】
 查询光崽身高.pptr 【好友码 / 扫码链接】
-查询光崽装扮.pptr 【好友码 / 扫码链接】
 ```
 
 ## 🧪 测试模式
@@ -43,13 +44,13 @@
 所有查询命令都支持 `--dry` / `--dryrun`。测试模式不会请求后端，只使用假数据测试文字或图片样式。
 
 ```text
-查询光崽身高装扮.pptr --dryrun
-查询光崽身高装扮.text --dry
-查询光崽身高装扮.forward --dryrun
-查询光崽身高装扮.takumi --dryrun
-查询光崽身高装扮.api --dryrun
-查询光崽身高装扮.md-style --dryrun
-查询光崽身高装扮.md-table --dryrun
+测身高.pptr --dryrun
+测身高.text --dry
+测身高.forward --dryrun
+测身高.takumi --dryrun
+测身高.api --dryrun
+测身高.md-style --dryrun
+测身高.md-table --dryrun
 ```
 
 ## 🌙 深色模式
@@ -129,26 +130,60 @@ Puppeteer / Takumi 是本地生成图片。若要嵌入 QQ Markdown，需要通�
 
 ### 📌 指令设置
 
+#### 📌 通用前缀设置
+
 | 配置名 | 类型 | 默认值 | 备注 |
 | --- | --- | --- | --- |
-| `commandPrefix` | `string` | `查询光崽身高装扮` | 查询指令共同前缀；实际命令格式为 `前缀.后缀`。 |
-| `commandPrefixAliases` | `string[]` | `查询光崽身高`, `查询光崽装扮`, `查询身高`, `查询装扮`, `测身高` | 查询指令前缀别名；每个别名都会和相同后缀组合成指令 alias，例如 `查询光崽身高.pptr`。 |
+| `commandPrefix` | `string` | `测身高` | 查询指令共同前缀；实际命令格式为 `前缀.后缀`。直接发送纯前缀亦可快捷呼出帮助。 |
+| `commandPrefixAliases` | `string[]` | `查询光崽身高装扮`, `查询光崽身高`, `查询光崽装扮`, `查询身高`, `查询装扮` | 查询指令前缀别名；每个别名都会和相同后缀组合成指令 alias，例如 `查询光崽身高装扮.pptr`。 |
+
+#### ❔ 帮助指令设置
+
+| 配置名 | 类型 | 默认值 | 备注 |
+| --- | --- | --- | --- |
 | `enableHelpCommand` | `boolean` | `true` | 注册帮助指令。 |
 | `helpCommandSuffix` | `string` | `帮助` | 帮助指令后缀。 |
+
+#### 📝 纯文本指令设置
+
+| 配置名 | 类型 | 默认值 | 备注 |
+| --- | --- | --- | --- |
 | `enableTextCommand` | `boolean` | `true` | 注册纯文本查询指令。 |
 | `textCommandSuffix` | `string` | `text` | 纯文本指令后缀。 |
-| `enableForwardCommand` | `boolean` | `true` | 注册 OneBot 合并转发查询指令。 |
-| `forwardCommandSuffix` | `string` | `forward` | OneBot 合并转发指令后缀。 |
-| `enablePptrCommand` | `boolean` | `true` | 注册 Puppeteer 出图查询指令。 |
+
+#### 📨 合并转发指令设置
+
+| 配置名 | 类型 | 默认值 | 备注 |
+| --- | --- | --- | --- |
+| `enableForwardCommand` | `boolean` | `true` | 注册合并转发查询指令。 |
+| `forwardCommandSuffix` | `string` | `forward` | 合并转发指令后缀。 |
+| `forwardPlatforms` | `Array<ForwardPlatformConfig>` | `onebot(否), red(否), discord(否)` | 允许合并转发的平台与引用策略列表表格；配置平台名称、是否quote触发指令的消息以及是否启用。 |
+
+#### 🖼️ 本地开源渲染出图设置
+
+| 配置名 | 类型 | 默认值 | 备注 |
+| --- | --- | --- | --- |
+| `enablePptrCommand` | `boolean` | `true` | 注册本地开源 Puppeteer 出图查询指令。 |
 | `pptrCommandSuffix` | `string` | `pptr` | Puppeteer 出图指令后缀。 |
-| `enableTakumiCommand` | `boolean` | `true` | 注册 Takumi wasm 出图查询指令。 |
+| `enableTakumiCommand` | `boolean` | `true` | 注册本地开源 Takumi wasm 出图查询指令。 |
 | `takumiCommandSuffix` | `string` | `takumi` | Takumi wasm 出图指令后缀。 |
-| `enableApiCommand` | `boolean` | `false` | 注册外部 Fastapi Pillow画图后端出图查询指令。 |
-| `apiCommandSuffix` | `string` | `api` | 外部 Fastapi Pillow画图后端出图指令后缀。 |
-| `enableQqMdTableCommand` | `boolean` | `false` | 注册 QQ Markdown 表格模式查询指令；仅 QQ 官方 Bot 平台支持。 |
+
+#### 🌐 远程闭源 API 出图设置
+
+| 配置名 | 类型 | 默认值 | 备注 |
+| --- | --- | --- | --- |
+| `enableApiCommand` | `boolean` | `false` | 注册远程闭源 FastAPI Pillow 后端出图查询指令。 |
+| `apiCommandSuffix` | `string` | `api` | 远程闭源 FastAPI Pillow 后端出图指令后缀。 |
+
+#### 💫 QQ Markdown 指令设置
+
+| 配置名 | 类型 | 默认值 | 备注 |
+| --- | --- | --- | --- |
+| `enableQqMdTableCommand` | `boolean` | `true` | 注册 QQ Markdown 表格模式查询指令；仅 QQ 官方 Bot 平台支持。 |
 | `qqMdTableCommandSuffix` | `string` | `md-table` | QQ Markdown 表格模式指令后缀。 |
 | `enableQqMdStyleCommand` | `boolean` | `true` | 注册 QQ Markdown 格式风格查询指令；仅 QQ 官方 Bot 平台支持。 |
 | `qqMdStyleCommandSuffix` | `string` | `md-style` | QQ Markdown 格式风格指令后缀。 |
+| `qqMarkdownPlatforms` | `Array<ForwardPlatformConfig>` | `qq(是)` | 允许 QQ Markdown 渲染的平台列表表格（固定只读，仅支持官方 QQ 平台）。 |
 
 ### 💬 通用输出设置
 
@@ -157,8 +192,9 @@ Puppeteer / Takumi 是本地生成图片。若要嵌入 QQ Markdown，需要通�
 | `enableQuote` | `boolean` | `true` | 回复时是否引用触发消息。 |
 | `textMaxLength` | `number` | `1500` | 纯文本输出最大长度。 |
 | `hideFullUuid` | `boolean` | `true` | 是否不显示完整 UUID；开启后显示前 10 个字符并追加 `......`，关闭后显示完整 UUID。 |
-| `showFullUnknownOutfitId` | `boolean` | `false` | 未知装扮是否显示完整 ID；默认隐藏，`未知装扮(123456)` 会显示为 `未知装扮(123...)`。 |
+| `showFullUnknownOutfitId` | `boolean` | `true` | 未知装扮是否显示完整 ID；默认显示完整 ID `未知装扮(123456)`，关闭时显示为 `未知装扮(123...)`。 |
 | `useCustomFont` | `boolean` | `true` | 是否使用自定义字体路径；开启后会检查 `ctx.baseDir/data/fonts/LXGWWenKaiMono-Regular.ttf`，缺失或 hash 校验失败时尝试从 Gitee / GitHub 下载；关闭后 Puppeteer / Takumi 使用系统默认字体，并跳过字体下载。 |
+| `outfitFeedbackNotice` | `string` | `📢 若发现装扮物品的中文标注...` | 装扮标注反馈提示（固定只读，在所有 8 种指令返回形式末尾展示联系作者 @VincentZyu 的反馈渠道）。 |
 
 ### 🖼️ Puppeteer 出图设置
 

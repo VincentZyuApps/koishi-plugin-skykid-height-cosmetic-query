@@ -32,7 +32,7 @@ export function numberText(value: unknown): string {
 /**
  * 📝 生成纯文本身高查询结果。
  */
-export function generateHeightText(result: HeightResult): string {
+export function generateHeightText(result: HeightResult, feedbackNotice?: string): string {
   const data = result.data
   const lines = [
     ...(result.dryRun ? ['🧪⚠️ 假数据测试模式：仅用于测试文字格式/图片样式，不是真实查询结果。', '=================='] : []),
@@ -62,6 +62,11 @@ export function generateHeightText(result: HeightResult): string {
   } else {
     lines.push('==================', '⚠️ 说明：该接口默认 action=delete，会消费一次性好友码。', '📌 数据仅供参考，请以游戏内实际情况为准。')
   }
+
+  if (feedbackNotice) {
+    lines.push('==================', feedbackNotice)
+  }
+
   return lines.join('\n')
 }
 
