@@ -15,9 +15,10 @@
 <p>💬 插件使用问题 / 🐛 Bug反馈 / 👨‍💻 插件开发交流，欢迎加入QQ群：<b>1085190201</b> 🎉</p>
 <p>💡 在群里直接艾特我，回复的更快哦~ ✨</p>
 
-🌌 查询国服光遇的玩家身高信息捏。基于 `sky.cesgao.cn` 的光遇好友码身高查询插件。
+🌌 查询国服光遇的玩家身高信息捏。支持 **好友码联网查询**（基于 `sky.cesgao.cn`）与 **离线扫码链接解析**（`https://sky.thatg.co/o=...`）。
 
-`【好友码】` 表示光遇一次性好友码，例如 `ABCD-EFGH-IJKL`。也支持不带横杠的 12 位好友码。
+- `【好友码】`：光遇一次性好友码，例如 `ABCD-EFGH-IJKL`。也支持不带横杠的 12 位好友码（默认 `action=delete` 会消费好友码）。
+- `【扫码链接】`：以 `https://sky.thatg.co/o=` 开头的完整链接。本地零外部依赖极速解码，**不消耗好友码**，安全快捷。
 
 ## 📌 指令
 
@@ -25,16 +26,16 @@
 
 ```text
 查询光崽身高装扮.帮助
-查询光崽身高装扮.pptr 【好友码】
-查询光崽身高装扮.text 【好友码】
-查询光崽身高装扮.forward 【好友码】
-查询光崽身高装扮.takumi 【好友码】
-查询光崽身高装扮.api 【好友码】
-查询光崽身高装扮.md-style 【好友码】
-查询光崽身高装扮.md-table 【好友码】
+查询光崽身高装扮.pptr 【好友码 / 扫码链接】
+查询光崽身高装扮.text 【好友码 / 扫码链接】
+查询光崽身高装扮.forward 【好友码 / 扫码链接】
+查询光崽身高装扮.takumi 【好友码 / 扫码链接】
+查询光崽身高装扮.api 【好友码 / 扫码链接】
+查询光崽身高装扮.md-style 【好友码 / 扫码链接】
+查询光崽身高装扮.md-table 【好友码 / 扫码链接】
 
-查询光崽身高.pptr 【好友码】
-查询光崽装扮.pptr 【好友码】
+查询光崽身高.pptr 【好友码 / 扫码链接】
+查询光崽装扮.pptr 【好友码 / 扫码链接】
 ```
 
 ## 🧪 测试模式
@@ -117,8 +118,8 @@ Puppeteer / Takumi 是本地生成图片。若要嵌入 QQ Markdown，需要通�
 | 配置名 | 类型 | 默认值 | 备注 |
 | --- | --- | --- | --- |
 | `baseUrl` | `string` | `https://sky.cesgao.cn` | `sky.cesgao.cn` 基础地址。 |
-| `powChallengeUrl` | `string` | `https://sky.cesgao.cn/web/v1/pow/challenge` | POW challenge 接口地址。 |
-| `queryUrl` | `string` | `https://sky.cesgao.cn/web/v1/query` | 身高查询接口地址。 |
+| `powChallengePathSuffix` | `string` | `/web/v1/pow/challenge` | POW challenge 接口相对路径（固定接口，暂不可修改）。 |
+| `queryHeightPathSuffix` | `string` | `/web/v1/query` | 身高查询接口相对路径（固定接口，暂不可修改）。 |
 | `httpTimeout` | `number` | `75` | HTTP 总超时时间，单位秒。 |
 | `queryTimeout` | `number` | `60` | 提交给查询接口的 `timeout` 参数，单位秒。 |
 | `queryAction` | `string` | `delete` | 提交给查询接口的 `action` 参数；默认会消费一次性好友码。 |

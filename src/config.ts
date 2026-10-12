@@ -23,8 +23,8 @@ export type QQMarkdownImageStorageModeType = typeof QQ_MARKDOWN_IMAGE_STORAGE_MO
 export interface Config {
   // ----- 🌐 后端接口设置 -----
   baseUrl: string
-  powChallengeUrl: string
-  queryUrl: string
+  powChallengePathSuffix: string
+  queryHeightPathSuffix: string
   httpTimeout: number
   queryTimeout: number
   queryAction: string
@@ -105,8 +105,8 @@ const DEFAULT_USER_AGENT =
 export const Config: Schema<Config> = Schema.intersect([
   Schema.object({
     baseUrl: Schema.string().role('link').default('https://sky.cesgao.cn').description('🌐 sky.cesgao.cn 基础地址'),
-    powChallengeUrl: Schema.string().role('link').default('https://sky.cesgao.cn/web/v1/pow/challenge').description('🧩 POW challenge 接口地址'),
-    queryUrl: Schema.string().role('link').default('https://sky.cesgao.cn/web/v1/query').description('📡 身高查询接口地址'),
+    powChallengePathSuffix: Schema.string().default('/web/v1/pow/challenge').disabled().description('🧩 POW challenge 接口相对路径<i>（固定接口，暂不可修改）</i>'),
+    queryHeightPathSuffix: Schema.string().default('/web/v1/query').disabled().description('📡 身高查询接口相对路径<i>（固定接口，暂不可修改）</i>'),
     httpTimeout: Schema.number().min(5).max(300).step(1).default(75).description('⏱️ HTTP 总超时时间（秒）'),
     queryTimeout: Schema.number().min(5).max(300).step(1).default(60).description('⌛ 提交给查询接口的 timeout 参数（秒）'),
     queryAction: Schema.string().default('delete').description('⚠️ 提交给查询接口的 action 参数。默认 delete，会消费一次性好友码'),

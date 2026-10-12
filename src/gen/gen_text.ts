@@ -38,7 +38,7 @@ export function generateHeightText(result: HeightResult): string {
     ...(result.dryRun ? ['🧪⚠️ 假数据测试模式：仅用于测试文字格式/图片样式，不是真实查询结果。', '=================='] : []),
     `✅ 状态：${result.message}`,
     '==================',
-    `🧾 好友码：${result.code}`,
+    `🧾 好友码 / url中o参数：${result.code}`,
     `🆔 UUID：${valueText(data.uuid)}`,
     `🕒 查询时间：${formatDate(result.queriedAt)}`,
     '==================',
@@ -71,7 +71,7 @@ export function generateHeightText(result: HeightResult): string {
 export function generateHeightRows(result: HeightResult): [string, string][] {
   const data = result.data
   const rows: [string, string][] = [
-    ['好友码', result.code],
+    ['好友码 / url中o参数', result.code],
     ['UUID', valueText(data.uuid)],
     ['体型值', numberText(data.body_size)],
     ['身高值', numberText(data.height_value)],
