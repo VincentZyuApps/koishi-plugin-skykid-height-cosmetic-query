@@ -160,7 +160,7 @@ export const usage = `
     <b>⚠️ 友情提示：</b><br>
     • 好友码模式默认参数 <code>action=delete</code> 会消费一次性好友码；<br>
     • 若想反复查看同一身高的装扮或避免好友码被销毁，推荐使用 <code>https://sky.thatg.co/o=...</code> 离线扫码链接进行查询；<br>
-    • 若发现装扮物品的中文标注或图标图片显示有误或缺失 🎒，欢迎加入<a href="https://qm.qq.com/q/rvrRosfKMw" target="_blank" style="color: #0284c7; font-weight: bold; text-decoration: underline;">交流 Q 群</a>（<b style="color: #12B7F5;">1085190201</b>）或联系作者 <a href="https://wpa.qq.com/msgrd?v=3&uin=1830540513&site=qq&menu=yes" target="_blank" style="color: #0284c7; font-weight: bold; text-decoration: underline;">@VincentZyu</a>（QQ：<b>1830540513</b>）反馈更正 🛠️ 感谢光崽们的支持与陪伴 ✨🕯️；<br>
+    • 若发现装扮物品的中文标注或图标图片显示有误或缺失 🎒，欢迎加入<a href="https://qm.qq.com/q/rvrRosfKMw" target="_blank" style="color: #0284c7; font-weight: bold; text-decoration: underline;">交流 Q 群</a>（<b style="color: #12B7F5;">1085190201</b>）或联系作者 <a href="https://vincentzyu-vitepress.pages.dev/" target="_blank" style="color: #0284c7; font-weight: bold; text-decoration: underline;">@VincentZyu</a>（QQ：<b>1830540513</b>）反馈更正 🛠️ 感谢光崽们的支持与陪伴 ✨🕯️；<br>
     • 完整且详细的配置项说明文档请移步至本插件的 <a href="https://github.com/VincentZyuApps/koishi-plugin-skykid-height-cosmetic-query#readme" target="_blank" style="color: #0284c7; font-weight: bold; text-decoration: underline;">GitHub README.md</a> 在线查看。
   </blockquote>
 
