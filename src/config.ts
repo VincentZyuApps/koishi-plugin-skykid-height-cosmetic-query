@@ -301,11 +301,11 @@ export const Config: Schema<Config> = Schema.intersect([
     qqMarkdownEmbedApiImage: Schema.boolean().default(true).description('🌐 QQ 官方平台下，API 出图是否改为 QQ Markdown 内联图片。关闭后保持普通图片 + 耗时文本。'),
     qqMarkdownEmbedPptrImage: Schema.boolean().default(true).description('🖼️ QQ 官方平台下，Puppeteer 出图是否改为 QQ Markdown 内联图片。关闭后保持普通图片 + 耗时文本。'),
     qqMarkdownEmbedTakumiImage: Schema.boolean().default(true).description('⚡ QQ 官方平台下，Takumi 出图是否改为 QQ Markdown 内联图片。关闭后保持普通图片 + 耗时文本。'),
-    qqMdStyleShowCosmeticIcon: Schema.boolean().default(false).description([
+    qqMdStyleShowCosmeticIcon: Schema.boolean().default(true).description([
       '🖼️ QQ Markdown 格式风格模式下，装扮文字左侧是否展示装扮物品小图标。',
       '⚠️ <b>前置要求</b>：必须配置好 <code>imageApi</code> 后端；且使用 <code>server</code> 模式时必须确保已配置可供腾讯 QQ 访问的公网 <code>selfUrl</code>（如frp）。',
     ].join('<br/>')),
-    qqMdTableShowCosmeticIcon: Schema.boolean().default(false).description([
+    qqMdTableShowCosmeticIcon: Schema.boolean().default(true).description([
       '📊 QQ Markdown 表格模式下，是否展示装扮物品小图标。',
       '⚠️ <b>前置要求</b>：同上，需配置好 <code>imageApi</code> 后端与可供腾讯 QQ 访问的公网环境（如frp）。',
     ].join('<br/>')),
