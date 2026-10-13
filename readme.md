@@ -248,6 +248,7 @@ Puppeteer / Takumi 是本地生成图片。若要嵌入 QQ Markdown，需要通�
 | `qqMdStyleShowCosmeticIcon` | `boolean` | `true` | QQ Markdown 格式风格（`md-style`）装扮文字左侧是否展示单品图标图片（需要对应模式公网可访问，如frp或assets服务）。 |
 | `qqMdTableShowCosmeticIcon` | `boolean` | `true` | QQ Markdown 表格模式（`md-table`）装扮单元格左侧是否展示单品图标图片（方案 B1 图文同单元格）。 |
 | `qqMdCosmeticIconSize` | `"minimal" \| "small" \| "medium" \| "large" \| "xlarge" \| "original"` | `minimal` | QQ Markdown 中展示的单品装扮图标尺寸规格（默认 `minimal` 10×10 像素）。 |
+| `qqMdCosmeticIconTimestampBuster` | `boolean` | `false` | [实验性] 是否在装扮图标 URL 追加秒级 Unix 时间戳参数（`?t=...`）；如果 QQ 图片不刷新可以尝试打开此项。 |
 
 ### 🛠️ 调试设置
 

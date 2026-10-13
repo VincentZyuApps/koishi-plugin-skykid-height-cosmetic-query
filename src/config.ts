@@ -129,6 +129,7 @@ export interface Config {
   qqMdStyleShowCosmeticIcon: boolean
   qqMdTableShowCosmeticIcon: boolean
   qqMdCosmeticIconSize: QQMarkdownCosmeticIconSizeType
+  qqMdCosmeticIconTimestampBuster: boolean
 
   // ----- 🛠️ 调试设置 -----
   verboseSessionLog: boolean
@@ -324,6 +325,10 @@ export const Config: Schema<Config> = Schema.intersect([
       Schema.const(QQ_MARKDOWN_COSMETIC_ICON_SIZE.XLARGE).description('【 xlarge】192×192 px 高清单品展示'),
       Schema.const(QQ_MARKDOWN_COSMETIC_ICON_SIZE.ORIGINAL).description('【 original】原始尺寸，不做任何压缩'),
     ]).role('radio').default(QQ_MARKDOWN_COSMETIC_ICON_SIZE.MINIMAL).description('📐 QQ Markdown 内联装扮图标尺寸规格。'),
+    qqMdCosmeticIconTimestampBuster: Schema.boolean().default(false).experimental().description([
+      '⏱️ <b>[实验性]</b> 装扮图标 URL 追加秒级 Unix 时间戳参数（<code>?t=...</code>）。',
+      '⚠️ <b>使用场景</b>：如果发现 QQ 客户端中的装扮图标一直不刷新（显示的是历史本地缓存旧图），可以尝试打开此开关强制每次重新拉取最新图标。',
+    ].join('<br/>')),
   }).description('💬 QQ 官方 Bot Markdown 适配设置'),
 
   Schema.object({

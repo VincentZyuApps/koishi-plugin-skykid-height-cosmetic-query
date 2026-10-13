@@ -41,7 +41,8 @@ export async function resolveCosmeticIconUrl(
   // Server 模式：由 Koishi Server 暴露并代理路由
   const publicBase = resolveQQMarkdownImagePublicBaseUrl(ctx, config)
   if (!publicBase) return ''
-  return `${publicBase}${ICON_CACHE_ROUTE}/${encodeURIComponent(safeItem)}/${encodeURIComponent(safeId)}?size=${encodeURIComponent(safeSize)}`
+  const timestampQuery = config.qqMdCosmeticIconTimestampBuster ? `&t=${Math.floor(Date.now() / 1000)}` : ''
+  return `${publicBase}${ICON_CACHE_ROUTE}/${encodeURIComponent(safeItem)}/${encodeURIComponent(safeId)}?size=${encodeURIComponent(safeSize)}${timestampQuery}`
 }
 
 /**
