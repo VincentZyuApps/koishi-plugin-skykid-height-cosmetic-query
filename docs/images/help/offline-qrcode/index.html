@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>《光·遇》国服离线活动二维码获取指南</title>
+  <style>
+    @font-face {
+      font-family: 'LXGW WenKai Mono';
+      src: url('../../../../../../data/fonts/LXGWWenKaiMono-Regular.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'LXGW WenKai Mono';
+      src: url('../../../../../../data/fonts/LXGWWenKaiMono-Medium.ttf') format('truetype');
+      font-weight: bold;
+      font-style: normal;
+    }
+
+    :root {
+      --primary: #38bdf8;
+      --primary-glow: rgba(56, 189, 248, 0.35);
+      --accent: #fbbf24;
+      --bg-gradient: linear-gradient(135deg, #0b1120 0%, #111d38 40%, #0b1120 100%);
+      --card-bg: rgba(17, 24, 39, 0.78);
+      --card-border: rgba(255, 255, 255, 0.12);
+      --text-main: #f1f5f9;
+      --text-sub: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'LXGW WenKai Mono', ui-monospace, Consolas, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 16px 16px 36px;
+      line-height: 1.5;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 760px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* 顶部导航与大标题 */
+    header {
+      text-align: center;
+      padding: 8px 10px 4px;
+      position: relative;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 12px;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 999px;
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: bold;
+      margin-bottom: 6px;
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.12);
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: bold;
+      letter-spacing: 0.3px;
+      color: #ffffff;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+      margin-bottom: 4px;
+    }
+
+    header p {
+      font-size: 13.5px;
+      color: var(--text-sub);
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    /* 步骤流转卡片容器 */
+    .steps-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      position: relative;
+    }
+
+    .step-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 14px 16px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .step-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #0284c7, #38bdf8);
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 10px var(--primary-glow);
+      flex-shrink: 0;
+    }
+
+    .step-title-box h2 {
+      font-size: 16px;
+      font-weight: bold;
+      color: #ffffff;
+      margin-bottom: 2px;
+    }
+
+    .step-title-box p {
+      font-size: 13px;
+      color: var(--text-sub);
+    }
+
+    /* 铺满卡片的高清截图展示区（无黑边） */
+    .image-frame {
+      width: 100%;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+      background: transparent;
+    }
+
+    .image-frame img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* 底部提示块 */
+    .tips-card {
+      background: rgba(251, 191, 36, 0.08);
+      border: 1px solid rgba(251, 191, 36, 0.28);
+      border-radius: 12px;
+      padding: 14px 18px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    }
+
+    .tips-icon {
+      font-size: 22px;
+      line-height: 1.2;
+      flex-shrink: 0;
+    }
+
+    .tips-content h3 {
+      font-size: 15px;
+      color: var(--accent);
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    .tips-content ul {
+      list-style-type: disc;
+      padding-left: 18px;
+      font-size: 13px;
+      color: #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .tips-content code {
+      background: rgba(255, 255, 255, 0.12);
+      padding: 1px 5px;
+      border-radius: 4px;
+      color: var(--accent);
+      font-size: 12.5px;
+    }
+
+    /* 底部作者与声明 */
+    footer {
+      text-align: center;
+      color: #64748b;
+      font-size: 12.5px;
+      padding-top: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- 头部区域 -->
+    <header>
+      <div class="badge">
+        <span>✨</span>《光·遇》国服离线活动外观二维码
+      </div>
+      <h1>📸 线下活动外观二维码获取指引</h1>
+      <p>无需消耗一次性好友码 · 纯本地毫秒级秒出图 · 永久可重复查询</p>
+    </header>
+
+    <!-- 步骤区域 -->
+    <div class="steps-wrapper">
+
+      <!-- Step 1 -->
+      <section class="step-card">
+        <div class="step-header">
+          <div class="step-num">01</div>
+          <div class="step-title-box">
+            <h2>点击主界面右上角齿轮「设置」图标</h2>
+            <p>进入游戏后，轻触屏幕唤出界面，点击右上角的齿轮设置按钮。</p>
+          </div>
+        </div>
+        <div class="image-frame">
+          <img src="./step1.点击右上角齿轮设置图标.png" alt="步骤一：点击右上角齿轮设置图标">
+        </div>
+      </section>
+
+      <!-- Step 2 -->
+      <section class="step-card">
+        <div class="step-header">
+          <div class="step-num">02</div>
+          <div class="step-title-box">
+            <h2>点击右下角三个点「更多」按钮</h2>
+            <p>在弹出的系统设置侧边菜单中，点击右下角的三个点「更多选项」气泡。</p>
+          </div>
+        </div>
+        <div class="image-frame">
+          <img src="./step2.点击右下角三个点更多按钮.png" alt="步骤二：点击右下角三个点更多按钮">
+        </div>
+      </section>
+
+      <!-- Step 3 -->
+      <section class="step-card">
+        <div class="step-header">
+          <div class="step-num">03</div>
+          <div class="step-title-box">
+            <h2>下滑至设置列表最下方，点击「线下活动外观二维码」</h2>
+            <p>向下滚动详细设置项目，在列表最底端找到并点击「线下活动外观二维码」选项。</p>
+          </div>
+        </div>
+        <div class="image-frame">
+          <img src="./step3.下滑到最下方点击线下活动外观二维码.png" alt="步骤三：下滑到最下方点击线下活动外观二维码">
+        </div>
+      </section>
+
+      <!-- Step 4 -->
+      <section class="step-card">
+        <div class="step-header">
+          <div class="step-num">04</div>
+          <div class="step-title-box">
+            <h2>获取到「线下 AR 镜子活动二维码」并截图保存</h2>
+            <p>屏幕将展示专属外观二维码名片，点击系统截图或拍照保存即可。</p>
+          </div>
+        </div>
+        <div class="image-frame">
+          <img src="./step4.成功获取到线下AR镜子活动二维码.png" alt="步骤四：成功获取到线下AR镜子活动二维码">
+        </div>
+      </section>
+
+    </div>
+
+    <!-- 底部使用说明提示卡片 -->
+    <div class="tips-card">
+      <div class="tips-icon">💡</div>
+      <div class="tips-content">
+        <h3>如何使用这张二维码？</h3>
+        <ul>
+          <li><b>无需担心失效：</b>该二维码用于光遇线下活动 AR 镜子体验功能，仅编码您的体型与当前穿搭，<b>不会过期、不会被销毁</b>，可长期反复随时使用。</li>
+          <li><b>多种极简发送方式（推荐直接发图）：</b>
+            <ul>
+              <li><b>直接发图：</b>将截取的二维码图片与指令一同发送（如 <code>[图片] 测身高.pptr</code>）；</li>
+              <li><b>引用回复：</b>群聊中长按回复该二维码图片消息，直接发送 <code>测身高</code>；</li>
+              <li><b>交互等待：</b>仅发送指令 <code>测身高</code>，在机器人引导提示的 30 秒内直接发送二维码图片。</li>
+            </ul>
+          </li>
+          <li><b>亦可扫码提取链接查询：</b>
+            除了直接发图外，也可以使用 <b>QQ、微信、系统相机、浏览器</b> 等任意支持扫码的 App 扫描此二维码，复制解析出的 <code>https://sky.thatg.co/o=...</code> 离线链接发送给机器人（如 <code>测身高.pptr [链接]</code>），效果完全相同。
+          </li>
+          <li><b>本地纯算法毫秒级出图：</b>Bot 本地零外部网络依赖秒解，无需排队与等待第三方接口，轻松一键生成您的专属身高对比与全套穿搭档案卡！✨🕯️</li>
+        </ul>
+      </div>
+    </div>
+
+    <footer>
+      Koishi Plugin: koishi-plugin-skykid-height-cosmetic-query · Designed for Sky Kids
+    </footer>
+
+  </div>
+
+</body>
+</html>

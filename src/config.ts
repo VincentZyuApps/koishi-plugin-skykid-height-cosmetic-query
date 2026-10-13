@@ -53,6 +53,8 @@ export interface Config {
   powMaxNonce: number
   sendRunningTip: boolean
   userAgent: string
+  repoImageBaseUrls: string[]
+  repoImageProbeEnable: boolean
 
   // ----- 📌 指令设置 -----
   // ---------- 📌 通用前缀设置 ----------
@@ -61,6 +63,10 @@ export interface Config {
   // ---------- ❔ 帮助指令设置 ----------
   enableHelpCommand: boolean
   helpCommandSuffix: string
+  helpGuideImageShow: boolean
+  helpGuideImagePath: string
+  helpGuideImageWidth: string
+  helpGuideImageHeight: string
   // ---------- 📝 纯文本指令设置 ----------
   enableTextCommand: boolean
   textCommandSuffix: string
@@ -90,6 +96,11 @@ export interface Config {
   showFullUnknownOutfitId: boolean
   useCustomFont: boolean
   outfitFeedbackNotice: string
+
+  // ----- ⏳ 交互式输入与二维码设置 -----
+  enablePromptInput: boolean
+  promptTimeout: number
+  promptExitWords: string[]
 
   // ----- 🖼️ Puppeteer 图片设置 -----
   pptrWidth: number
@@ -122,6 +133,7 @@ export interface Config {
   qqMarkdownImageStorageMode: QQMarkdownImageStorageModeType
   qqMarkdownImageSelfUrl: string
   qqMarkdownImageMaxFiles: number
+  qqMarkdownHelpCommand: boolean
   qqMarkdownEmbedApiImage: boolean
   qqMarkdownEmbedApiImageProxy: boolean
   qqMarkdownEmbedPptrImage: boolean
@@ -147,6 +159,27 @@ export const Config: Schema<Config> = Schema.intersect([
     powMaxNonce: Schema.number().min(1000).max(100000000).step(1000).default(20000000).description('🧮 POW 最大尝试 nonce'),
     sendRunningTip: Schema.boolean().default(true).description('💬 查询前是否发送“正在查询”提示'),
     userAgent: Schema.string().role('textarea', { rows: [2, 4] }).default(DEFAULT_USER_AGENT).description('🧭 请求 User-Agent'),
+    repoImageBaseUrls: Schema.array(Schema.string())
+      .role('table')
+      .default([
+        'https://gh-proxy.org/https://raw.githubusercontent.com/VincentZyuApps/koishi-plugin-skykid-height-cosmetic-query/main/',
+        'https://raw.githubusercontent.com/VincentZyuApps/koishi-plugin-skykid-height-cosmetic-query/main/',
+        'https://cdn.jsdelivr.net/gh/VincentZyuApps/koishi-plugin-skykid-height-cosmetic-query@main/',
+        'https://gitee.com/vincent-zyu/koishi-plugin-skykid-height-cosmetic-query/raw/main/',
+      ])
+      .description([
+        '🌐 <b>仓库公开静态资源 Base URL 镜像源列表。</b>',
+        '作为插件内置静态图片（如操作指南、图鉴等）的通用前缀，按数组顺序排列优先级。',
+        '<i>注：QQ 官方 Markdown 要求直链 200 直出，Gitee raw 往往会有 302 重定向导致裂图，因此首选推荐 gh-proxy 代理的 GitHub 直链。</i>',
+      ].join('<br/>')),
+    repoImageProbeEnable: Schema.boolean()
+      .default(true)
+      .experimental()
+      .description([
+        '🧪 <b>静态资源图片 URL 自动探测开关。</b>',
+        '✅ <b>开启（推荐）</b>：发送前进行轻量探测（3~5s 超时），选用第一个 200 直出、无重定向且为图片的可用链接，带有内存缓存；',
+        'ℹ️ <b>关闭</b>：直接按列表顺序使用第一个非空 Base URL 拼接。',
+      ].join('<br/>')),
   }).description('🌐 后端设置'),
 
   Schema.intersect([
@@ -158,6 +191,13 @@ export const Config: Schema<Config> = Schema.intersect([
     Schema.object({
       enableHelpCommand: Schema.boolean().default(true).description('❔ 注册帮助指令'),
       helpCommandSuffix: Schema.string().default('帮助').description('❔ 帮助指令后缀'),
+      helpGuideImageShow: Schema.boolean().default(true).description('🖼️ 查看帮助时是否附带展示线下二维码获取指南长图'),
+      helpGuideImagePath: Schema.string().default('docs/images/help/offline-qrcode/index.png').description([
+        '🖼️ 线下二维码指南图片的相对仓库路径或完整文件名。',
+        '将自动与后端的 <code>repoImageBaseUrls</code> 拼接。',
+      ].join('<br/>')),
+      helpGuideImageWidth: Schema.string().default('1080px').description('📐 QQ Markdown 内联指南图片宽度（含 px 单位，如 1080px）'),
+      helpGuideImageHeight: Schema.string().default('3951px').description('📐 QQ Markdown 内联指南图片高度（含 px 单位，如 3951px，对应 1600x5854 等比缩放）'),
     }).description('❔ 帮助指令设置'),
 
     Schema.object({
@@ -216,6 +256,12 @@ export const Config: Schema<Config> = Schema.intersect([
   }).description('💬 通用输出设置'),
 
   Schema.object({
+    enablePromptInput: Schema.boolean().default(true).description('缺少参数时是否启用多轮交互等待输入（支持发送图片二维码、离线链接或好友码）'),
+    promptTimeout: Schema.natural().default(30).description('交互式等待用户输入的超时时间（秒）'),
+    promptExitWords: Schema.array(String).role('table').default(['取消', 'exit', 'quit', '0', '-1']).description('交互式等待时主动取消查询的关键词列表（忽略大小写与首尾空格）'),
+  }).description('⏳ 交互式输入与二维码设置'),
+
+  Schema.object({
     pptrWidth: Schema.number().min(480).max(1600).step(10).default(880).description('📐 Puppeteer 图片宽度'),
     pptrDeviceScaleFactor: Schema.number().min(0.5).max(5).step(0.1).default(2.5).description('🔍 Puppeteer 截图设备像素比，越高越清晰但图片体积越大'),
     pptrImageType: Schema.union([
@@ -253,12 +299,12 @@ export const Config: Schema<Config> = Schema.intersect([
 
   Schema.object({
     qqMarkdownButtonMode: Schema.array(Schema.union([
-      Schema.const(QQ_MARKDOWN_BUTTON_MODE.STANDALONE).description(`【 ${QQ_MARKDOWN_BUTTON_MODE.STANDALONE}】每次查询成功后额外发送一条 JSON 按钮消息`),
-      Schema.const(QQ_MARKDOWN_BUTTON_MODE.APPEND_API_IMAGE).description(`【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_API_IMAGE}】挂在 API 出图 QQ Markdown 内联图片后面`),
-      Schema.const(QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_STYLE).description(`【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_STYLE}】挂在 QQ Markdown 格式风格后面`),
-      Schema.const(QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_TABLE).description(`【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_TABLE}】挂在 QQ Markdown 表格模式后面`),
-      Schema.const(QQ_MARKDOWN_BUTTON_MODE.APPEND_PPTR_IMAGE).description(`【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_PPTR_IMAGE}】挂在 Puppeteer 出图 QQ Markdown 内联图片后面`),
-      Schema.const(QQ_MARKDOWN_BUTTON_MODE.APPEND_TAKUMI_IMAGE).description(`【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_TAKUMI_IMAGE}】挂在 Takumi 出图 QQ Markdown 内联图片后面`),
+      Schema.const(QQ_MARKDOWN_BUTTON_MODE.STANDALONE).description(`【🔘 ${QQ_MARKDOWN_BUTTON_MODE.STANDALONE}】每次查询成功后额外发送一条 JSON 按钮消息`),
+      Schema.const(QQ_MARKDOWN_BUTTON_MODE.APPEND_API_IMAGE).description(`【🌐 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_API_IMAGE}】挂在 API 出图 QQ Markdown 内联图片后面`),
+      Schema.const(QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_STYLE).description(`【💫 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_STYLE}】挂在 QQ Markdown 格式风格后面`),
+      Schema.const(QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_TABLE).description(`【📊 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_TABLE}】挂在 QQ Markdown 表格模式后面`),
+      Schema.const(QQ_MARKDOWN_BUTTON_MODE.APPEND_PPTR_IMAGE).description(`【🖼️ ${QQ_MARKDOWN_BUTTON_MODE.APPEND_PPTR_IMAGE}】挂在 Puppeteer 出图 QQ Markdown 内联图片后面`),
+      Schema.const(QQ_MARKDOWN_BUTTON_MODE.APPEND_TAKUMI_IMAGE).description(`【⚡ ${QQ_MARKDOWN_BUTTON_MODE.APPEND_TAKUMI_IMAGE}】挂在 Takumi 出图 QQ Markdown 内联图片后面`),
     ]))
       .role('checkbox')
       .default([
@@ -270,25 +316,19 @@ export const Config: Schema<Config> = Schema.intersect([
       ])
       .description([
         '🔘 QQ Markdown 按钮发送行为，可多选。',
-        `【 ${QQ_MARKDOWN_BUTTON_MODE.STANDALONE}】每次查询成功后额外发送一条 JSON 按钮消息。`,
-        `【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_API_IMAGE}】挂在 API 出图 QQ Markdown 内联图片后面，需要 qqMarkdownEmbedApiImage 开启。`,
-        `【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_STYLE}】挂在 QQ Markdown 格式风格后面。`,
-        `【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_TABLE}】挂在 QQ Markdown 表格模式后面。`,
-        `【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_PPTR_IMAGE}】挂在 Puppeteer 出图 QQ Markdown 内联图片后面，需要 qqMarkdownEmbedPptrImage 开启。`,
-        `【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_TAKUMI_IMAGE}】挂在 Takumi 出图 QQ Markdown 内联图片后面，需要 qqMarkdownEmbedTakumiImage 开启。`,
         '⚠️ 不想发送 QQ 按钮时保持空选即可。条件不满足时默认静默跳过，除非开启调试日志。',
       ].join('<br/>')),
     qqMarkdownKeyboardJson: Schema.string().role('textarea', { rows: [4, 12] }).default('').description('⌨️ QQ Markdown 按钮 JSON。留空时默认一行两个按钮：获取帮助 -> 当前前缀.帮助，玩玩别的 -> help。JSON 解析失败时使用默认按钮。'),
     qqMarkdownImageStorageMode: Schema.union([
-      Schema.const(QQ_MARKDOWN_IMAGE_STORAGE_MODE.ASSETS).description(`【 ${QQ_MARKDOWN_IMAGE_STORAGE_MODE.ASSETS}】使用 Koishi assets 服务发送 Markdown 内嵌图片`),
-      Schema.const(QQ_MARKDOWN_IMAGE_STORAGE_MODE.SERVER).description(`【 ${QQ_MARKDOWN_IMAGE_STORAGE_MODE.SERVER}】使用 Koishi server 服务发送 Markdown 内嵌图片`),
+      Schema.const(QQ_MARKDOWN_IMAGE_STORAGE_MODE.ASSETS).description(`【📦 ${QQ_MARKDOWN_IMAGE_STORAGE_MODE.ASSETS}】使用 Koishi assets 服务发送 Markdown 内嵌图片`),
+      Schema.const(QQ_MARKDOWN_IMAGE_STORAGE_MODE.SERVER).description(`【🌐 ${QQ_MARKDOWN_IMAGE_STORAGE_MODE.SERVER}】使用 Koishi server 服务发送 Markdown 内嵌图片`),
     ])
       .role('radio')
       .default(QQ_MARKDOWN_IMAGE_STORAGE_MODE.SERVER)
       .description([
         '🖼️ Puppeteer / Takumi 本地出图转 QQ Markdown 内联图片时的公网 URL 生成模式。',
-        '【 assets】生成公网图片 URL。只能新增，不能删除，文件名由 assets 服务决定，通常无法自定义。',
-        '【 server】从 ctx.baseDir/cache/skykid-height-cosmetic-query 暴露临时图片，并按数量上限仅保留最新图片。',
+        '<i><code>【📦 assets】</code>生成公网图片 URL。只能新增，不能删除，文件名由 assets 服务决定，通常无法自定义。</i>',
+        '<i><code>【🌐 server】</code>从 ctx.baseDir/cache/skykid-height-cosmetic-query 暴露临时图片，并按数量上限仅保留最新图片。</i>',
         'standalone、append-md-style、append-md-table 不使用此配置。',
       ].join('<br/>')),
     qqMarkdownImageSelfUrl: Schema.string().role('textarea', { rows: [2, 5] }).default('').description([
@@ -299,6 +339,11 @@ export const Config: Schema<Config> = Schema.intersect([
     qqMarkdownImageMaxFiles: Schema.number().step(1).default(5).description([
       '🧹 server 模式缓存图片数量上限。',
       '缓存目录固定为 ctx.baseDir/cache/skykid-height-cosmetic-query；仅保留最新 N 张，填写 <= 0 表示不设置上限。',
+    ].join('<br/>')),
+    qqMarkdownHelpCommand: Schema.boolean().default(true).description([
+      '❔ <b>QQ 官方平台下帮助指令是否以原生 Markdown 形式发送。</b>',
+      '✅ <b>默认开启</b>：在 QQ 官方平台下以原生 Markdown 渲染卡片发送帮助；',
+      'ℹ️ <b>关闭或非 QQ 平台</b>：直接将统一的 Markdown 帮助内容作为原始文本发出。',
     ].join('<br/>')),
     qqMarkdownEmbedApiImage: Schema.boolean().default(true).description('🌐 QQ 官方平台下，API 出图是否改为 QQ Markdown 内联图片。关闭后保持普通图片 + 耗时文本。'),
     qqMarkdownEmbedApiImageProxy: Schema.boolean().default(true).description([

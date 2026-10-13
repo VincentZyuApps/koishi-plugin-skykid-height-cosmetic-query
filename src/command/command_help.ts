@@ -1,5 +1,8 @@
-import { Context } from 'koishi'
+import { Context, h } from 'koishi'
 import type { Config } from '../config'
+import { buildHeightKeyboard } from '../qq/keyboard'
+import { isQQOfficialSession, sendQQMarkdownWithGuard } from '../qq/sender'
+import { resolveRepoImageUrl } from '../utils/cdn'
 import { buildCommandAliases, buildCommandName, withQuote } from './common'
 
 /**
@@ -11,9 +14,30 @@ export function registerHelpCommand(ctx: Context, config: Config) {
   const aliases = buildCommandAliases(config, config.helpCommandSuffix)
   if (aliases.length) command.alias(...aliases)
   command
-    .action(({ session }) => {
-      const text = generateHelpText(config)
-      return session ? withQuote(session, config, text) : text
+    .action(async ({ session }) => {
+      let guideImageUrl: string | undefined
+      if (config.helpGuideImageShow && config.helpGuideImagePath) {
+        guideImageUrl = await resolveRepoImageUrl(config, config.helpGuideImagePath)
+      }
+
+      if (session) {
+        const isQQ = isQQOfficialSession(session, config)
+        if (config.qqMarkdownHelpCommand && isQQ) {
+          const markdown = generateHelpMarkdown(config, guideImageUrl)
+          const keyboard = buildHeightKeyboard(config)
+          await sendQQMarkdownWithGuard(ctx, session, config, markdown, keyboard, 'help-markdown')
+          return
+        }
+
+        const rawMarkdown = generateHelpMarkdown(config)
+        const contentElements: (string | h)[] = [withQuote(session, config, rawMarkdown) as any]
+        if (guideImageUrl) {
+          contentElements.push(h.image(guideImageUrl))
+        }
+        return contentElements
+      }
+
+      return generateHelpMarkdown(config, guideImageUrl)
     })
 
   const barePrefix = String(config.commandPrefix || '测身高').trim()
@@ -25,50 +49,72 @@ export function registerHelpCommand(ctx: Context, config: Config) {
     if (bareAliases.length) bareCommand.alias(...bareAliases)
 
     bareCommand.action(async ({ session }) => {
-      if (!session) return generateHelpText(config)
+      if (!session) return generateHelpMarkdown(config)
       return session.execute(helpCommandName)
     })
   }
 }
 
 /**
- * 🧾 生成硬编码帮助文本。
+ * 🧾 生成统一的 Markdown 帮助文档（单一信源：在 QQ 平台为原生 Markdown 卡片，其他平台为原始 Markdown 文本）。
  */
-function generateHelpText(config: Config): string {
-  const code = '【好友码】'
+function generateHelpMarkdown(config: Config, guideImageUrl?: string): string {
+  const targetPlaceholder = '`[好友码 / 二维码 / 链接]`'
   const prefixAliases = Array.isArray(config.commandPrefixAliases)
     ? config.commandPrefixAliases.filter((item) => String(item || '').trim())
     : []
-  const prefixLines = [
-    '🌌 光崽身高装扮查询指令帮助',
-    `📌 默认前缀：${config.commandPrefix}`,
-    ...(prefixAliases.length ? [`📌 前缀别名：${prefixAliases.join(' / ')}`] : []),
-    `💡 快捷帮助：直接发送【${config.commandPrefix}】也可获取本帮助。`,
-    '每个前缀都可以和相同后缀组合使用。',
+
+  const headerLines = [
+    '# 🌌 光崽身高装扮查询指令帮助',
+    '',
+    `> 💡 **快捷触发**：直接发送 \`${config.commandPrefix}\` 即可唤出本帮助。`,
+    '> 每一个前缀均可与以下指令后缀自由组合使用。',
   ]
+
+  const prefixSection = [
+    '### 📌 触发前缀',
+    `- **默认前缀**：\`${config.commandPrefix}\``,
+    ...(prefixAliases.length ? [`- **前缀别名**：${prefixAliases.map((a) => `\`${a}\``).join(' / ')}`] : []),
+  ]
+
   const commandLines = [
-    `❔ 帮助：${buildCommandName(config, config.helpCommandSuffix)}`,
-    `🖼️ Puppeteer 出图：${buildCommandName(config, config.pptrCommandSuffix)} ${code}`,
-    `📝 纯文本：${buildCommandName(config, config.textCommandSuffix)} ${code}`,
-    `📨 OneBot 合并转发：${buildCommandName(config, config.forwardCommandSuffix)} ${code}`,
-    `⚡ Takumi wasm 出图：${buildCommandName(config, config.takumiCommandSuffix)} ${code}`,
-    `🌐 外部 Pillow 后端出图：${buildCommandName(config, config.apiCommandSuffix)} ${code}`,
-    `💫 QQ Markdown 格式风格：${buildCommandName(config, config.qqMdStyleCommandSuffix)} ${code}`,
-    `📊 QQ Markdown 表格：${buildCommandName(config, config.qqMdTableCommandSuffix)} ${code}`,
+    '### 🧭 可用指令',
+    `- 🖼️ **Puppeteer 出图**：\`${buildCommandName(config, config.pptrCommandSuffix)}\` ${targetPlaceholder}`,
+    `- ⚡ **Takumi wasm 出图**：\`${buildCommandName(config, config.takumiCommandSuffix)}\` ${targetPlaceholder}`,
+    `- 🌐 **API 远程出图**：\`${buildCommandName(config, config.apiCommandSuffix)}\` ${targetPlaceholder}`,
+    `- 💫 **QQ Markdown 卡片**：\`${buildCommandName(config, config.qqMdStyleCommandSuffix)}\` ${targetPlaceholder}`,
+    `- 📊 **QQ Markdown 表格**：\`${buildCommandName(config, config.qqMdTableCommandSuffix)}\` ${targetPlaceholder}`,
+    `- 📝 **纯文本输出**：\`${buildCommandName(config, config.textCommandSuffix)}\` ${targetPlaceholder}`,
+    `- 📨 **OneBot 合并转发**：\`${buildCommandName(config, config.forwardCommandSuffix)}\` ${targetPlaceholder}`,
+    `- ❔ **查看帮助**：\`${buildCommandName(config, config.helpCommandSuffix)}\``,
   ]
+
   const optionLines = [
-    '🧪 测试模式：在任意查询命令后追加 --dry 或 --dryrun',
-    '🌙 深色模式：Puppeteer / Takumi 支持 -d true 或 --dark dark',
-    '🛠️ 调试参数：追加 -v 或 --verbose 输出本次命令详情',
-    '⚠️ 默认 queryAction=delete，会消费一次性好友码。',
+    '### ⚙️ 可选参数',
+    '- 🧪 **测试模式**：追加 `--dry` 或 `--dryrun`（跳过请求，不消耗好友码）',
+    '- 🌙 **深色模式**：追加 `-d true` 或 `--dark dark`（Puppeteer / Takumi 支持）',
+    '- 🛠️ **调试详情**：追加 `-v` 或 `--verbose` 输出调用详情',
+    '- ⚠️ *默认 queryAction=delete，会消费一次性好友码。*',
   ]
+
   const sections = [
-    prefixLines.join('\n'),
-    ['🧭 可用指令：', ...commandLines].join('\n\n'),
-    ['⚙️ 可选参数：', ...optionLines].join('\n\n'),
+    headerLines.join('\n'),
+    prefixSection.join('\n'),
+    commandLines.join('\n'),
+    optionLines.join('\n'),
   ]
-  if (config.outfitFeedbackNotice) {
-    sections.push(['──────────────────', config.outfitFeedbackNotice].join('\n'))
+
+  if (guideImageUrl) {
+    const width = config.helpGuideImageWidth ? `#${config.helpGuideImageWidth}` : ''
+    const height = config.helpGuideImageHeight ? `#${config.helpGuideImageHeight}` : ''
+    const sizePart = [width, height].filter(Boolean).join(' ')
+    const altText = sizePart ? ` ${sizePart}` : ''
+    sections.push(`---\n\n### 📱 线下活动外观二维码获取指引\n\n![${altText}](${guideImageUrl})`)
   }
+
+  if (config.outfitFeedbackNotice) {
+    sections.push(`---\n\n> ${config.outfitFeedbackNotice}`)
+  }
+
   return sections.join('\n\n')
 }

@@ -82,25 +82,35 @@ export const usage = `
   <p style="margin: 4px 0;">💡 在群里直接艾特我，回复的更快哦~ ✨</p>
 
   <blockquote style="margin: 14px 0; padding: 10px 14px; border-left: 5px solid #0284c7; border-radius: 6px; background: rgba(2, 132, 199, 0.08); line-height: 1.6;">
-    <b style="color: #0284c7;">💡 双模式查询能力：</b><br>
+    <b style="color: #0284c7;">💡 多模态与双模式查询能力：</b><br>
     • 支持光遇<b>好友码联网查询</b>（基于 <code>sky.cesgao.cn</code>，会消耗一次性好友码）<br>
-    • 支持<b>离线扫码链接解析</b>（严格匹配 <code>https://sky.thatg.co/o=...</code>，完全本地零外部依赖秒级解码，不消耗好友码）
+    • 支持<b>离线扫码链接与名片二维码图片解析</b>（支持 <code>https://sky.thatg.co/o=...</code> 或游戏内二维码截图，纯本地零外部依赖秒级解码，不消耗好友码）<br>
+    • 支持<b>直接传参</b>、<b>消息引用 (Quote)</b> 与 <b>交互等待 (Prompt)</b> 三种灵活输入途径
   </blockquote>
 
   <!-- 折叠区域 1 -->
   <details style="${detailsStyle}">
-    <summary style="${summaryStyle}"><b style="color: #0284c7;">🔍 两种查询输入模式说明（好友码 vs 离线扫码链接）</b></summary>
+    <summary style="${summaryStyle}"><b style="color: #0284c7;">🔍 两种查询数据模式说明（好友码 vs 离线扫码/二维码图片）</b></summary>
     <div style="${detailsBodyStyle}">
       <p style="margin: 4px 0;"><b>1️⃣ 传统好友码模式（联网查询）：</b></p>
       <ul style="margin: 4px 0; padding-left: 20px;">
-        <li>输入格式：光遇一次性好友码，如 <code>ABCD-EFGH-IJKL</code> 或 12 位无横杠码 <code>ABCDEFGHIJKL</code>。</li>
-        <li>行为机制：通过 POW 运算向 <code>sky.cesgao.cn</code> 发起查询，<b>默认 <code>action=delete</code> 会消费一次性好友码</b>。</li>
+        <li><b>输入格式：</b>光遇一次性好友码，如 <code>ABCD-EFGH-IJKL</code> 或 12 位无横杠码 <code>ABCDEFGHIJKL</code>。</li>
+        <li><b>行为机制：</b>通过 POW 运算向 <code>sky.cesgao.cn</code> 发起查询，<b>默认 <code>action=delete</code> 会消费一次性好友码</b>。</li>
       </ul>
-      <p style="margin: 8px 0 4px 0;"><b>2️⃣ 离线扫码链接模式（零依赖本地解码）：</b></p>
+      <p style="margin: 8px 0 4px 0;"><b>2️⃣ 离线扫码与二维码图片模式（零依赖本地秒解，不耗好友码）：</b></p>
       <ul style="margin: 4px 0; padding-left: 20px;">
-        <li>输入格式：严格以 <code>https://sky.thatg.co/o=</code> 开头的扫码 URL，例如 <code>https://sky.thatg.co/o=8RZ7...</code>。</li>
-        <li>行为机制：纯本地 Base64URL 解码 ➔ 手写 LZ4 Block 算法解压 ➔ 提取体型值与身高值 ➔ 按身高公式自动换算。<b>完全离线，不消耗好友码，秒回。</b></li>
-        <li>装扮名称解析：若开启了 Python 绘图后端（默认 60704 端口），会自动调用接口解析装扮中文名；若未开启后端，则优雅降级为 <code>ID 123456</code> 显示，绝不报错。</li>
+        <li><b>输入格式：</b>
+          ① 游戏内名片<b>二维码图片</b>（纯 JS 图像算法自动识别，免除手动扫码）；<br>
+          ② 严格以 <code>https://sky.thatg.co/o=</code> 开头的扫码 URL，例如 <code>https://sky.thatg.co/o=8RZ7...</code>。
+        </li>
+        <li><b>行为机制：</b>纯本地 Base64URL 解码 ➔ 手写 LZ4 Block 算法解压 ➔ 提取体型值与身高值 ➔ 按身高公式自动换算。<b>完全离线，不消耗好友码，毫秒级响应。</b></li>
+        <li><b>装扮名称解析：</b>若开启了 Python 绘图后端（默认 60704 端口），会自动调用接口解析装扮中文名；若未开启后端，则优雅降级为 <code>ID 123456</code> 显示，绝不报错。</li>
+      </ul>
+      <p style="margin: 8px 0 4px 0;"><b>📲 三种极简输入流转途径：</b></p>
+      <ul style="margin: 4px 0; padding-left: 20px;">
+        <li><b>方式 A（直接传参）：</b>指令后面直接带上好友码、扫码 URL 或同条消息发送图片。</li>
+        <li><b>方式 B（引用回复 Quote）：</b>长按引用群友发送的好友码、链接或二维码名片，直接回复指令名即可触发。</li>
+        <li><b>方式 C（交互会话 Prompt）：</b>仅发纯指令名自动开启 30 秒等待交互，下条消息发送图片、好友码或链接，输入 <code>取消</code> / <code>0</code> 随时终止。</li>
       </ul>
     </div>
   </details>
@@ -120,10 +130,14 @@ export const usage = `
         <li>📊 <b>查询光崽身高装扮.md-table</b> - QQ 官方 Bot 专属 Markdown 表格模式</li>
         <li>❔ <b>查询光崽身高装扮.帮助</b> - 快速查看命令使用帮助</li>
       </ul>
-      <p style="margin: 8px 0 2px 0;"><b>用法示例：</b><br>
-        <code>查询光崽身高装扮.text ABCD-EFGH-IJKL</code>（查好友码）<br>
-        <code>查询光崽身高装扮.pptr https://sky.thatg.co/o=8RZ7...</code>（查离线扫码）
-      </p>
+      <p style="margin: 8px 0 2px 0;"><b>多样化用法示例：</b></p>
+      <ul style="margin: 4px 0; padding-left: 20px;">
+        <li><b>直接跟参数：</b><code>查询光崽身高装扮.text ABCD-EFGH-IJKL</code>（查好友码）</li>
+        <li><b>直接跟链接：</b><code>查询光崽身高装扮.pptr https://sky.thatg.co/o=8RZ7...</code>（查离线扫码）</li>
+        <li><b>直接附带图片：</b><code>[二维码图片] 查询光崽身高装扮.takumi</code>（同发图片与指令）</li>
+        <li><b>引用消息回复：</b>长按引用包含二维码图片或好友码的消息 ➔ 回复 <code>查询光崽身高装扮.pptr</code></li>
+        <li><b>空参多轮交互：</b>直接发送 <code>查询光崽身高装扮.api</code> ➔ 触发 30 秒等待提示 ➔ 发送二维码截图、好友码或输入 <code>取消</code></li>
+      </ul>
     </div>
   </details>
 
@@ -134,12 +148,12 @@ export const usage = `
       <p style="margin: 4px 0;"><b>🧪 样式测试模式（--dry / --dryrun）：</b></p>
       <p style="margin: 2px 0;">跳过外部请求与数据解码，使用假数据测试各渲染器的排版与图片样式：</p>
       <pre style="margin: 4px 0; padding: 8px 12px; border-radius: 6px; background: var(--k-card-bg, rgba(0, 0, 0, 0.05)); border: 1px solid var(--k-color-divider, rgba(127, 127, 127, 0.2)); font-family: ui-monospace, Consolas, monospace; font-size: 13px;"><code>查询光崽身高装扮.pptr --dryrun
-查询光崽身高装扮.takumi --dry
-查询光崽身高装扮.api --dryrun</code></pre>
+  查询光崽身高装扮.takumi --dry
+  查询光崽身高装扮.api --dryrun</code></pre>
       <p style="margin: 8px 0 2px 0;"><b>🌙 深色模式（-d / --dark / --darkmode）：</b></p>
       <p style="margin: 2px 0;">支持 <code>pptr</code> 和 <code>takumi</code> 出图。可选值：<code>true</code> / <code>false</code> / <code>on</code> / <code>off</code> / <code>dark</code> / <code>light</code> / <code>深色</code> / <code>浅色</code>：</p>
       <pre style="margin: 4px 0; padding: 8px 12px; border-radius: 6px; background: var(--k-card-bg, rgba(0, 0, 0, 0.05)); border: 1px solid var(--k-color-divider, rgba(127, 127, 127, 0.2)); font-family: ui-monospace, Consolas, monospace; font-size: 13px;"><code>查询光崽身高装扮.pptr 【好友码或链接】 -d true
-查询光崽身高装扮.takumi 【好友码或链接】 --dark 深色</code></pre>
+  查询光崽身高装扮.takumi 【好友码或链接】 --dark 深色</code></pre>
       <p style="margin: 8px 0 2px 0;"><b>🛠️ 调试日志（-v / --verbose）：</b></p>
       <p style="margin: 2px 0;">在会话和控制台输出本次解析到的详尽参数：</p>
       <pre style="margin: 4px 0; padding: 8px 12px; border-radius: 6px; background: var(--k-card-bg, rgba(0, 0, 0, 0.05)); border: 1px solid var(--k-color-divider, rgba(127, 127, 127, 0.2)); font-family: ui-monospace, Consolas, monospace; font-size: 13px;"><code>查询光崽身高装扮.text 【好友码或链接】 -v</code></pre>
