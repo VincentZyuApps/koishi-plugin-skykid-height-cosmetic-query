@@ -1,7 +1,7 @@
 import type { Context } from 'koishi'
 import type { Config } from '../config'
 import type { HeightResult } from '../types'
-import { formatCosmeticIconMarkdown, resolveCosmeticIconUrl } from '../qq/cosmetic_icon'
+import { formatCosmeticIconMarkdown, resolveCosmeticIconUrl } from '../qq/icon'
 import { formatDate, generateHeightRows, outfitLabels } from './gen_text'
 
 const basicLabels = ['好友码', 'UUID', '体型值', '身高值', '当前身高', '最高身高', '最矮身高']
