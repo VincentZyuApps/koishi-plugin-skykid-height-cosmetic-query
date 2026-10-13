@@ -159,6 +159,28 @@ Puppeteer / Takumi 是本地生成图片。若要嵌入 QQ Markdown，需要通�
 
 ---
 
+#### 💫 QQ 官方 Markdown 格式风格 (`.md-style`)
+
+> 💡 **指令调用**：`测身高.md-style [好友码/扫码链接]`（别名：`查询光崽身高装扮.md-style` 等）  
+> 📌 **方式解析**：QQ 官方 Bot 原生 Markdown 格式流输出，装扮文字左侧支持嵌入 10×10 ~ 192×192 单品微标小图与底部交互按钮。
+
+↓ 实际效果预览：
+
+<img src="./docs/images/preview/live/preview.live.qqmd-style.png" width="500" alt="live qqmd-style preview">
+
+---
+
+#### 📊 QQ 官方 Markdown 表格模式 (`.md-table`)
+
+> 💡 **指令调用**：`测身高.md-table [好友码/扫码链接]`（别名：`查询光崽身高装扮.md-table` 等）  
+> 📌 **方式解析**：QQ 官方 Bot 原生 Markdown 表格输出，部位与装扮图文合并单元格排版，整齐规范，移动端自适应良好。
+
+↓ 实际效果预览：
+
+<img src="./docs/images/preview/live/preview.live.qqmd-table.png" width="500" alt="live qqmd-table preview">
+
+---
+
 ## ⚙️ 配置项
 
 ### 🌐 后端设置
