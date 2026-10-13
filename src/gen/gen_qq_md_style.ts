@@ -1,16 +1,37 @@
+import type { Context } from 'koishi'
+import type { Config } from '../config'
 import type { HeightResult } from '../types'
-import { formatDate, generateHeightRows } from './gen_text'
+import { formatCosmeticIconMarkdown, resolveCosmeticIconUrl } from '../qq/cosmetic_icon'
+import { formatDate, generateHeightRows, outfitLabels } from './gen_text'
 
 const heightLabels = ['体型值', '身高值', '当前身高', '最高身高', '最矮身高']
-const excludedOutfitLabels = ['好友码', 'UUID', ...heightLabels]
 
 /**
  * 💫 生成 QQ Markdown 格式风格内容。
  */
-export function generateQqMdStyle(result: HeightResult, feedbackNotice?: string): string {
+export async function generateQqMdStyle(
+  ctx: Context,
+  config: Config,
+  result: HeightResult,
+  feedbackNotice?: string,
+): Promise<string> {
   const rows = generateHeightRows(result)
   const get = (label: string) => rows.find(([key]) => key === label)?.[1] || '未知'
-  const outfitRows = rows.filter(([label]) => !excludedOutfitLabels.includes(label))
+  const outfitData = (result.data.outfit || {}) as Record<string, string | undefined>
+
+  const outfitLines: string[] = []
+  if (typeof outfitData === 'object' && Object.keys(outfitData).length) {
+    for (const [key, label] of outfitLabels) {
+      const rawVal = outfitData[key]
+      const displayVal = rows.find(([itemLabel]) => itemLabel === label)?.[1] || '未知'
+      let iconPrefix = ''
+      if (config.qqMdStyleShowCosmeticIcon) {
+        const iconUrl = await resolveCosmeticIconUrl(ctx, config, key, rawVal, config.qqMdCosmeticIconSize)
+        iconPrefix = formatCosmeticIconMarkdown(label, iconUrl, config.qqMdCosmeticIconSize)
+      }
+      outfitLines.push(`- ${iconPrefix}**${escapeMarkdown(label)}**：${escapeMarkdown(displayVal)}`)
+    }
+  }
 
   return [
     '# 🌌 光崽身高装扮查询',
@@ -35,10 +56,10 @@ export function generateQqMdStyle(result: HeightResult, feedbackNotice?: string)
         `- **${escapeMarkdown(label)}**：\`${escapeInlineCode(get(label))}\``,
       ]),
     '',
-    ...(outfitRows.length ? [
+    ...(outfitLines.length ? [
       '## 🧢 装扮信息',
       '',
-      ...outfitRows.map(([label, value]) => `- **${escapeMarkdown(label)}**：${escapeMarkdown(value)}`),
+      ...outfitLines,
       '',
     ] : []),
     result.dryRun

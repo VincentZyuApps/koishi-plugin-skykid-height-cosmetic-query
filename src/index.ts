@@ -27,7 +27,7 @@ export const inject = {
  * 🚀 Koishi 插件入口，按配置注册各类查询命令。
  */
 export function apply(ctx: Context, config: Config) {
-  applyQQServices(ctx)
+  applyQQServices(ctx, config)
 
   ctx.on('ready', async () => {
   if (config.useCustomFont) await ensureRuntimeFonts(ctx, config)

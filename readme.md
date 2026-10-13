@@ -236,7 +236,7 @@ Puppeteer / Takumi 是本地生成图片。若要嵌入 QQ Markdown，需要通�
 
 | 配置名 | 类型 | 默认值 | 备注 |
 | --- | --- | --- | --- |
-| `qqMarkdownButtonMode` | `string[]` | append 除 standalone 外全部勾选 | QQ Markdown 按钮发送行为；包含 `append-text` / `append-api-image` / `append-pptr-image` / `append-takumi-image` / `append-md-table` / `append-md-style` / `standalone`。 |
+| `qqMarkdownButtonMode` | `string[]` | append 除 standalone 外全部勾选 | QQ Markdown 按钮发送行为；包含 `standalone` / `append-api-image` / `append-md-style` / `append-md-table` / `append-pptr-image` / `append-takumi-image`（按指令字典序排列）。 |
 | `qqMarkdownKeyboardJson` | `string` | 空字符串 | QQ Markdown 按钮 JSON；留空时默认一行两个按钮：获取帮助 -> 当前前缀.帮助，玩玩别的 -> help。 |
 | `qqMarkdownImageStorageMode` | `"assets" \| "server"` | `server` | Puppeteer / Takumi 本地图片转公网 URL 的方式。 |
 | `qqMarkdownImageSelfUrl` | `string` | 空字符串 | server 模式公网 URL 覆盖值；留空则回退 `ctx.server.config.selfUrl`。 |
@@ -244,6 +244,9 @@ Puppeteer / Takumi 是本地生成图片。若要嵌入 QQ Markdown，需要通�
 | `qqMarkdownEmbedApiImage` | `boolean` | `true` | QQ 官方平台下，API 出图是否改为 QQ Markdown 内联图片。 |
 | `qqMarkdownEmbedPptrImage` | `boolean` | `true` | QQ 官方平台下，Puppeteer 出图是否改为 QQ Markdown 内联图片。 |
 | `qqMarkdownEmbedTakumiImage` | `boolean` | `true` | QQ 官方平台下，Takumi 出图是否改为 QQ Markdown 内联图片。 |
+| `qqMdStyleShowCosmeticIcon` | `boolean` | `true` | QQ Markdown 格式风格（`md-style`）装扮文字左侧是否展示单品图标图片（需要对应模式公网可访问，如frp或assets服务）。 |
+| `qqMdTableShowCosmeticIcon` | `boolean` | `true` | QQ Markdown 表格模式（`md-table`）装扮单元格左侧是否展示单品图标图片（方案 B1 图文同单元格）。 |
+| `qqMdCosmeticIconSize` | `"minimal" \| "small" \| "medium" \| "large" \| "xlarge" \| "original"` | `minimal` | QQ Markdown 中展示的单品装扮图标尺寸规格（默认 `minimal` 10×10 像素）。 |
 
 ### 🛠️ 调试设置
 

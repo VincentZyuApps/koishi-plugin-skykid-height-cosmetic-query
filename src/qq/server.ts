@@ -7,21 +7,22 @@ import { logInfo } from '../utils/logger'
 
 const IMAGE_CACHE_DIR_NAME = 'skykid-height-cosmetic-query'
 const IMAGE_CACHE_ROUTE = '/skykid-height-cosmetic-query/cache'
+export const ICON_CACHE_ROUTE = '/skykid-height-cosmetic-query/icon'
 const IMAGE_EXTENSIONS = new Set(['.png', '.jpeg', '.jpg', '.webp'])
 
 /**
  * 🌐 注册 QQ Markdown 内联图片缓存 HTTP 路由。
  */
-export function applyQQServices(ctx: Context) {
+export function applyQQServices(ctx: Context, config?: Config) {
   ctx.inject(['server'], (ctx) => {
-    registerQQMarkdownImageServerRoute(ctx)
+    registerQQMarkdownImageServerRoute(ctx, config)
   })
 }
 
 /**
  * 🛣️ 暴露本地缓存图片，供 QQ Markdown 通过公网 URL 访问。
  */
-export function registerQQMarkdownImageServerRoute(ctx: Context) {
+export function registerQQMarkdownImageServerRoute(ctx: Context, config?: Config) {
   const server = (ctx as any).server
   if (!server) return
   server.get(`${IMAGE_CACHE_ROUTE}/:name`, async (koaCtx: any) => {
@@ -39,6 +40,42 @@ export function registerQQMarkdownImageServerRoute(ctx: Context) {
 
     koaCtx.type = getMimeType(path.extname(filename))
     koaCtx.body = createReadStream(filePath)
+  })
+
+  server.get(`${ICON_CACHE_ROUTE}/:item/:id`, async (koaCtx: any) => {
+    const item = String(koaCtx.params.item || '').trim()
+    const id = String(koaCtx.params.id || '').trim()
+    const size = String(koaCtx.query.size || 'minimal').trim()
+    if (!item || !id) {
+      koaCtx.status = 404
+      return
+    }
+
+    const iconsDir = path.join(getQQMarkdownImageCacheDir(ctx.baseDir), 'icons')
+    const fileName = `${item}_${id}_${size}.png`
+    const filePath = path.join(iconsDir, fileName)
+
+    koaCtx.set('Cache-Control', 'public, max-age=604800, immutable')
+    koaCtx.type = 'image/png'
+
+    if (existsSync(filePath)) {
+      koaCtx.body = createReadStream(filePath)
+      return
+    }
+
+    try {
+      await mkdir(iconsDir, { recursive: true })
+      const baseUrl = String(config?.imageApiBaseUrl || 'http://127.0.0.1:60704').replace(/\/+$/, '')
+      const response = await ctx.http.get<ArrayBuffer>(
+        `${baseUrl}/img/cosmetic/${encodeURIComponent(item)}/${encodeURIComponent(id)}?size=${encodeURIComponent(size)}`,
+        { responseType: 'arraybuffer', timeout: 10000 },
+      )
+      const buffer = Buffer.from(response)
+      await writeFile(filePath, buffer)
+      koaCtx.body = buffer
+    } catch {
+      koaCtx.status = 502
+    }
   })
 }
 
@@ -85,7 +122,7 @@ export function getQQMarkdownImageCacheDir(baseDir: string) {
 /**
  * 🔗 解析 server 模式对外公网 URL。
  */
-function resolveQQMarkdownImagePublicBaseUrl(ctx: Context, config: Config) {
+export function resolveQQMarkdownImagePublicBaseUrl(ctx: Context, config: Config) {
   const server = (ctx as any).server
   const raw = String(config.qqMarkdownImageSelfUrl || server?.config?.selfUrl || '').trim()
   return raw.replace(/\/+$/, '')

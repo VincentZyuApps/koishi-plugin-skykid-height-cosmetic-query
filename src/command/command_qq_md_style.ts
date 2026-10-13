@@ -25,7 +25,8 @@ export function registerQqMdStyleCommand(ctx: Context, config: Config) {
       if (!(await ensureQQMarkdownPlatform(ctx, session, config, 'QQ Markdown 格式风格'))) return
       const buttonModes = normalizeQQButtonModes(config)
       const keyboard = hasAppendMdStyleButtonMode(buttonModes) ? buildHeightKeyboard(config) : null
-      await sendQQMarkdownWithGuard(ctx, session, config, generateQqMdStyle(result, config.outfitFeedbackNotice), keyboard, 'qq-md-style')
+      const content = await generateQqMdStyle(ctx, config, result, config.outfitFeedbackNotice)
+      await sendQQMarkdownWithGuard(ctx, session, config, content, keyboard, 'qq-md-style')
     },
     {
       quote: (session) => {

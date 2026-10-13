@@ -1,6 +1,6 @@
 import type { HeightResult } from '../types'
 
-const outfitLabels: [string, string][] = [
+export const outfitLabels: [string, string][] = [
   ['body', '裤子'],
   ['hair', '发型'],
   ['mask', '面具'],

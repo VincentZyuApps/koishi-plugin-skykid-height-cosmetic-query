@@ -29,17 +29,24 @@ export function hasStandaloneQQButtonMode(buttonModes: readonly QQMarkdownButton
 }
 
 /**
- * 📝 判断按钮是否挂在 text Markdown 消息后面。
- */
-export function hasAppendTextButtonMode(buttonModes: readonly QQMarkdownButtonMode[]) {
-  return buttonModes.includes(QQ_MARKDOWN_BUTTON_MODE.APPEND_TEXT)
-}
-
-/**
  * 🌐 判断按钮是否挂在 API 出图 Markdown 消息后面。
  */
 export function hasAppendApiImageButtonMode(buttonModes: readonly QQMarkdownButtonMode[]) {
   return buttonModes.includes(QQ_MARKDOWN_BUTTON_MODE.APPEND_API_IMAGE)
+}
+
+/**
+ * 💫 判断按钮是否挂在 Markdown 格式风格消息后面。
+ */
+export function hasAppendMdStyleButtonMode(buttonModes: readonly QQMarkdownButtonMode[]) {
+  return buttonModes.includes(QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_STYLE)
+}
+
+/**
+ * 📊 判断按钮是否挂在 Markdown 表格消息后面。
+ */
+export function hasAppendMdTableButtonMode(buttonModes: readonly QQMarkdownButtonMode[]) {
+  return buttonModes.includes(QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_TABLE)
 }
 
 /**
@@ -54,18 +61,4 @@ export function hasAppendPptrImageButtonMode(buttonModes: readonly QQMarkdownBut
  */
 export function hasAppendTakumiImageButtonMode(buttonModes: readonly QQMarkdownButtonMode[]) {
   return buttonModes.includes(QQ_MARKDOWN_BUTTON_MODE.APPEND_TAKUMI_IMAGE)
-}
-
-/**
- * 📊 判断按钮是否挂在 Markdown 表格消息后面。
- */
-export function hasAppendMdTableButtonMode(buttonModes: readonly QQMarkdownButtonMode[]) {
-  return buttonModes.includes(QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_TABLE)
-}
-
-/**
- * 💫 判断按钮是否挂在 Markdown 格式风格消息后面。
- */
-export function hasAppendMdStyleButtonMode(buttonModes: readonly QQMarkdownButtonMode[]) {
-  return buttonModes.includes(QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_STYLE)
 }

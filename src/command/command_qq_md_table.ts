@@ -25,7 +25,8 @@ export function registerQqMdTableCommand(ctx: Context, config: Config) {
       if (!(await ensureQQMarkdownPlatform(ctx, session, config, 'QQ Markdown 表格模式'))) return
       const buttonModes = normalizeQQButtonModes(config)
       const keyboard = hasAppendMdTableButtonMode(buttonModes) ? buildHeightKeyboard(config) : null
-      await sendQQMarkdownWithGuard(ctx, session, config, generateQqMdTable(result, config.outfitFeedbackNotice), keyboard, 'qq-md-table')
+      const content = await generateQqMdTable(ctx, config, result, config.outfitFeedbackNotice)
+      await sendQQMarkdownWithGuard(ctx, session, config, content, keyboard, 'qq-md-table')
     },
     {
       quote: (session) => {

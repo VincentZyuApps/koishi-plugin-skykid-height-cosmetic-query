@@ -5,16 +5,15 @@ const DEFAULT_USER_AGENT =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36 Edg/149.0.0.0'
 
 export const DEFAULT_FEEDBACK_NOTICE =
-  '📢 若发现装扮物品的中文标注显示有误或缺失 🎒，欢迎加入交流 Q 群（1085190201）或联系作者 @VincentZyu（QQ：1830540513）反馈更正 🛠️ 感谢光崽们的支持与陪伴 ✨🕯️'
+  '📢 若发现装扮物品的中文标注或图标图片显示有误或缺失 🎒，欢迎加入交流 Q 群（1085190201）或联系作者 @VincentZyu（QQ：1830540513）反馈更正 🛠️ 感谢光崽们的支持与陪伴 ✨🕯️'
 
 export const QQ_MARKDOWN_BUTTON_MODE = {
   STANDALONE: 'standalone',
-  APPEND_TEXT: 'append-text',
   APPEND_API_IMAGE: 'append-api-image',
+  APPEND_MD_STYLE: 'append-md-style',
+  APPEND_MD_TABLE: 'append-md-table',
   APPEND_PPTR_IMAGE: 'append-pptr-image',
   APPEND_TAKUMI_IMAGE: 'append-takumi-image',
-  APPEND_MD_TABLE: 'append-md-table',
-  APPEND_MD_STYLE: 'append-md-style',
 } as const
 
 export type QQMarkdownButtonModeType = typeof QQ_MARKDOWN_BUTTON_MODE[keyof typeof QQ_MARKDOWN_BUTTON_MODE]
@@ -25,6 +24,17 @@ export const QQ_MARKDOWN_IMAGE_STORAGE_MODE = {
 } as const
 
 export type QQMarkdownImageStorageModeType = typeof QQ_MARKDOWN_IMAGE_STORAGE_MODE[keyof typeof QQ_MARKDOWN_IMAGE_STORAGE_MODE]
+
+export const QQ_MARKDOWN_COSMETIC_ICON_SIZE = {
+  MINIMAL: 'minimal',
+  SMALL: 'small',
+  MEDIUM: 'medium',
+  LARGE: 'large',
+  XLARGE: 'xlarge',
+  ORIGINAL: 'original',
+} as const
+
+export type QQMarkdownCosmeticIconSizeType = typeof QQ_MARKDOWN_COSMETIC_ICON_SIZE[keyof typeof QQ_MARKDOWN_COSMETIC_ICON_SIZE]
 
 export interface ForwardPlatformConfig {
   platform: string
@@ -115,6 +125,9 @@ export interface Config {
   qqMarkdownEmbedApiImage: boolean
   qqMarkdownEmbedPptrImage: boolean
   qqMarkdownEmbedTakumiImage: boolean
+  qqMdStyleShowCosmeticIcon: boolean
+  qqMdTableShowCosmeticIcon: boolean
+  qqMdCosmeticIconSize: QQMarkdownCosmeticIconSizeType
 
   // ----- 🛠️ 调试设置 -----
   verboseSessionLog: boolean
@@ -239,31 +252,28 @@ export const Config: Schema<Config> = Schema.intersect([
   Schema.object({
     qqMarkdownButtonMode: Schema.array(Schema.union([
       Schema.const(QQ_MARKDOWN_BUTTON_MODE.STANDALONE).description(`【 ${QQ_MARKDOWN_BUTTON_MODE.STANDALONE}】每次查询成功后额外发送一条 JSON 按钮消息`),
-      Schema.const(QQ_MARKDOWN_BUTTON_MODE.APPEND_TEXT).description(`【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_TEXT}】挂在 text 的 QQ Markdown 文本后面`),
       Schema.const(QQ_MARKDOWN_BUTTON_MODE.APPEND_API_IMAGE).description(`【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_API_IMAGE}】挂在 API 出图 QQ Markdown 内联图片后面`),
+      Schema.const(QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_STYLE).description(`【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_STYLE}】挂在 QQ Markdown 格式风格后面`),
+      Schema.const(QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_TABLE).description(`【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_TABLE}】挂在 QQ Markdown 表格模式后面`),
       Schema.const(QQ_MARKDOWN_BUTTON_MODE.APPEND_PPTR_IMAGE).description(`【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_PPTR_IMAGE}】挂在 Puppeteer 出图 QQ Markdown 内联图片后面`),
       Schema.const(QQ_MARKDOWN_BUTTON_MODE.APPEND_TAKUMI_IMAGE).description(`【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_TAKUMI_IMAGE}】挂在 Takumi 出图 QQ Markdown 内联图片后面`),
-      Schema.const(QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_TABLE).description(`【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_TABLE}】挂在 QQ Markdown 表格模式后面`),
-      Schema.const(QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_STYLE).description(`【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_STYLE}】挂在 QQ Markdown 格式风格后面`),
     ]))
       .role('checkbox')
       .default([
-        QQ_MARKDOWN_BUTTON_MODE.APPEND_TEXT,
         QQ_MARKDOWN_BUTTON_MODE.APPEND_API_IMAGE,
+        QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_STYLE,
+        QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_TABLE,
         QQ_MARKDOWN_BUTTON_MODE.APPEND_PPTR_IMAGE,
         QQ_MARKDOWN_BUTTON_MODE.APPEND_TAKUMI_IMAGE,
-        QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_TABLE,
-        QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_STYLE,
       ])
       .description([
         '🔘 QQ Markdown 按钮发送行为，可多选。',
         `【 ${QQ_MARKDOWN_BUTTON_MODE.STANDALONE}】每次查询成功后额外发送一条 JSON 按钮消息。`,
-        `【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_TEXT}】挂在 text 的 QQ Markdown 文本后面。`,
         `【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_API_IMAGE}】挂在 API 出图 QQ Markdown 内联图片后面，需要 qqMarkdownEmbedApiImage 开启。`,
+        `【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_STYLE}】挂在 QQ Markdown 格式风格后面。`,
+        `【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_TABLE}】挂在 QQ Markdown 表格模式后面。`,
         `【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_PPTR_IMAGE}】挂在 Puppeteer 出图 QQ Markdown 内联图片后面，需要 qqMarkdownEmbedPptrImage 开启。`,
         `【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_TAKUMI_IMAGE}】挂在 Takumi 出图 QQ Markdown 内联图片后面，需要 qqMarkdownEmbedTakumiImage 开启。`,
-        `【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_TABLE}】挂在 QQ Markdown 表格模式后面。`,
-        `【 ${QQ_MARKDOWN_BUTTON_MODE.APPEND_MD_STYLE}】挂在 QQ Markdown 格式风格后面。`,
         '⚠️ 不想发送 QQ 按钮时保持空选即可。条件不满足时默认静默跳过，除非开启调试日志。',
       ].join('<br/>')),
     qqMarkdownKeyboardJson: Schema.string().role('textarea', { rows: [4, 12] }).default('').description('⌨️ QQ Markdown 按钮 JSON。留空时默认一行两个按钮：获取帮助 -> 当前前缀.帮助，玩玩别的 -> help。JSON 解析失败时使用默认按钮。'),
@@ -277,7 +287,7 @@ export const Config: Schema<Config> = Schema.intersect([
         '🖼️ Puppeteer / Takumi 本地出图转 QQ Markdown 内联图片时的公网 URL 生成模式。',
         '【 assets】生成公网图片 URL。只能新增，不能删除，文件名由 assets 服务决定，通常无法自定义。',
         '【 server】从 ctx.baseDir/cache/skykid-height-cosmetic-query 暴露临时图片，并按数量上限仅保留最新图片。',
-        'standalone、append-text、append-md-table、append-md-style 不使用此配置。',
+        'standalone、append-md-style、append-md-table 不使用此配置。',
       ].join('<br/>')),
     qqMarkdownImageSelfUrl: Schema.string().role('textarea', { rows: [2, 5] }).default('').description([
       '🌐 server 模式的公网 URL 覆盖值。',
@@ -291,6 +301,22 @@ export const Config: Schema<Config> = Schema.intersect([
     qqMarkdownEmbedApiImage: Schema.boolean().default(true).description('🌐 QQ 官方平台下，API 出图是否改为 QQ Markdown 内联图片。关闭后保持普通图片 + 耗时文本。'),
     qqMarkdownEmbedPptrImage: Schema.boolean().default(true).description('🖼️ QQ 官方平台下，Puppeteer 出图是否改为 QQ Markdown 内联图片。关闭后保持普通图片 + 耗时文本。'),
     qqMarkdownEmbedTakumiImage: Schema.boolean().default(true).description('⚡ QQ 官方平台下，Takumi 出图是否改为 QQ Markdown 内联图片。关闭后保持普通图片 + 耗时文本。'),
+    qqMdStyleShowCosmeticIcon: Schema.boolean().default(false).description([
+      '🖼️ QQ Markdown 格式风格模式下，装扮文字左侧是否展示装扮物品小图标。',
+      '⚠️ <b>前置要求</b>：必须配置好 <code>imageApi</code> 后端；且使用 <code>server</code> 模式时必须确保已配置可供腾讯 QQ 访问的公网 <code>selfUrl</code>（如frp）。',
+    ].join('<br/>')),
+    qqMdTableShowCosmeticIcon: Schema.boolean().default(false).description([
+      '📊 QQ Markdown 表格模式下，是否展示装扮物品小图标。',
+      '⚠️ <b>前置要求</b>：同上，需配置好 <code>imageApi</code> 后端与可供腾讯 QQ 访问的公网环境（如frp）。',
+    ].join('<br/>')),
+    qqMdCosmeticIconSize: Schema.union([
+      Schema.const(QQ_MARKDOWN_COSMETIC_ICON_SIZE.MINIMAL).description('【 minimal】10×10 px 极简微标（默认推荐，对齐文字行高无位移）'),
+      Schema.const(QQ_MARKDOWN_COSMETIC_ICON_SIZE.SMALL).description('【 small】36×36 px 精致小标（表格推荐）'),
+      Schema.const(QQ_MARKDOWN_COSMETIC_ICON_SIZE.MEDIUM).description('【 medium】48×48 px 列表标准标'),
+      Schema.const(QQ_MARKDOWN_COSMETIC_ICON_SIZE.LARGE).description('【 large】96×96 px 中等单品预览大图'),
+      Schema.const(QQ_MARKDOWN_COSMETIC_ICON_SIZE.XLARGE).description('【 xlarge】192×192 px 高清单品展示'),
+      Schema.const(QQ_MARKDOWN_COSMETIC_ICON_SIZE.ORIGINAL).description('【 original】原始尺寸，不做任何压缩'),
+    ]).role('radio').default(QQ_MARKDOWN_COSMETIC_ICON_SIZE.MINIMAL).description('📐 QQ Markdown 内联装扮图标尺寸规格。'),
   }).description('💬 QQ 官方 Bot Markdown 适配设置'),
 
   Schema.object({

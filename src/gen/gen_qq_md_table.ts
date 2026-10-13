@@ -1,15 +1,37 @@
+import type { Context } from 'koishi'
+import type { Config } from '../config'
 import type { HeightResult } from '../types'
-import { formatDate, generateHeightRows } from './gen_text'
+import { formatCosmeticIconMarkdown, resolveCosmeticIconUrl } from '../qq/cosmetic_icon'
+import { formatDate, generateHeightRows, outfitLabels } from './gen_text'
 
 const basicLabels = ['好友码', 'UUID', '体型值', '身高值', '当前身高', '最高身高', '最矮身高']
 
 /**
  * 📊 生成 QQ Markdown 表格模式内容。
  */
-export function generateQqMdTable(result: HeightResult, feedbackNotice?: string): string {
+export async function generateQqMdTable(
+  ctx: Context,
+  config: Config,
+  result: HeightResult,
+  feedbackNotice?: string,
+): Promise<string> {
   const rows = generateHeightRows(result)
   const basicRows = rows.filter(([label]) => basicLabels.includes(label))
-  const outfitRows = rows.filter(([label]) => !basicLabels.includes(label))
+  const outfitData = (result.data.outfit || {}) as Record<string, string | undefined>
+
+  const outfitTableRows: string[] = []
+  if (typeof outfitData === 'object' && Object.keys(outfitData).length) {
+    for (const [key, label] of outfitLabels) {
+      const rawVal = outfitData[key]
+      const displayVal = rows.find(([itemLabel]) => itemLabel === label)?.[1] || '未知'
+      let iconPrefix = ''
+      if (config.qqMdTableShowCosmeticIcon) {
+        const iconUrl = await resolveCosmeticIconUrl(ctx, config, key, rawVal, config.qqMdCosmeticIconSize)
+        iconPrefix = formatCosmeticIconMarkdown(label, iconUrl, config.qqMdCosmeticIconSize)
+      }
+      outfitTableRows.push(`| ${escapeTableCell(label)} | ${iconPrefix}${escapeTableCell(displayVal)} |`)
+    }
+  }
 
   return [
     '# 🌌 光崽身高装扮查询',
@@ -24,12 +46,12 @@ export function generateQqMdTable(result: HeightResult, feedbackNotice?: string)
     '| --- | --- |',
     ...basicRows.map(([label, value]) => `| ${escapeTableCell(label)} | ${escapeTableCell(value)} |`),
     '',
-    ...(outfitRows.length ? [
+    ...(outfitTableRows.length ? [
       '## 🧢 装扮信息',
       '',
       '| 部位 | 装扮 |',
       '| --- | --- |',
-      ...outfitRows.map(([label, value]) => `| ${escapeTableCell(label)} | ${escapeTableCell(value)} |`),
+      ...outfitTableRows,
       '',
     ] : []),
     result.dryRun
