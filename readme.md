@@ -104,13 +104,60 @@ Puppeteer / Takumi 是本地生成图片。若要嵌入 QQ Markdown，需要通�
 
 ### 🌐 真实查询 live
 
-| 输出方式 | 预览 |
-| --- | --- |
-| pptr<br>（浏览器截图出图）<br>`查询光崽身高装扮.pptr` | <img src="./docs/images/preview/live/preview.live.pptr.png" width="420" alt="live pptr preview"> |
-| api<br>（外部 Pillow 后端出图）<br>`查询光崽身高装扮.api` | <img src="./docs/images/preview/live/preview.live.api.png" width="420" alt="live api preview"> |
-| forward<br>（OneBot 合并转发）<br>`查询光崽身高装扮.forward` | <img src="./docs/images/preview/live/preview.live.forward.png" width="420" alt="live forward preview"> |
-| takumi<br>（wasm 渲染图片）<br>`查询光崽身高装扮.takumi` | <img src="./docs/images/preview/live/preview.live.takumi.png" width="420" alt="live takumi preview"> |
-| text<br>（直接拼接文本）<br>`查询光崽身高装扮.text` | <img src="./docs/images/preview/live/preview.live.text.png" width="420" alt="live text preview"> |
+#### 🖼️ Puppeteer 浏览器截图出图 (`.pptr`)
+
+> 💡 **指令调用**：`测身高.pptr [好友码/扫码链接]`（别名：`查询光崽身高装扮.pptr` 等）  
+> 📌 **方式解析**：调用无头浏览器渲染 HTML/CSS 卡片后截图生成图片，排版精美细腻，支持深浅色模式与自定义字体。
+
+↓ 实际效果预览：
+
+<img src="./docs/images/preview/live/preview.live.pptr.png" width="600" alt="live pptr preview">
+
+---
+
+#### 🌐 外部 Pillow 后端出图 (`.api`)
+
+> 💡 **指令调用**：`测身高.api [好友码/扫码链接]`（别名：`查询光崽身高装扮.api` 等）  
+> 📌 **方式解析**：调用本地或远程 Fastapi Pillow 绘图后端接口极速合成高清游戏卡片，内置周年庆全套饰品双层内框排版。
+
+↓ 实际效果预览：
+
+<img src="./docs/images/preview/live/preview.live.api.png" width="600" alt="live api preview">
+
+---
+
+#### 📨 OneBot 合并转发消息 (`.forward`)
+
+> 💡 **指令调用**：`测身高.forward [好友码/扫码链接]`（别名：`查询光崽身高装扮.forward` 等）  
+> 📌 **方式解析**：以聊天记录合并转发节点形式发送，不刷屏，支持 OneBot、Red 等协议平台。
+
+↓ 实际效果预览：
+
+<img src="./docs/images/preview/live/preview.live.forward.png" width="500" alt="live forward preview">
+
+---
+
+#### ⚡ Takumi wasm 极速出图 (`.takumi`)
+
+> 💡 **指令调用**：`测身高.takumi [好友码/扫码链接]`（别名：`查询光崽身高装扮.takumi` 等）  
+> 📌 **方式解析**：基于 `@takumi-rs/wasm` 本地编译级快速渲染卡片图片，毫秒级响应，开销极低。
+
+↓ 实际效果预览：
+
+<img src="./docs/images/preview/live/preview.live.takumi.png" width="600" alt="live takumi preview">
+
+---
+
+#### 📝 纯文本直接输出 (`.text`)
+
+> 💡 **指令调用**：`测身高.text [好友码/扫码链接]`（别名：`查询光崽身高装扮.text` 等）  
+> 📌 **方式解析**：直接拼接纯文本与 Emoji 符号，轻量极速，适合无图形环境或弱网环境。
+
+↓ 实际效果预览：
+
+<img src="./docs/images/preview/live/preview.live.text.png" width="500" alt="live text preview">
+
+---
 
 ## ⚙️ 配置项
 
