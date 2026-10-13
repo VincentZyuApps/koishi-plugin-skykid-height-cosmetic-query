@@ -15,29 +15,35 @@ export function registerHelpCommand(ctx: Context, config: Config) {
   if (aliases.length) command.alias(...aliases)
   command
     .action(async ({ session }) => {
-      let guideImageUrl: string | undefined
-      if (config.helpGuideImageShow && config.helpGuideImagePath) {
-        guideImageUrl = await resolveRepoImageUrl(config, config.helpGuideImagePath)
-      }
-
-      if (session) {
-        const isQQ = isQQOfficialSession(session, config)
-        if (config.qqMarkdownHelpCommand && isQQ) {
-          const markdown = generateHelpMarkdown(config, guideImageUrl)
-          const keyboard = buildHeightKeyboard(config)
-          await sendQQMarkdownWithGuard(ctx, session, config, markdown, keyboard, 'help-markdown')
-          return
+      try {
+        let guideImageUrl: string | undefined
+        if (config.helpGuideImageShow && config.helpGuideImagePath) {
+          guideImageUrl = await resolveRepoImageUrl(config, config.helpGuideImagePath)
         }
 
-        const rawMarkdown = generateHelpMarkdown(config)
-        const contentElements: (string | h)[] = [withQuote(session, config, rawMarkdown) as any]
-        if (guideImageUrl) {
-          contentElements.push(h.image(guideImageUrl))
-        }
-        return contentElements
-      }
+        if (session) {
+          const isQQ = isQQOfficialSession(session, config)
+          if (config.qqMarkdownHelpCommand && isQQ) {
+            const markdown = generateHelpMarkdown(config, guideImageUrl)
+            const keyboard = buildHeightKeyboard(config)
+            await sendQQMarkdownWithGuard(ctx, session, config, markdown, keyboard, 'help-markdown')
+            return
+          }
 
-      return generateHelpMarkdown(config, guideImageUrl)
+          const rawMarkdown = generateHelpMarkdown(config)
+          const quoted = withQuote(session, config, rawMarkdown)
+          const contentElements: (string | h)[] = Array.isArray(quoted) ? [...quoted] : [quoted]
+          if (guideImageUrl) {
+            contentElements.push(h.image(guideImageUrl))
+          }
+          return contentElements
+        }
+
+        return generateHelpMarkdown(config, guideImageUrl)
+      } catch (error) {
+        ctx.logger('skykid-height-cosmetic-query').error('获取帮助指令执行异常:', error)
+        return '❌ 获取帮助失败，请稍后重试。'
+      }
     })
 
   const barePrefix = String(config.commandPrefix || '测身高').trim()
