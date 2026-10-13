@@ -79,8 +79,8 @@ function generateHelpMarkdown(config: Config, guideImageUrl?: string): string {
 
   const prefixSection = [
     '### 📌 触发前缀',
-    `- **默认前缀**：\`${config.commandPrefix}\``,
-    ...(prefixAliases.length ? [`- **前缀别名**：${prefixAliases.map((a) => `\`${a}\``).join(' / ')}`] : []),
+    `> **默认前缀**：\`${config.commandPrefix}\``,
+    ...(prefixAliases.length ? [`> **前缀别名**：${prefixAliases.map((a) => `\`${a}\``).join(' / ')}`] : []),
   ]
 
   const commandLines = [
@@ -97,10 +97,10 @@ function generateHelpMarkdown(config: Config, guideImageUrl?: string): string {
 
   const optionLines = [
     '### ⚙️ 可选参数',
-    '- 🧪 **测试模式**：追加 `--dry` 或 `--dryrun`（跳过请求，不消耗好友码）',
-    '- 🌙 **深色模式**：追加 `-d true` 或 `--dark dark`（Puppeteer / Takumi 支持）',
-    '- 🛠️ **调试详情**：追加 `-v` 或 `--verbose` 输出调用详情',
-    '- ⚠️ *默认 queryAction=delete，会消费一次性好友码。*',
+    '> 🧪 **测试模式**：追加 `--dry` 或 `--dryrun`（跳过请求，不消耗好友码）',
+    '> 🌙 **深色模式**：追加 `-d true` 或 `--dark dark`（Puppeteer / Takumi 支持）',
+    '> 🛠️ **调试详情**：追加 `-v` 或 `--verbose` 输出调用详情',
+    '> ⚠️ *默认 queryAction=delete，会消费一次性好友码。*',
   ]
 
   const sections = [
