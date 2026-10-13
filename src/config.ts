@@ -123,6 +123,7 @@ export interface Config {
   qqMarkdownImageSelfUrl: string
   qqMarkdownImageMaxFiles: number
   qqMarkdownEmbedApiImage: boolean
+  qqMarkdownEmbedApiImageProxy: boolean
   qqMarkdownEmbedPptrImage: boolean
   qqMarkdownEmbedTakumiImage: boolean
   qqMdStyleShowCosmeticIcon: boolean
@@ -299,6 +300,12 @@ export const Config: Schema<Config> = Schema.intersect([
       '缓存目录固定为 ctx.baseDir/cache/skykid-height-cosmetic-query；仅保留最新 N 张，填写 <= 0 表示不设置上限。',
     ].join('<br/>')),
     qqMarkdownEmbedApiImage: Schema.boolean().default(true).description('🌐 QQ 官方平台下，API 出图是否改为 QQ Markdown 内联图片。关闭后保持普通图片 + 耗时文本。'),
+    qqMarkdownEmbedApiImageProxy: Schema.boolean().default(true).description([
+      '🌐 QQ 官方平台下，API 出图转 Markdown 时是否由 Koishi（asset 或 server 服务）中转托管。',
+      '✅ <b>默认开启</b>：当后端为局域网或内网地址（如 127.0.0.1:60704）时，自动拉取图片并转为公网可访问的 URL，避免腾讯服务器拉取失败裂图。',
+      '⚠️ <b>前置要求</b>：需要已配置好 <code>assets</code> 服务或 <code>server</code> 服务的公网访问地址（如frp穿透的 selfUrl）。',
+      'ℹ️ <b>关闭场景</b>：仅当上方 <code>imageApiBaseUrl</code> 填写的本身就是公网可直接访问的域名/IP 时，方可关闭此项直接直连。',
+    ].join('<br/>')),
     qqMarkdownEmbedPptrImage: Schema.boolean().default(true).description('🖼️ QQ 官方平台下，Puppeteer 出图是否改为 QQ Markdown 内联图片。关闭后保持普通图片 + 耗时文本。'),
     qqMarkdownEmbedTakumiImage: Schema.boolean().default(true).description('⚡ QQ 官方平台下，Takumi 出图是否改为 QQ Markdown 内联图片。关闭后保持普通图片 + 耗时文本。'),
     qqMdStyleShowCosmeticIcon: Schema.boolean().default(true).description([

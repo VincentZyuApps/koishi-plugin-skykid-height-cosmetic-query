@@ -242,6 +242,7 @@ Puppeteer / Takumi 是本地生成图片。若要嵌入 QQ Markdown，需要通�
 | `qqMarkdownImageSelfUrl` | `string` | 空字符串 | server 模式公网 URL 覆盖值；留空则回退 `ctx.server.config.selfUrl`。 |
 | `qqMarkdownImageMaxFiles` | `number` | `5` | server 模式缓存图片数量上限；`<= 0` 表示不限制。 |
 | `qqMarkdownEmbedApiImage` | `boolean` | `true` | QQ 官方平台下，API 出图是否改为 QQ Markdown 内联图片。 |
+| `qqMarkdownEmbedApiImageProxy` | `boolean` | `true` | QQ 官方平台下，API 出图转 Markdown 时是否由 Koishi（asset 或 server 服务）中转托管；局域网后端必须开启以供腾讯访问（如frp或assets服务）。 |
 | `qqMarkdownEmbedPptrImage` | `boolean` | `true` | QQ 官方平台下，Puppeteer 出图是否改为 QQ Markdown 内联图片。 |
 | `qqMarkdownEmbedTakumiImage` | `boolean` | `true` | QQ 官方平台下，Takumi 出图是否改为 QQ Markdown 内联图片。 |
 | `qqMdStyleShowCosmeticIcon` | `boolean` | `true` | QQ Markdown 格式风格（`md-style`）装扮文字左侧是否展示单品图标图片（需要对应模式公网可访问，如frp或assets服务）。 |

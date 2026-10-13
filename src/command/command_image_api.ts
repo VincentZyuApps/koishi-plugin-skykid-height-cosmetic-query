@@ -2,10 +2,10 @@ import { Context, h } from 'koishi'
 import type { Config } from '../config'
 import { buildHeightApiRenderUrl, renderHeightApi, type RenderHeightApiOptions } from '../gen/gen_image_api'
 import { hasAppendApiImageButtonMode, normalizeQQButtonModes } from '../qq/button'
-import { fitImageDimensionsByWidth, formatHeightImageMarkdown } from '../qq/image'
+import { fitImageDimensionsByWidth, formatHeightImageMarkdown, getImageDimensions } from '../qq/image'
 import { buildHeightKeyboard } from '../qq/keyboard'
 import { notifyQQButtonSkip } from '../qq/notify'
-import { isQQOfficialSession, sendQQMarkdownWithGuard } from '../qq/sender'
+import { isQQOfficialSession, resolveQQMarkdownImageUrl, sendQQMarkdownWithGuard } from '../qq/sender'
 import { buildCommandAliases, buildCommandName, registerHeightCommand } from './common'
 
 /**
@@ -34,9 +34,18 @@ export function registerApiCommand(ctx: Context, config: Config) {
 
       if (isQQOfficialSession(session)) {
         if (config.qqMarkdownEmbedApiImage) {
-          const url = buildHeightApiRenderUrl(result, renderOptions)
+          let imageUrl: string
+          let imageBuffer: Buffer | null = null
+
+          if (config.qqMarkdownEmbedApiImageProxy) {
+            imageBuffer = await renderHeightApi(ctx, config, result, renderOptions)
+            imageUrl = await resolveQQMarkdownImageUrl(ctx, config, imageBuffer, 'jpeg')
+          } else {
+            imageUrl = buildHeightApiRenderUrl(result, renderOptions).toString()
+          }
+
           const dimensions = fitImageDimensionsByWidth(
-            { width: config.imageApiWidth, height: config.imageApiHeight },
+            imageBuffer ? getImageDimensions(imageBuffer) : { width: config.imageApiWidth, height: config.imageApiHeight },
             { maxWidth: 900, fallback: { width: 900, height: 506 } },
           )
           const footers = [
@@ -47,7 +56,7 @@ export function registerApiCommand(ctx: Context, config: Config) {
             ctx,
             session,
             config,
-            formatHeightImageMarkdown('🌌 光崽身高装扮查询', url.toString(), dimensions.width, dimensions.height, footers),
+            formatHeightImageMarkdown('🌌 光崽身高装扮查询', imageUrl, dimensions.width, dimensions.height, footers),
             shouldAppendButton ? buildHeightKeyboard(config) : null,
             'api-image',
           )
