@@ -88,6 +88,14 @@ QQ Markdown 相关输出仅支持 Koishi 的 QQ 官方 Bot 平台，非 QQ 平�
 
 按钮行为由 `qqMarkdownButtonMode` 控制，默认勾选所有 append 行为，不勾选 standalone。`append-api-image` / `append-pptr-image` / `append-takumi-image` 需要对应的内联图片开关为 `true` 才能挂按钮；否则默认静默跳过，只有开启 `verboseSessionLog` / `verboseConsoleLog` 才会提示。
 
+## 📱 线下活动外观二维码获取指引
+
+若没有生成好友码，也可直接截取游戏内“线下活动外观二维码”直接发送给机器人识别测算：
+
+<p align="center">
+  <img src="./docs/images/help/offline-qrcode/index.png" width="600" alt="线下活动外观二维码获取指引">
+</p>
+
 Puppeteer / Takumi 是本地生成图片。若要嵌入 QQ Markdown，需要通过 `server` 或 `assets` 生成公网图片 URL；server 模式缓存目录为 `ctx.baseDir/cache/skykid-height-cosmetic-query`，暴露路由为 `/skykid-height-cosmetic-query/cache/:name`。
 
 ## 🖼️ 效果预览
