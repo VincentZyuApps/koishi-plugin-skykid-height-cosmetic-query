@@ -96,7 +96,6 @@ export const usage = `
         <li>输入格式：光遇一次性好友码，如 <code>ABCD-EFGH-IJKL</code> 或 12 位无横杠码 <code>ABCDEFGHIJKL</code>。</li>
         <li>行为机制：通过 POW 运算向 <code>sky.cesgao.cn</code> 发起查询，<b>默认 <code>action=delete</code> 会消费一次性好友码</b>。</li>
       </ul>
-
       <p style="margin: 8px 0 4px 0;"><b>2️⃣ 离线扫码链接模式（零依赖本地解码）：</b></p>
       <ul style="margin: 4px 0; padding-left: 20px;">
         <li>输入格式：严格以 <code>https://sky.thatg.co/o=</code> 开头的扫码 URL，例如 <code>https://sky.thatg.co/o=8RZ7...</code>。</li>
@@ -110,7 +109,7 @@ export const usage = `
   <details style="${detailsStyle}">
     <summary style="${summaryStyle}"><b style="color: #b45309;">📌 指令列表与输出形态（纯文本 / 转发 / 多引擎出图 / QQ Markdown）</b></summary>
     <div style="${detailsBodyStyle}">
-      <p style="margin: 4px 0;">默认主指令前缀是 <code>查询光崽身高装扮</code>。前缀别名包含 <code>查询光崽身高</code>、<code>查询光崽装扮</code>、<code>查询身高</code>、<code>查询装扮</code>、<code>测身高</code>，每个前缀均可与以下子指令后缀自由搭配：</p>
+      <p style="margin: 4px 0;">默认配置的主指令前缀是 <code>测身高</code>。默认配置的前缀别名包含 <code>查询光崽身高装扮</code>、<code>查询光崽身高</code>、<code>查询光崽装扮</code>、<code>查询身高</code>、<code>查询装扮</code>，每个前缀均可与以下子指令后缀自由搭配：</p>
       <ul style="margin: 4px 0; padding-left: 20px;">
         <li>📝 <b>查询光崽身高装扮.text</b> - 纯文本输出（带装扮与详细身高编号）</li>
         <li>🖼️ <b>查询光崽身高装扮.pptr</b> - Puppeteer 浏览器渲染卡片图</li>
@@ -137,12 +136,10 @@ export const usage = `
       <pre style="margin: 4px 0; padding: 8px 12px; border-radius: 6px; background: var(--k-card-bg, rgba(0, 0, 0, 0.05)); border: 1px solid var(--k-color-divider, rgba(127, 127, 127, 0.2)); font-family: ui-monospace, Consolas, monospace; font-size: 13px;"><code>查询光崽身高装扮.pptr --dryrun
 查询光崽身高装扮.takumi --dry
 查询光崽身高装扮.api --dryrun</code></pre>
-
       <p style="margin: 8px 0 2px 0;"><b>🌙 深色模式（-d / --dark / --darkmode）：</b></p>
       <p style="margin: 2px 0;">支持 <code>pptr</code> 和 <code>takumi</code> 出图。可选值：<code>true</code> / <code>false</code> / <code>on</code> / <code>off</code> / <code>dark</code> / <code>light</code> / <code>深色</code> / <code>浅色</code>：</p>
       <pre style="margin: 4px 0; padding: 8px 12px; border-radius: 6px; background: var(--k-card-bg, rgba(0, 0, 0, 0.05)); border: 1px solid var(--k-color-divider, rgba(127, 127, 127, 0.2)); font-family: ui-monospace, Consolas, monospace; font-size: 13px;"><code>查询光崽身高装扮.pptr 【好友码或链接】 -d true
 查询光崽身高装扮.takumi 【好友码或链接】 --dark 深色</code></pre>
-
       <p style="margin: 8px 0 2px 0;"><b>🛠️ 调试日志（-v / --verbose）：</b></p>
       <p style="margin: 2px 0;">在会话和控制台输出本次解析到的详尽参数：</p>
       <pre style="margin: 4px 0; padding: 8px 12px; border-radius: 6px; background: var(--k-card-bg, rgba(0, 0, 0, 0.05)); border: 1px solid var(--k-color-divider, rgba(127, 127, 127, 0.2)); font-family: ui-monospace, Consolas, monospace; font-size: 13px;"><code>查询光崽身高装扮.text 【好友码或链接】 -v</code></pre>
