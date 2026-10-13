@@ -30,13 +30,26 @@ export function registerHelpCommand(ctx: Context, config: Config) {
             return
           }
 
-          const rawMarkdown = generateHelpMarkdown(config)
-          const quoted = withQuote(session, config, rawMarkdown)
-          const contentElements: (string | h)[] = Array.isArray(quoted) ? [...quoted] : [quoted]
+          // 非 QQ 官方平台：组装图文消息流，保证排版顺序与 Markdown 卡片完全一致
+          const baseMarkdown = generateBaseHelpMarkdown(config)
+          const elements: (string | h)[] = []
+
           if (guideImageUrl) {
-            contentElements.push(h.image(guideImageUrl))
+            elements.push(`${baseMarkdown}\n\n---\n\n### 📱 线下活动外观二维码获取指引\n`)
+            elements.push(h.image(guideImageUrl))
+            if (config.outfitFeedbackNotice) {
+              elements.push(`\n---\n\n> ${config.outfitFeedbackNotice}`)
+            }
+          } else {
+            let fullText = baseMarkdown
+            if (config.outfitFeedbackNotice) {
+              fullText += `\n\n---\n\n> ${config.outfitFeedbackNotice}`
+            }
+            elements.push(fullText)
           }
-          return contentElements
+
+          const quoted = withQuote(session, config, elements)
+          return Array.isArray(quoted) ? quoted : [quoted]
         }
 
         return generateHelpMarkdown(config, guideImageUrl)
@@ -62,9 +75,9 @@ export function registerHelpCommand(ctx: Context, config: Config) {
 }
 
 /**
- * 🧾 生成统一的 Markdown 帮助文档（单一信源：在 QQ 平台为原生 Markdown 卡片，其他平台为原始 Markdown 文本）。
+ * 🧾 生成统一的基础 Markdown 帮助文本（不含长图与反馈通告）。
  */
-function generateHelpMarkdown(config: Config, guideImageUrl?: string): string {
+function generateBaseHelpMarkdown(config: Config): string {
   const targetPlaceholder = '`[好友码 / 二维码 / 链接]`'
   const prefixAliases = Array.isArray(config.commandPrefixAliases)
     ? config.commandPrefixAliases.filter((item) => String(item || '').trim())
@@ -103,12 +116,19 @@ function generateHelpMarkdown(config: Config, guideImageUrl?: string): string {
     '> ⚠️ *默认 queryAction=delete，会消费一次性好友码。*',
   ]
 
-  const sections = [
+  return [
     headerLines.join('\n'),
     prefixSection.join('\n'),
     commandLines.join('\n'),
     optionLines.join('\n'),
-  ]
+  ].join('\n\n')
+}
+
+/**
+ * 🧾 生成统一的 Markdown 帮助文档（单一信源：在 QQ 平台为原生 Markdown 卡片，其他平台为原始 Markdown 文本）。
+ */
+function generateHelpMarkdown(config: Config, guideImageUrl?: string): string {
+  const sections = [generateBaseHelpMarkdown(config)]
 
   if (guideImageUrl) {
     const width = config.helpGuideImageWidth ? `#${config.helpGuideImageWidth}` : ''
