@@ -1,4 +1,5 @@
 import { Schema } from 'koishi'
+import { DEFAULT_QQ_MARKDOWN_KEYBOARD, stringifyCompact } from './qq/keyboard'
 import { DEFAULT_LXGW_WENKAI_PATH } from './utils/fonts'
 
 const DEFAULT_USER_AGENT =
@@ -318,7 +319,14 @@ export const Config: Schema<Config> = Schema.intersect([
         '🔘 QQ Markdown 按钮发送行为，可多选。',
         '⚠️ 不想发送 QQ 按钮时保持空选即可。条件不满足时默认静默跳过，除非开启调试日志。',
       ].join('<br/>')),
-    qqMarkdownKeyboardJson: Schema.string().role('textarea', { rows: [4, 12] }).default('').description('⌨️ QQ Markdown 按钮 JSON。留空时默认一行两个按钮：获取帮助 -> 当前前缀.帮助，玩玩别的 -> help。JSON 解析失败时使用默认按钮。'),
+    qqMarkdownKeyboardJson: Schema.string()
+      .role('textarea', { rows: [6, 16] })
+      .default(stringifyCompact(DEFAULT_QQ_MARKDOWN_KEYBOARD))
+      .description([
+        '⌨️ <b>QQ Markdown 按钮 JSON 配置。</b>',
+        '默认包含四行八个常用操作与出图按钮，支持 <code>${commandPrefix}</code> 动态前缀占位符。',
+        '支持自定义按钮文字、颜色样式 (style) 和点击操作；JSON 解析失败时自动回退默认按钮。',
+      ].join('<br/>')),
     qqMarkdownImageStorageMode: Schema.union([
       Schema.const(QQ_MARKDOWN_IMAGE_STORAGE_MODE.ASSETS).description(`【📦 ${QQ_MARKDOWN_IMAGE_STORAGE_MODE.ASSETS}】使用 Koishi assets 服务发送 Markdown 内嵌图片`),
       Schema.const(QQ_MARKDOWN_IMAGE_STORAGE_MODE.SERVER).description(`【🌐 ${QQ_MARKDOWN_IMAGE_STORAGE_MODE.SERVER}】使用 Koishi server 服务发送 Markdown 内嵌图片`),
@@ -363,13 +371,13 @@ export const Config: Schema<Config> = Schema.intersect([
       '⚠️ <b>前置要求</b>：同上，需配置好 <code>imageApi</code> 后端与可供腾讯 QQ 访问的公网环境（如frp）。',
     ].join('<br/>')),
     qqMdCosmeticIconSize: Schema.union([
-      Schema.const(QQ_MARKDOWN_COSMETIC_ICON_SIZE.MINIMAL).description('【 minimal】10×10 px 极简微标（默认推荐，对齐文字行高无位移）'),
-      Schema.const(QQ_MARKDOWN_COSMETIC_ICON_SIZE.SMALL).description('【 small】36×36 px 精致小标（表格推荐）'),
-      Schema.const(QQ_MARKDOWN_COSMETIC_ICON_SIZE.MEDIUM).description('【 medium】48×48 px 列表标准标'),
-      Schema.const(QQ_MARKDOWN_COSMETIC_ICON_SIZE.LARGE).description('【 large】96×96 px 中等单品预览大图'),
-      Schema.const(QQ_MARKDOWN_COSMETIC_ICON_SIZE.XLARGE).description('【 xlarge】192×192 px 高清单品展示'),
-      Schema.const(QQ_MARKDOWN_COSMETIC_ICON_SIZE.ORIGINAL).description('【 original】原始尺寸，不做任何压缩'),
-    ]).role('radio').default(QQ_MARKDOWN_COSMETIC_ICON_SIZE.MINIMAL).description('📐 QQ Markdown 内联装扮图标尺寸规格。'),
+      Schema.const(QQ_MARKDOWN_COSMETIC_ICON_SIZE.MINIMAL).description('【🔹 minimal】10×10 px 极简微标（对齐文字行高无位移）'),
+      Schema.const(QQ_MARKDOWN_COSMETIC_ICON_SIZE.SMALL).description('【✨ small】36×36 px 精致小标（默认推荐，表格推荐）'),
+      Schema.const(QQ_MARKDOWN_COSMETIC_ICON_SIZE.MEDIUM).description('【📱 medium】48×48 px 列表标准标'),
+      Schema.const(QQ_MARKDOWN_COSMETIC_ICON_SIZE.LARGE).description('【🖼️ large】96×96 px 中等单品预览大图'),
+      Schema.const(QQ_MARKDOWN_COSMETIC_ICON_SIZE.XLARGE).description('【🌟 xlarge】192×192 px 高清单品展示'),
+      Schema.const(QQ_MARKDOWN_COSMETIC_ICON_SIZE.ORIGINAL).description('【📦 original】原始尺寸，不做任何压缩'),
+    ]).role('radio').default(QQ_MARKDOWN_COSMETIC_ICON_SIZE.SMALL).description('📐 QQ Markdown 内联装扮图标尺寸规格。'),
     qqMdCosmeticIconTimestampBuster: Schema.boolean().default(false).experimental().description([
       '⏱️ <b>[实验性]</b> 装扮图标 URL 追加秒级 Unix 时间戳参数（<code>?t=...</code>）。',
       '⚠️ <b>使用场景</b>：如果发现 QQ 客户端中的装扮图标一直不刷新（显示的是历史本地缓存旧图），可以尝试打开此开关强制每次重新拉取最新图标。',

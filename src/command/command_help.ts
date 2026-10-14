@@ -72,6 +72,24 @@ export function registerHelpCommand(ctx: Context, config: Config) {
       return session.execute(helpCommandName)
     })
   }
+
+  // 🖱️ 监听 QQ 官方 Bot 的回调按钮事件（action.type = 1），支持无感静默点击触发
+  ctx.on('interaction/button', async (session) => {
+    const button = session.event?.button as any
+    const buttonData = String(button?.data || button?.id || '').trim()
+    if (!buttonData) return
+
+    const cleanPrefix = String(config.commandPrefix || '测身高').trim().replace(/\.+$/, '')
+    const helpCommand = `${cleanPrefix}.帮助`
+
+    if (buttonData === helpCommand || buttonData === 'help') {
+      try {
+        await session.execute(buttonData)
+      } catch (error) {
+        ctx.logger('skykid-height-cosmetic-query').warn('执行回调按钮指令失败:', buttonData, error)
+      }
+    }
+  })
 }
 
 /**

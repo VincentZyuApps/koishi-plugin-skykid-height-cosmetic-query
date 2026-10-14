@@ -12,40 +12,75 @@ export interface KeyboardRows {
 export const QQ_MARKDOWN_BUTTON_ONLY_CONTENT = '# 光遇身高查询操作按钮'
 
 /**
- * ⌨️ 根据配置构造 QQ 官方 Bot keyboard。
+ * ⌨️ 默认四行八按钮布局定义，支持动态占位符 ${commandPrefix}
+ */
+export const DEFAULT_QQ_MARKDOWN_KEYBOARD: KeyboardRows = {
+  rows: [
+    {
+      buttons: [
+        {
+          render_data: { label: '❔ 获取帮助', style: 1 },
+          action: { type: 1, permission: { type: 2 }, data: '${commandPrefix}.帮助', enter: false },
+        },
+        {
+          render_data: { label: '🧭 玩玩别的', style: 0 },
+          action: { type: 1, permission: { type: 2 }, data: 'help', enter: false },
+        },
+      ],
+    },
+    {
+      buttons: [
+        {
+          render_data: { label: '🖼️ Puppeteer出图', style: 0 },
+          action: { type: 2, permission: { type: 2 }, data: '${commandPrefix}.pptr', enter: false },
+        },
+        {
+          render_data: { label: '⚡ Takumi出图', style: 0 },
+          action: { type: 2, permission: { type: 2 }, data: '${commandPrefix}.takumi', enter: false },
+        },
+      ],
+    },
+    {
+      buttons: [
+        {
+          render_data: { label: '💫 Markdown卡片', style: 0 },
+          action: { type: 2, permission: { type: 2 }, data: '${commandPrefix}.md-style', enter: false },
+        },
+        {
+          render_data: { label: '📊 Markdown表格', style: 0 },
+          action: { type: 2, permission: { type: 2 }, data: '${commandPrefix}.md-table', enter: false },
+        },
+      ],
+    },
+    {
+      buttons: [
+        {
+          render_data: { label: '🌐 API远程出图', style: 0 },
+          action: { type: 2, permission: { type: 2 }, data: '${commandPrefix}.api', enter: false },
+        },
+        {
+          render_data: { label: '📝 纯文本输出', style: 0 },
+          action: { type: 2, permission: { type: 2 }, data: '${commandPrefix}.text', enter: false },
+        },
+      ],
+    },
+  ],
+}
+
+/**
+ * ⌨️ 根据配置构造 QQ 官方 Bot keyboard，自动替换 ${commandPrefix} 占位符。
  */
 export function buildHeightKeyboard(config: Config): KeyboardRows {
-  const fallbackKeyboard = buildDefaultHeightKeyboard(config)
-  const raw = String(config.qqMarkdownKeyboardJson || stringifyCompact(fallbackKeyboard))
+  const prefix = getCleanCommandPrefix(config)
+  let raw = String(config.qqMarkdownKeyboardJson || stringifyCompact(DEFAULT_QQ_MARKDOWN_KEYBOARD))
+  raw = raw.replace(/\$\{commandPrefix\}/g, prefix)
 
   try {
     const parsed = JSON.parse(raw)
     if (parsed?.rows?.[0]?.buttons?.length) return parsed
   } catch {}
 
-  return fallbackKeyboard
-}
-
-/**
- * ⌨️ 构造默认 QQ 官方 Bot keyboard。
- */
-export function buildDefaultHeightKeyboard(config: Config): KeyboardRows {
-  return {
-    rows: [
-      {
-        buttons: [
-          {
-            render_data: { label: '❔ 获取帮助', style: 1 },
-            action: { type: 2, permission: { type: 2 }, data: buildHelpCommandName(config), enter: true },
-          },
-          {
-            render_data: { label: '🧭 玩玩别的', style: 0 },
-            action: { type: 2, permission: { type: 2 }, data: 'help', enter: true },
-          },
-        ],
-      },
-    ],
-  }
+  return resolveKeyboardTemplate(DEFAULT_QQ_MARKDOWN_KEYBOARD, prefix)
 }
 
 /**
@@ -59,10 +94,15 @@ export function stringifyCompact(obj: object): string {
 }
 
 /**
- * ❔ 拼出帮助指令，避免 qq 模块反向依赖 command 模块。
+ * 🧩 获取纯净的前缀字符串。
  */
-function buildHelpCommandName(config: Config): string {
-  const prefix = String(config.commandPrefix || '查询光崽身高装扮').trim().replace(/\.+$/, '') || '查询光崽身高装扮'
-  const suffix = String(config.helpCommandSuffix || '帮助').trim().replace(/^\.+/, '') || '帮助'
-  return `${prefix}.${suffix}`
+function getCleanCommandPrefix(config: Config): string {
+  return String(config.commandPrefix || '测身高').trim().replace(/\.+$/, '') || '测身高'
+}
+
+/**
+ * 🔄 将 keyboard 模板中的占位符替换为具体前缀。
+ */
+function resolveKeyboardTemplate(keyboard: KeyboardRows, prefix: string): KeyboardRows {
+  return JSON.parse(JSON.stringify(keyboard).replace(/\$\{commandPrefix\}/g, prefix))
 }
