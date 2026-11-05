@@ -93,7 +93,7 @@ QQ Markdown 相关输出仅支持 Koishi 的 QQ 官方 Bot 平台，非 QQ 平�
 若没有生成好友码，也可直接截取游戏内“线下活动外观二维码”直接发送给机器人识别测算：
 
 <p align="center">
-  <img src="./docs/images/help/offline-qrcode/index.png" width="600" alt="线下活动外观二维码获取指引">
+  <img src="https://cdn.jsdelivr.net/gh/VincentZyuApps/koishi-plugin-skykid-height-cosmetic-query@main/docs/images/help/offline-qrcode/index.png" width="600" alt="线下活动外观二维码获取指引">
 </p>
 
 Puppeteer / Takumi 是本地生成图片。若要嵌入 QQ Markdown，需要通过 `server` 或 `assets` 生成公网图片 URL；server 模式缓存目录为 `ctx.baseDir/cache/skykid-height-cosmetic-query`，暴露路由为 `/skykid-height-cosmetic-query/cache/:name`。
@@ -104,13 +104,13 @@ Puppeteer / Takumi 是本地生成图片。若要嵌入 QQ Markdown，需要通�
 
 | 输出方式 | 预览 |
 | --- | --- |
-| pptr<br>（浏览器截图出图）<br>`查询光崽身高装扮.pptr` | <img src="./docs/images/preview/dryrun/preview.dryrun.pptr.png" width="420" alt="dryrun pptr preview"> |
-| api<br>（外部 Pillow 后端出图）<br>`查询光崽身高装扮.api` | <img src="./docs/images/preview/dryrun/preview.dryrun.api.png" width="420" alt="dryrun api preview"> |
-| forward<br>（OneBot 合并转发）<br>`查询光崽身高装扮.forward` | <img src="./docs/images/preview/dryrun/preview.dryrun.forward.png" width="420" alt="dryrun forward preview"> |
-| takumi<br>（wasm 渲染图片）<br>`查询光崽身高装扮.takumi` | <img src="./docs/images/preview/dryrun/preview.dryrun.takumi.png" width="420" alt="dryrun takumi preview"> |
-| text<br>（直接拼接文本）<br>`查询光崽身高装扮.text` | <img src="./docs/images/preview/dryrun/preview.dryrun.text.png" width="420" alt="dryrun text preview"> |
-| md-style<br>（QQ Markdown 格式风格）<br>`查询光崽身高装扮.md-style` | <img src="./docs/images/preview/dryrun/preview.dryrun.qqmd-style.png" width="420" alt="dryrun qqmd-style preview"> |
-| md-table<br>（QQ Markdown 表格模式）<br>`查询光崽身高装扮.md-table` | <img src="./docs/images/preview/dryrun/preview.dryrun.qqmd-table.png" width="420" alt="dryrun qqmd-table preview"> |
+| pptr<br>（浏览器截图出图）<br>`查询光崽身高装扮.pptr` | <img src="https://cdn.jsdelivr.net/gh/VincentZyuApps/koishi-plugin-skykid-height-cosmetic-query@main/docs/images/preview/dryrun/preview.dryrun.pptr.png" width="420" alt="dryrun pptr preview"> |
+| api<br>（外部 Pillow 后端出图）<br>`查询光崽身高装扮.api` | <img src="https://cdn.jsdelivr.net/gh/VincentZyuApps/koishi-plugin-skykid-height-cosmetic-query@main/docs/images/preview/dryrun/preview.dryrun.api.png" width="420" alt="dryrun api preview"> |
+| forward<br>（OneBot 合并转发）<br>`查询光崽身高装扮.forward` | <img src="https://cdn.jsdelivr.net/gh/VincentZyuApps/koishi-plugin-skykid-height-cosmetic-query@main/docs/images/preview/dryrun/preview.dryrun.forward.png" width="420" alt="dryrun forward preview"> |
+| takumi<br>（wasm 渲染图片）<br>`查询光崽身高装扮.takumi` | <img src="https://cdn.jsdelivr.net/gh/VincentZyuApps/koishi-plugin-skykid-height-cosmetic-query@main/docs/images/preview/dryrun/preview.dryrun.takumi.png" width="420" alt="dryrun takumi preview"> |
+| text<br>（直接拼接文本）<br>`查询光崽身高装扮.text` | <img src="https://cdn.jsdelivr.net/gh/VincentZyuApps/koishi-plugin-skykid-height-cosmetic-query@main/docs/images/preview/dryrun/preview.dryrun.text.png" width="420" alt="dryrun text preview"> |
+| md-style<br>（QQ Markdown 格式风格）<br>`查询光崽身高装扮.md-style` | <img src="https://cdn.jsdelivr.net/gh/VincentZyuApps/koishi-plugin-skykid-height-cosmetic-query@main/docs/images/preview/dryrun/preview.dryrun.qqmd-style.png" width="420" alt="dryrun qqmd-style preview"> |
+| md-table<br>（QQ Markdown 表格模式）<br>`查询光崽身高装扮.md-table` | <img src="https://cdn.jsdelivr.net/gh/VincentZyuApps/koishi-plugin-skykid-height-cosmetic-query@main/docs/images/preview/dryrun/preview.dryrun.qqmd-table.png" width="420" alt="dryrun qqmd-table preview"> |
 
 ### 🌐 真实查询 live
 
@@ -121,7 +121,7 @@ Puppeteer / Takumi 是本地生成图片。若要嵌入 QQ Markdown，需要通�
 
 ↓ 实际效果预览：
 
-<img src="./docs/images/preview/live/preview.live.pptr.png" width="600" alt="live pptr preview">
+<img src="https://cdn.jsdelivr.net/gh/VincentZyuApps/koishi-plugin-skykid-height-cosmetic-query@main/docs/images/preview/live/preview.live.pptr.png" width="600" alt="live pptr preview">
 
 ---
 
@@ -132,7 +132,7 @@ Puppeteer / Takumi 是本地生成图片。若要嵌入 QQ Markdown，需要通�
 
 ↓ 实际效果预览：
 
-<img src="./docs/images/preview/live/preview.live.api.png" width="600" alt="live api preview">
+<img src="https://cdn.jsdelivr.net/gh/VincentZyuApps/koishi-plugin-skykid-height-cosmetic-query@main/docs/images/preview/live/preview.live.api.png" width="600" alt="live api preview">
 
 ---
 
@@ -143,7 +143,7 @@ Puppeteer / Takumi 是本地生成图片。若要嵌入 QQ Markdown，需要通�
 
 ↓ 实际效果预览：
 
-<img src="./docs/images/preview/live/preview.live.forward.png" width="500" alt="live forward preview">
+<img src="https://cdn.jsdelivr.net/gh/VincentZyuApps/koishi-plugin-skykid-height-cosmetic-query@main/docs/images/preview/live/preview.live.forward.png" width="500" alt="live forward preview">
 
 ---
 
@@ -154,7 +154,7 @@ Puppeteer / Takumi 是本地生成图片。若要嵌入 QQ Markdown，需要通�
 
 ↓ 实际效果预览：
 
-<img src="./docs/images/preview/live/preview.live.takumi.png" width="600" alt="live takumi preview">
+<img src="https://cdn.jsdelivr.net/gh/VincentZyuApps/koishi-plugin-skykid-height-cosmetic-query@main/docs/images/preview/live/preview.live.takumi.png" width="600" alt="live takumi preview">
 
 ---
 
@@ -165,7 +165,7 @@ Puppeteer / Takumi 是本地生成图片。若要嵌入 QQ Markdown，需要通�
 
 ↓ 实际效果预览：
 
-<img src="./docs/images/preview/live/preview.live.text.png" width="500" alt="live text preview">
+<img src="https://cdn.jsdelivr.net/gh/VincentZyuApps/koishi-plugin-skykid-height-cosmetic-query@main/docs/images/preview/live/preview.live.text.png" width="500" alt="live text preview">
 
 ---
 
@@ -176,7 +176,7 @@ Puppeteer / Takumi 是本地生成图片。若要嵌入 QQ Markdown，需要通�
 
 ↓ 实际效果预览：
 
-<img src="./docs/images/preview/live/preview.live.qqmd-style.png" width="500" alt="live qqmd-style preview">
+<img src="https://cdn.jsdelivr.net/gh/VincentZyuApps/koishi-plugin-skykid-height-cosmetic-query@main/docs/images/preview/live/preview.live.qqmd-style.png" width="500" alt="live qqmd-style preview">
 
 ---
 
@@ -187,7 +187,7 @@ Puppeteer / Takumi 是本地生成图片。若要嵌入 QQ Markdown，需要通�
 
 ↓ 实际效果预览：
 
-<img src="./docs/images/preview/live/preview.live.qqmd-table.png" width="500" alt="live qqmd-table preview">
+<img src="https://cdn.jsdelivr.net/gh/VincentZyuApps/koishi-plugin-skykid-height-cosmetic-query@main/docs/images/preview/live/preview.live.qqmd-table.png" width="500" alt="live qqmd-table preview">
 
 ---
 
