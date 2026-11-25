@@ -96,6 +96,8 @@ QQ Markdown 相关输出仅支持 Koishi 的 QQ 官方 Bot 平台，非 QQ 平�
   <img src="https://cdn.jsdelivr.net/gh/VincentZyuApps/koishi-plugin-skykid-height-cosmetic-query@main/docs/images/help/offline-qrcode/index.compact.png" width="600" alt="线下活动外观二维码获取指引">
 </p>
 
+> ↑ 提示：截图中的设置 UI 包含较多英文是因为截取指引时测试设备的系统语言设置为了英文，该截图流程实际完全来源于《光·遇》国服客户端，国内玩家对照相同位置操作即可。
+
 Puppeteer / Takumi 是本地生成图片。若要嵌入 QQ Markdown，需要通过 `server` 或 `assets` 生成公网图片 URL；server 模式缓存目录为 `ctx.baseDir/cache/skykid-height-cosmetic-query`，暴露路由为 `/skykid-height-cosmetic-query/cache/:name`。
 
 ## 🖼️ 效果预览
