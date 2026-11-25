@@ -93,7 +93,7 @@ QQ Markdown 相关输出仅支持 Koishi 的 QQ 官方 Bot 平台，非 QQ 平�
 若没有生成好友码，也可直接截取游戏内“线下活动外观二维码”直接发送给机器人识别测算：
 
 <p align="center">
-  <img src="https://cdn.jsdelivr.net/gh/VincentZyuApps/koishi-plugin-skykid-height-cosmetic-query@main/docs/images/help/offline-qrcode/index.png" width="600" alt="线下活动外观二维码获取指引">
+  <img src="https://cdn.jsdelivr.net/gh/VincentZyuApps/koishi-plugin-skykid-height-cosmetic-query@main/docs/images/help/offline-qrcode/index.compact.png" width="600" alt="线下活动外观二维码获取指引">
 </p>
 
 Puppeteer / Takumi 是本地生成图片。若要嵌入 QQ Markdown，需要通过 `server` 或 `assets` 生成公网图片 URL；server 模式缓存目录为 `ctx.baseDir/cache/skykid-height-cosmetic-query`，暴露路由为 `/skykid-height-cosmetic-query/cache/:name`。
